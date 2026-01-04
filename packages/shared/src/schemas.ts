@@ -31,6 +31,7 @@ export const updatePersonSchema = createPersonSchema.partial().extend({
 // Category schemas
 export const createCategorySchema = z.object({
   name: z.string().min(1).max(100),
+  type: z.enum(["INCOME", "EXPENSE"]),
   icon: z.string().optional(),
   color: z.string().optional(),
 });

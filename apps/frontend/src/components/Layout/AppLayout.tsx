@@ -33,6 +33,14 @@ export default function AppLayout() {
             💸 Lançamentos
           </NavLink>
           <NavLink
+            to="/app/imports"
+            className={({ isActive }) =>
+              `${styles.navLink} ${isActive ? styles.active : ''}`
+            }
+          >
+            📥 Importar
+          </NavLink>
+          <NavLink
             to="/app/budgets"
             className={({ isActive }) =>
               `${styles.navLink} ${isActive ? styles.active : ''}`

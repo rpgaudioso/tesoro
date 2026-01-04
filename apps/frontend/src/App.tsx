@@ -5,6 +5,7 @@ import BudgetsPage from './pages/BudgetsPage';
 import CardsPage from './pages/CardsPage';
 import CategoriesPage from './pages/CategoriesPage';
 import DashboardPage from './pages/DashboardPage';
+import { Imports } from './pages/Imports';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import TransactionsPage from './pages/TransactionsPage';
@@ -32,6 +33,7 @@ function App() {
           <Route index element={<Navigate to="/app/dashboard" />} />
           <Route path="dashboard" element={<DashboardPage />} />
           <Route path="transactions" element={<TransactionsPage />} />
+          <Route path="imports" element={<Imports />} />
           <Route path="budgets" element={<BudgetsPage />} />
           <Route path="cards" element={<CardsPage />} />
           <Route path="categories" element={<CategoriesPage />} />
