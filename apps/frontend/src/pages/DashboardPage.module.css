@@ -1,0 +1,141 @@
+.page {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.loading {
+  text-align: center;
+  padding: var(--spacing-64);
+  color: var(--color-text-secondary);
+}
+
+.header {
+  margin-bottom: var(--spacing-24);
+}
+
+.title {
+  font-size: var(--font-2xl);
+  font-weight: 700;
+  margin-bottom: var(--spacing-4);
+}
+
+.month {
+  font-size: var(--font-lg);
+  color: var(--color-text-secondary);
+  text-transform: capitalize;
+}
+
+.alerts {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-12);
+  margin-bottom: var(--spacing-24);
+}
+
+.summaryGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: var(--spacing-16);
+  margin-bottom: var(--spacing-24);
+}
+
+.summaryCard {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-8);
+}
+
+.summaryLabel {
+  font-size: var(--font-sm);
+  color: var(--color-text-secondary);
+  font-weight: 600;
+}
+
+.summaryValue {
+  font-size: var(--font-2xl);
+  font-weight: 700;
+}
+
+.income {
+  color: var(--color-success);
+}
+
+.expense {
+  color: var(--color-danger);
+}
+
+.positive {
+  color: var(--color-success);
+}
+
+.negative {
+  color: var(--color-danger);
+}
+
+.sectionTitle {
+  font-size: var(--font-xl);
+  font-weight: 600;
+  margin-bottom: var(--spacing-16);
+}
+
+.budgetList {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-24);
+}
+
+.emptyState {
+  text-align: center;
+  padding: var(--spacing-32);
+  color: var(--color-text-secondary);
+}
+
+.budgetItem {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-8);
+}
+
+.budgetHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.categoryName {
+  font-weight: 600;
+}
+
+.budgetValues {
+  display: flex;
+  gap: var(--spacing-4);
+  font-size: var(--font-sm);
+}
+
+.spent {
+  font-weight: 600;
+}
+
+.limit {
+  color: var(--color-text-secondary);
+}
+
+.cardImpactList {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-12);
+}
+
+.impactItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--spacing-12);
+  background-color: var(--color-neutral-50);
+  border-radius: var(--radius-8);
+}
+
+.impactMonth {
+  font-weight: 600;
+  text-transform: capitalize;
+}

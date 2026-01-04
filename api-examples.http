@@ -1,0 +1,216 @@
+### Auth - Registrar usuário
+POST http://localhost:3000/api/auth/register
+Content-Type: application/json
+
+{
+  "email": "teste@exemplo.com",
+  "password": "senha12345",
+  "workspaceName": "Minha Família"
+}
+
+###
+
+### Auth - Login
+POST http://localhost:3000/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "demo@tesoro.com",
+  "password": "password123"
+}
+
+###
+
+### Workspaces - Listar
+GET http://localhost:3000/api/workspaces
+Authorization: Bearer {{token}}
+
+###
+
+### Categories - Listar
+GET http://localhost:3000/api/categories
+Authorization: Bearer {{token}}
+x-workspace-id: {{workspaceId}}
+
+###
+
+### Categories - Criar
+POST http://localhost:3000/api/categories
+Authorization: Bearer {{token}}
+x-workspace-id: {{workspaceId}}
+Content-Type: application/json
+
+{
+  "name": "Supermercado",
+  "icon": "🛒",
+  "color": "#10b981"
+}
+
+###
+
+### People - Listar
+GET http://localhost:3000/api/people
+Authorization: Bearer {{token}}
+x-workspace-id: {{workspaceId}}
+
+###
+
+### People - Criar
+POST http://localhost:3000/api/people
+Authorization: Bearer {{token}}
+x-workspace-id: {{workspaceId}}
+Content-Type: application/json
+
+{
+  "name": "João",
+  "color": "#3b82f6"
+}
+
+###
+
+### Accounts - Listar
+GET http://localhost:3000/api/accounts
+Authorization: Bearer {{token}}
+x-workspace-id: {{workspaceId}}
+
+###
+
+### Accounts - Criar
+POST http://localhost:3000/api/accounts
+Authorization: Bearer {{token}}
+x-workspace-id: {{workspaceId}}
+Content-Type: application/json
+
+{
+  "name": "Nubank",
+  "type": "CHECKING",
+  "initialBalance": 1000.00
+}
+
+###
+
+### Cards - Listar
+GET http://localhost:3000/api/cards
+Authorization: Bearer {{token}}
+x-workspace-id: {{workspaceId}}
+
+###
+
+### Cards - Criar
+POST http://localhost:3000/api/cards
+Authorization: Bearer {{token}}
+x-workspace-id: {{workspaceId}}
+Content-Type: application/json
+
+{
+  "name": "Nubank Cartão",
+  "closingDay": 10,
+  "dueDay": 17,
+  "limit": 5000.00
+}
+
+###
+
+### Transactions - Listar
+GET http://localhost:3000/api/transactions?month=2026-01
+Authorization: Bearer {{token}}
+x-workspace-id: {{workspaceId}}
+
+###
+
+### Transactions - Criar Receita
+POST http://localhost:3000/api/transactions
+Authorization: Bearer {{token}}
+x-workspace-id: {{workspaceId}}
+Content-Type: application/json
+
+{
+  "date": "2026-01-05",
+  "description": "Salário Janeiro",
+  "amount": 5000.00,
+  "type": "INCOME",
+  "categoryId": "cat-outros",
+  "accountId": "account-main"
+}
+
+###
+
+### Transactions - Criar Despesa
+POST http://localhost:3000/api/transactions
+Authorization: Bearer {{token}}
+x-workspace-id: {{workspaceId}}
+Content-Type: application/json
+
+{
+  "date": "2026-01-10",
+  "description": "Supermercado",
+  "amount": 450.00,
+  "type": "EXPENSE",
+  "categoryId": "cat-alimentação",
+  "accountId": "account-main",
+  "personId": "person-casa"
+}
+
+###
+
+### Cards - Compra parcelada
+POST http://localhost:3000/api/cards/card-main/purchases
+Authorization: Bearer {{token}}
+x-workspace-id: {{workspaceId}}
+Content-Type: application/json
+
+{
+  "description": "Notebook Dell",
+  "date": "2026-01-15",
+  "amount": 3600.00,
+  "categoryId": "cat-outros",
+  "installments": 12
+}
+
+###
+
+### Cards - Fatura do mês
+GET http://localhost:3000/api/cards/card-main/statement?month=2026-01
+Authorization: Bearer {{token}}
+x-workspace-id: {{workspaceId}}
+
+###
+
+### Budgets - Buscar orçamentos do mês
+GET http://localhost:3000/api/budgets/2026-01
+Authorization: Bearer {{token}}
+x-workspace-id: {{workspaceId}}
+
+###
+
+### Budgets - Atualizar orçamentos
+PUT http://localhost:3000/api/budgets/2026-01
+Authorization: Bearer {{token}}
+x-workspace-id: {{workspaceId}}
+Content-Type: application/json
+
+{
+  "budgets": [
+    {
+      "categoryId": "cat-alimentação",
+      "limitAmount": 1000.00
+    },
+    {
+      "categoryId": "cat-transporte",
+      "limitAmount": 500.00
+    },
+    {
+      "categoryId": "cat-moradia",
+      "limitAmount": 1500.00
+    }
+  ]
+}
+
+###
+
+### Dashboard - Visão geral
+GET http://localhost:3000/api/dashboard?month=2026-01
+Authorization: Bearer {{token}}
+x-workspace-id: {{workspaceId}}
+
+###

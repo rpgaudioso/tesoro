@@ -1,0 +1,83 @@
+.layout {
+  display: flex;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.sidebar {
+  width: 250px;
+  background-color: var(--color-bg);
+  border-right: 1px solid var(--color-border);
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+}
+
+.sidebarHeader {
+  padding: var(--spacing-24) var(--spacing-16);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.logo {
+  font-size: var(--font-xl);
+  font-weight: 700;
+  margin: 0;
+  color: var(--color-primary);
+}
+
+.workspaceName {
+  margin: var(--spacing-8) 0 0;
+  font-size: var(--font-sm);
+  color: var(--color-text-secondary);
+}
+
+.nav {
+  flex: 1;
+  padding: var(--spacing-16) var(--spacing-8);
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-4);
+}
+
+.navLink {
+  padding: var(--spacing-12) var(--spacing-16);
+  border-radius: var(--radius-8);
+  text-decoration: none;
+  color: var(--color-text);
+  transition: all 0.2s;
+  font-weight: 500;
+}
+
+.navLink:hover {
+  background-color: var(--color-neutral-100);
+}
+
+.navLink.active {
+  background-color: var(--color-primary-light);
+  color: var(--color-primary);
+}
+
+.logoutButton {
+  margin: var(--spacing-16);
+  padding: var(--spacing-12);
+  background-color: transparent;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-8);
+  color: var(--color-text);
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.logoutButton:hover {
+  background-color: var(--color-danger-light);
+  border-color: var(--color-danger);
+  color: var(--color-danger);
+}
+
+.main {
+  flex: 1;
+  overflow-y: auto;
+  background-color: var(--color-bg-secondary);
+  padding: var(--spacing-24);
+}

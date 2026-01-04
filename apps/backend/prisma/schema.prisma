@@ -1,0 +1,206 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String   @id @default(uuid())
+  email        String   @unique
+  passwordHash String   @map("password_hash")
+  createdAt    DateTime @default(now()) @map("created_at")
+  
+  members Member[]
+
+  @@map("users")
+}
+
+model Workspace {
+  id        String   @id @default(uuid())
+  name      String
+  createdAt DateTime @default(now()) @map("created_at")
+  
+  members          Member[]
+  people           Person[]
+  categories       Category[]
+  accounts         Account[]
+  cards            Card[]
+  budgets          Budget[]
+  transactions     Transaction[]
+  installmentPlans InstallmentPlan[]
+  importBatches    ImportBatch[]
+
+  @@map("workspaces")
+}
+
+model Member {
+  id          String @id @default(uuid())
+  workspaceId String @map("workspace_id")
+  userId      String @map("user_id")
+  role        String // OWNER, EDITOR, VIEWER
+  
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([workspaceId, userId])
+  @@map("members")
+}
+
+model Person {
+  id          String  @id @default(uuid())
+  workspaceId String  @map("workspace_id")
+  name        String
+  color       String?
+  active      Boolean @default(true)
+  
+  workspace    Workspace     @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  transactions Transaction[]
+
+  @@map("people")
+}
+
+model Category {
+  id          String  @id @default(uuid())
+  workspaceId String  @map("workspace_id")
+  name        String
+  icon        String?
+  color       String?
+  
+  workspace    Workspace     @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  budgets      Budget[]
+  transactions Transaction[]
+
+  @@map("categories")
+}
+
+model Account {
+  id             String  @id @default(uuid())
+  workspaceId    String  @map("workspace_id")
+  name           String
+  type           String // CHECKING, CASH, SAVINGS, INVESTMENT
+  initialBalance Float   @default(0) @map("initial_balance")
+  active         Boolean @default(true)
+  
+  workspace    Workspace     @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  transactions Transaction[]
+
+  @@map("accounts")
+}
+
+model Card {
+  id          String  @id @default(uuid())
+  workspaceId String  @map("workspace_id")
+  name        String
+  closingDay  Int?    @map("closing_day")
+  dueDay      Int?    @map("due_day")
+  limit       Float?
+  active      Boolean @default(true)
+  
+  workspace    Workspace     @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  transactions Transaction[]
+
+  @@map("cards")
+}
+
+model Budget {
+  id          String @id @default(uuid())
+  workspaceId String @map("workspace_id")
+  categoryId  String @map("category_id")
+  month       String // YYYY-MM
+  limitAmount Float  @map("limit_amount")
+  
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  category  Category  @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+
+  @@unique([workspaceId, categoryId, month])
+  @@map("budgets")
+}
+
+model Transaction {
+  id            String   @id @default(uuid())
+  workspaceId   String   @map("workspace_id")
+  date          DateTime
+  description   String
+  amount        Float
+  type          String // INCOME, EXPENSE
+  categoryId    String   @map("category_id")
+  accountId     String?  @map("account_id")
+  cardId        String?  @map("card_id")
+  personId      String?  @map("person_id")
+  installmentId String?  @unique @map("installment_id")
+  createdAt     DateTime @default(now()) @map("created_at")
+  
+  workspace   Workspace    @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  category    Category     @relation(fields: [categoryId], references: [id])
+  account     Account?     @relation(fields: [accountId], references: [id])
+  card        Card?        @relation(fields: [cardId], references: [id])
+  person      Person?      @relation(fields: [personId], references: [id])
+  installment Installment? @relation(fields: [installmentId], references: [id])
+
+  @@index([workspaceId, date])
+  @@index([workspaceId, categoryId])
+  @@index([workspaceId, cardId])
+  @@map("transactions")
+}
+
+model InstallmentPlan {
+  id           String @id @default(uuid())
+  workspaceId  String @map("workspace_id")
+  description  String
+  totalAmount  Float  @map("total_amount")
+  installments Int
+  startMonth   String @map("start_month") // YYYY-MM
+  
+  workspace       Workspace     @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  installmentList Installment[]
+
+  @@map("installment_plans")
+}
+
+model Installment {
+  id                String  @id @default(uuid())
+  planId            String  @map("plan_id")
+  installmentNumber Int     @map("installment_number")
+  month             String // YYYY-MM
+  amount            Float
+  transactionId     String? @unique @map("transaction_id")
+  
+  plan        InstallmentPlan @relation(fields: [planId], references: [id], onDelete: Cascade)
+  transaction Transaction?
+
+  @@map("installments")
+}
+
+model ImportBatch {
+  id          String   @id @default(uuid())
+  workspaceId String   @map("workspace_id")
+  status      String // CREATED, UPLOADED, PARSED, CONFIRMED, FAILED
+  createdAt   DateTime @default(now()) @map("created_at")
+  
+  workspace Workspace      @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  rows      ImportedRow[]
+
+  @@map("import_batches")
+}
+
+model ImportedRow {
+  id                   String   @id @default(uuid())
+  batchId              String   @map("batch_id")
+  date                 DateTime
+  description          String
+  amount               Float
+  type                 String // INCOME, EXPENSE
+  suggestedCategoryId  String?  @map("suggested_category_id")
+  suggestedPersonId    String?  @map("suggested_person_id")
+  confirmed            Boolean  @default(false)
+  
+  batch ImportBatch @relation(fields: [batchId], references: [id], onDelete: Cascade)
+
+  @@map("imported_rows")
+}
