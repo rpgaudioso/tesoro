@@ -3,6 +3,14 @@
   margin: 0 auto;
 }
 
+.page > * {
+  margin-bottom: var(--spacing-24);
+}
+
+.page > *:last-child {
+  margin-bottom: 0;
+}
+
 .loading {
   text-align: center;
   padding: var(--spacing-64);
@@ -13,7 +21,125 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: var(--spacing-24);
+  margin-bottom: var(--spacing-32);
+  flex-wrap: wrap;
+  gap: var(--spacing-20);
+}
+
+.headerControls {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-16);
+}
+
+.filterButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border: 1px solid var(--color-border);
+  background-color: var(--color-bg);
+  border-radius: var(--radius-8);
+  color: var(--color-text-primary);
+  cursor: pointer;
+  transition: all 0.2s;
+  position: relative;
+}
+
+.filterButton:hover {
+  background-color: var(--color-bg-secondary);
+  border-color: var(--color-primary);
+}
+
+.filterActive {
+  background-color: var(--color-primary);
+  color: white;
+  border-color: var(--color-primary);
+}
+
+.filterBadge {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  width: 12px;
+  height: 12px;
+  background-color: var(--color-danger);
+  border-radius: 50%;
+  font-size: 20px;
+  line-height: 1;
+  color: white;
+}
+
+.filterPanel {
+  padding: var(--spacing-24);
+}
+
+.filterHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--spacing-20);
+}
+
+.filterHeader h3 {
+  margin: 0;
+  font-size: var(--font-lg);
+  font-weight: 600;
+}
+
+.clearFilters {
+  padding: var(--spacing-6) var(--spacing-12);
+  font-size: var(--font-sm);
+  color: var(--color-primary);
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-decoration: underline;
+  transition: opacity 0.2s;
+}
+
+.clearFilters:hover {
+  opacity: 0.7;
+}
+
+.filterGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: var(--spacing-20);
+}
+
+.filterGroup {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-10);
+}
+
+.filterGroup label {
+  font-size: var(--font-sm);
+  font-weight: 600;
+  color: var(--color-text-secondary);
+}
+
+.filterSelect {
+  padding: var(--spacing-10);
+  padding-right: var(--spacing-40);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-6);
+  font-size: var(--font-base);
+  background-color: var(--color-bg);
+  cursor: pointer;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23737373' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right var(--spacing-12) center;
+  width: 100%;
+}
+
+.filterSelect:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px var(--color-primary-light, rgba(66, 153, 225, 0.1));
 }
 
 .title {
@@ -103,6 +229,7 @@
   align-items: center;
   padding: var(--spacing-16);
   border-bottom: 1px solid var(--color-border);
+  gap: var(--spacing-16);
 }
 
 .transactionItem:last-child {
@@ -113,13 +240,24 @@
   flex: 1;
   display: flex;
   flex-direction: column;
-  gap: var(--spacing-4);
+  gap: var(--spacing-8);
 }
 
 .transactionMain {
   display: flex;
   align-items: center;
-  gap: var(--spacing-12);
+  gap: var(--spacing-16);
+}
+
+.categoryIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-8);
+  font-size: 18px;
+  flex-shrink: 0;
 }
 
 .description {
@@ -134,8 +272,8 @@
   color: var(--color-text-secondary);
 }
 
-.category::before {
-  content: '🏷️ ';
+.category {
+  /* Ícone agora é exibido visualmente antes da descrição */
 }
 
 .date::before {
@@ -189,24 +327,28 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 32px;
-  height: 32px;
+  padding: 0.5rem;
   border: none;
-  background-color: transparent;
-  border-radius: var(--radius-6);
-  color: var(--color-text-secondary);
+  background: #f3f4f6;
+  border-radius: 0.375rem;
+  color: #6b7280;
   cursor: pointer;
   transition: all 0.2s;
 }
 
 .actionButton:hover {
-  background-color: var(--color-bg-secondary);
-  color: var(--color-primary);
+  background: #e5e7eb;
+  color: #1f2937;
+}
+
+.deleteButton {
+  background: #fee2e2;
+  color: #dc2626;
 }
 
 .deleteButton:hover {
-  background-color: var(--color-danger-light, #fee);
-  color: var(--color-danger);
+  background: #fecaca;
+  color: #dc2626;
 }
 
 .person {
@@ -217,10 +359,10 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: var(--spacing-16);
+  padding: var(--spacing-20);
   background-color: var(--color-primary-light, #e3f2fd);
-  border-radius: var(--radius-8);
-  margin-bottom: var(--spacing-16);
+  border-radius: var(--radius-12);
+  margin-bottom: var(--spacing-20);
 }
 
 .bulkActionsText {
@@ -230,7 +372,7 @@
 
 .bulkActionsButtons {
   display: flex;
-  gap: var(--spacing-12);
+  gap: var(--spacing-16);
 }
 
 .bulkActionButton {
@@ -292,6 +434,15 @@
   border-radius: var(--radius-6);
   font-size: var(--font-base);
   background-color: var(--color-bg);
+  width: 100%;
+}
+
+.formGroup select {
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23737373' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right var(--spacing-12) center;
+  padding-right: var(--spacing-40);
 }
 
 .formGroup input:focus,
@@ -303,7 +454,7 @@
 
 .formActions {
   display: flex;
-  gap: var(--spacing-12);
+  gap: var(--spacing-16);
   margin-top: var(--spacing-24);
 }
 

@@ -26,6 +26,7 @@ export const createPersonSchema = z.object({
 
 export const updatePersonSchema = createPersonSchema.partial().extend({
   active: z.boolean().optional(),
+  removePhoto: z.boolean().optional(),
 });
 
 // Category schemas
@@ -34,6 +35,7 @@ export const createCategorySchema = z.object({
   type: z.enum(["INCOME", "EXPENSE"]),
   icon: z.string().optional(),
   color: z.string().optional(),
+  monthlyLimit: z.number().nonnegative().optional(),
 });
 
 export const updateCategorySchema = createCategorySchema.partial();

@@ -36,8 +36,10 @@ export interface Category {
   id: string;
   workspaceId: string;
   name: string;
+  type?: string;
   icon?: string;
   color?: string;
+  monthlyLimit?: number;
 }
 
 export interface Account {

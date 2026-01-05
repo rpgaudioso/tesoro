@@ -10,11 +10,31 @@ import { PrismaService } from "../prisma/prisma.service";
 export class CardsService {
   constructor(private prisma: PrismaService) {}
 
-  async create(workspaceId: string, dto: CreateCardDto) {
+  async create(
+    workspaceId: string,
+    dto: CreateCardDto & { personIds?: string[] }
+  ) {
+    const { personIds, ...cardData } = dto;
+
     return this.prisma.card.create({
       data: {
         workspaceId,
-        ...dto,
+        ...cardData,
+        people:
+          personIds && personIds.length > 0
+            ? {
+                create: personIds.map((personId) => ({
+                  personId,
+                })),
+              }
+            : undefined,
+      },
+      include: {
+        people: {
+          include: {
+            person: true,
+          },
+        },
       },
     });
   }
@@ -22,6 +42,13 @@ export class CardsService {
   async findAll(workspaceId: string) {
     return this.prisma.card.findMany({
       where: { workspaceId },
+      include: {
+        people: {
+          include: {
+            person: true,
+          },
+        },
+      },
       orderBy: { name: "asc" },
     });
   }
@@ -29,13 +56,50 @@ export class CardsService {
   async findOne(workspaceId: string, id: string) {
     return this.prisma.card.findFirst({
       where: { id, workspaceId },
+      include: {
+        people: {
+          include: {
+            person: true,
+          },
+        },
+      },
     });
   }
 
-  async update(workspaceId: string, id: string, dto: UpdateCardDto) {
+  async update(
+    workspaceId: string,
+    id: string,
+    dto: UpdateCardDto & { personIds?: string[] }
+  ) {
+    const { personIds, ...cardData } = dto;
+
+    // Delete existing associations if personIds is provided
+    if (personIds) {
+      await this.prisma.cardPerson.deleteMany({
+        where: { cardId: id },
+      });
+    }
+
     return this.prisma.card.update({
       where: { id },
-      data: dto,
+      data: {
+        ...cardData,
+        people:
+          personIds && personIds.length > 0
+            ? {
+                create: personIds.map((personId) => ({
+                  personId,
+                })),
+              }
+            : undefined,
+      },
+      include: {
+        people: {
+          include: {
+            person: true,
+          },
+        },
+      },
     });
   }
 

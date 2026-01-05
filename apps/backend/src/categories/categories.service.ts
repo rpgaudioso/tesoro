@@ -1,6 +1,6 @@
-import { Injectable } from '@nestjs/common';
-import { CreateCategoryDto, UpdateCategoryDto } from '@tesoro/shared';
-import { PrismaService } from '../prisma/prisma.service';
+import { BadRequestException, Injectable } from "@nestjs/common";
+import { CreateCategoryDto, UpdateCategoryDto } from "@tesoro/shared";
+import { PrismaService } from "../prisma/prisma.service";
 
 @Injectable()
 export class CategoriesService {
@@ -18,7 +18,7 @@ export class CategoriesService {
   async findAll(workspaceId: string) {
     return this.prisma.category.findMany({
       where: { workspaceId },
-      orderBy: { name: 'asc' },
+      orderBy: { name: "asc" },
     });
   }
 
@@ -36,6 +36,17 @@ export class CategoriesService {
   }
 
   async remove(workspaceId: string, id: string) {
+    // Verificar se há transações associadas a esta categoria
+    const transactionsCount = await this.prisma.transaction.count({
+      where: { categoryId: id },
+    });
+
+    if (transactionsCount > 0) {
+      throw new BadRequestException(
+        `Não é possível excluir esta categoria pois existem ${transactionsCount} lançamento(s) associado(s). Remova a categoria desses lançamentos antes de excluí-la.`
+      );
+    }
+
     return this.prisma.category.delete({
       where: { id },
     });

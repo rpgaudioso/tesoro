@@ -1,33 +1,57 @@
 import Badge from '@/components/UI/Badge';
 import Card from '@/components/UI/Card';
+import ConfirmDialog from '@/components/UI/ConfirmDialog';
+import { useAuth } from '@/contexts/AuthContext';
+import { useConfirm } from '@/hooks/useConfirm';
+import { useWorkspaceChange } from '@/hooks/useWorkspaceChange';
 import api from '@/lib/api';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import type { Transaction, Category, Person, Account, Card as CardType } from '@tesoro/shared';
-import { format, addMonths, subMonths, parseISO } from 'date-fns';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import type { Account, Card as CardType, Category, Person, Transaction } from '@tesoro/shared';
+import { addMonths, format, subMonths } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
-import { ChevronLeft, ChevronRight, Edit2, Trash2, X, Check } from 'lucide-react';
+import { Check, ChevronLeft, ChevronRight, Edit2, Filter, Trash2, X } from 'lucide-react';
 import { useState } from 'react';
+import { toast } from 'sonner';
 import styles from './TransactionsPage.module.css';
 
 export default function TransactionsPage() {
+  const { currentWorkspace } = useAuth();
+  useWorkspaceChange();
+  
   const [selectedDate, setSelectedDate] = useState(new Date());
   const selectedMonth = format(selectedDate, 'yyyy-MM');
   const [editingTransaction, setEditingTransaction] = useState<Transaction | null>(null);
   const [selectedTransactions, setSelectedTransactions] = useState<Set<string>>(new Set());
   const [bulkEditMode, setBulkEditMode] = useState(false);
   const [bulkEditData, setBulkEditData] = useState<Partial<Transaction>>({});
+  const [filterAccountId, setFilterAccountId] = useState<string>('');
+  const [filterCardId, setFilterCardId] = useState<string>('');
+  const [filterType, setFilterType] = useState<string>('');
+  const [filterCategoryId, setFilterCategoryId] = useState<string>('');
+  const [showFilters, setShowFilters] = useState(false);
   const queryClient = useQueryClient();
+  const { confirm, confirmState, handleConfirm, handleCancel } = useConfirm();
+
+  // Construir URL com filtros
+  const buildQueryUrl = () => {
+    const params = new URLSearchParams({ month: selectedMonth });
+    if (filterAccountId) params.append('accountId', filterAccountId);
+    if (filterCardId) params.append('cardId', filterCardId);
+    if (filterType) params.append('type', filterType);
+    if (filterCategoryId) params.append('categoryId', filterCategoryId);
+    return `/transactions?${params.toString()}`;
+  };
 
   const { data: transactions, isLoading } = useQuery<Transaction[]>({
-    queryKey: ['transactions', selectedMonth],
+    queryKey: ['transactions', selectedMonth, filterAccountId, filterCardId, filterType, filterCategoryId, currentWorkspace?.id],
     queryFn: async () => {
-      const { data } = await api.get(`/transactions?month=${selectedMonth}`);
+      const { data } = await api.get(buildQueryUrl());
       return data;
     },
   });
 
   const { data: categories } = useQuery<Category[]>({
-    queryKey: ['categories'],
+    queryKey: ['categories', currentWorkspace?.id],
     queryFn: async () => {
       const { data } = await api.get('/categories');
       return data;
@@ -35,9 +59,25 @@ export default function TransactionsPage() {
   });
 
   const { data: people } = useQuery<Person[]>({
-    queryKey: ['people'],
+    queryKey: ['people', currentWorkspace?.id],
     queryFn: async () => {
       const { data } = await api.get('/people');
+      return data;
+    },
+  });
+
+  const { data: accounts } = useQuery<Account[]>({
+    queryKey: ['accounts', currentWorkspace?.id],
+    queryFn: async () => {
+      const { data } = await api.get('/accounts');
+      return data;
+    },
+  });
+
+  const { data: cards } = useQuery<CardType[]>({
+    queryKey: ['cards', currentWorkspace?.id],
+    queryFn: async () => {
+      const { data } = await api.get('/cards');
       return data;
     },
   });
@@ -74,13 +114,31 @@ export default function TransactionsPage() {
     setSelectedDate(new Date());
   };
 
+  const handleClearFilters = () => {
+    setFilterAccountId('');
+    setFilterCardId('');
+    setFilterType('');
+    setFilterCategoryId('');
+  };
+
+  const hasActiveFilters = filterAccountId || filterCardId || filterType || filterCategoryId;
+
   const handleEdit = (transaction: Transaction) => {
     setEditingTransaction(transaction);
   };
 
   const handleDelete = async (id: string) => {
-    if (confirm('Tem certeza que deseja excluir este lançamento?')) {
+    const confirmed = await confirm({
+      title: 'Excluir Lançamento',
+      message: 'Tem certeza que deseja excluir este lançamento? Esta ação não pode ser desfeita.',
+      confirmLabel: 'Excluir',
+      cancelLabel: 'Cancelar',
+      variant: 'danger',
+    });
+
+    if (confirmed) {
       await deleteMutation.mutateAsync(id);
+      toast.success('Lançamento excluído com sucesso');
     }
   };
 
@@ -137,11 +195,20 @@ export default function TransactionsPage() {
   const handleBulkDelete = async () => {
     if (selectedTransactions.size === 0) return;
 
-    if (confirm(`Tem certeza que deseja excluir ${selectedTransactions.size} lançamento(s)?`)) {
+    const confirmed = await confirm({
+      title: 'Excluir Múltiplas Transações',
+      message: `Tem certeza que deseja excluir ${selectedTransactions.size} lançamento(s)? Esta ação não pode ser desfeita.`,
+      confirmLabel: 'Excluir Todos',
+      cancelLabel: 'Cancelar',
+      variant: 'danger',
+    });
+
+    if (confirmed) {
       for (const id of selectedTransactions) {
         await deleteMutation.mutateAsync(id);
       }
       setSelectedTransactions(new Set());
+      toast.success(`${selectedTransactions.size} lançamento(s) excluído(s) com sucesso`);
     }
   };
 
@@ -151,36 +218,131 @@ export default function TransactionsPage() {
 
   return (
     <div className={styles.page}>
+      <ConfirmDialog
+        isOpen={confirmState.isOpen}
+        title={confirmState.title}
+        message={confirmState.message}
+        confirmLabel={confirmState.confirmLabel}
+        cancelLabel={confirmState.cancelLabel}
+        variant={confirmState.variant}
+        onConfirm={handleConfirm}
+        onCancel={handleCancel}
+      />
+
       <div className={styles.header}>
-        <h1 className={styles.title}>Lançamentos</h1>
-        <div className={styles.monthSelector}>
-          <button 
-            onClick={handlePreviousMonth}
-            className={styles.monthButton}
-            aria-label="Mês anterior"
+        <h1 className={styles.title}>Transações</h1>
+        <div className={styles.headerControls}>
+          <button
+            onClick={() => setShowFilters(!showFilters)}
+            className={`${styles.filterButton} ${hasActiveFilters ? styles.filterActive : ''}`}
+            title="Filtros"
           >
-            <ChevronLeft size={20} />
+            <Filter size={20} />
+            {hasActiveFilters && <span className={styles.filterBadge}>•</span>}
           </button>
-          <div className={styles.monthDisplay}>
-            <span className={styles.monthText}>
-              {format(selectedDate, 'MMMM yyyy', { locale: ptBR })}
-            </span>
+          <div className={styles.monthSelector}>
             <button 
-              onClick={handleToday}
-              className={styles.todayButton}
+              onClick={handlePreviousMonth}
+              className={styles.monthButton}
+              aria-label="Mês anterior"
             >
-              Hoje
+              <ChevronLeft size={20} />
+            </button>
+            <div className={styles.monthDisplay}>
+              <span className={styles.monthText}>
+                {format(selectedDate, 'MMMM yyyy', { locale: ptBR })}
+              </span>
+              <button 
+                onClick={handleToday}
+                className={styles.todayButton}
+              >
+                Hoje
+              </button>
+            </div>
+            <button 
+              onClick={handleNextMonth}
+              className={styles.monthButton}
+              aria-label="Próximo mês"
+            >
+              <ChevronRight size={20} />
             </button>
           </div>
-          <button 
-            onClick={handleNextMonth}
-            className={styles.monthButton}
-            aria-label="Próximo mês"
-          >
-            <ChevronRight size={20} />
-          </button>
         </div>
       </div>
+
+      {showFilters && (
+        <Card>
+          <div className={styles.filterPanel}>
+            <div className={styles.filterHeader}>
+              <h3>Filtros</h3>
+              {hasActiveFilters && (
+                <button onClick={handleClearFilters} className={styles.clearFilters}>
+                  Limpar filtros
+                </button>
+              )}
+            </div>
+            <div className={styles.filterGrid}>
+              <div className={styles.filterGroup}>
+                <label>Tipo</label>
+                <select
+                  value={filterType}
+                  onChange={(e) => setFilterType(e.target.value)}
+                  className={styles.filterSelect}
+                >
+                  <option value="">Todos</option>
+                  <option value="EXPENSE">Despesa</option>
+                  <option value="INCOME">Receita</option>
+                </select>
+              </div>
+              <div className={styles.filterGroup}>
+                <label>Categoria</label>
+                <select
+                  value={filterCategoryId}
+                  onChange={(e) => setFilterCategoryId(e.target.value)}
+                  className={styles.filterSelect}
+                >
+                  <option value="">Todas as categorias</option>
+                  {categories?.map(category => (
+                    <option key={category.id} value={category.id}>
+                      {category.icon} {category.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div className={styles.filterGroup}>
+                <label>Conta Corrente</label>
+                <select
+                  value={filterAccountId}
+                  onChange={(e) => setFilterAccountId(e.target.value)}
+                  className={styles.filterSelect}
+                >
+                  <option value="">Todas as contas</option>
+                  {accounts?.map(account => (
+                    <option key={account.id} value={account.id}>
+                      {account.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div className={styles.filterGroup}>
+                <label>Cartão de Crédito</label>
+                <select
+                  value={filterCardId}
+                  onChange={(e) => setFilterCardId(e.target.value)}
+                  className={styles.filterSelect}
+                >
+                  <option value="">Todos os cartões</option>
+                  {cards?.map(card => (
+                    <option key={card.id} value={card.id}>
+                      {card.name} ({card.lastFourDigits})
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
+          </div>
+        </Card>
+      )}
 
       {selectedTransactions.size > 0 && (
         <div className={styles.bulkActions}>
@@ -279,6 +441,14 @@ export default function TransactionsPage() {
                 />
                 <div className={styles.transactionInfo}>
                   <div className={styles.transactionMain}>
+                    {transaction.category && (
+                      <div 
+                        className={styles.categoryIcon}
+                        style={{ backgroundColor: transaction.category.color }}
+                      >
+                        {transaction.category.icon}
+                      </div>
+                    )}
                     <span className={styles.description}>
                       {transaction.description}
                     </span>

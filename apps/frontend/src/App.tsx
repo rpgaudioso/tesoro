@@ -1,4 +1,5 @@
 import { Navigate, Route, Routes } from 'react-router-dom';
+import { Toaster } from 'sonner';
 import AppLayout from './components/Layout/AppLayout';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import BudgetsPage from './pages/BudgetsPage';
@@ -8,6 +9,7 @@ import DashboardPage from './pages/DashboardPage';
 import { Imports } from './pages/Imports';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
+import SettingsPage from './pages/SettingsPage';
 import TransactionsPage from './pages/TransactionsPage';
 
 function PrivateRoute({ children }: { children: React.ReactNode }) {
@@ -18,6 +20,7 @@ function PrivateRoute({ children }: { children: React.ReactNode }) {
 function App() {
   return (
     <AuthProvider>
+      <Toaster position="top-right" richColors closeButton />
       <Routes>
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
@@ -37,6 +40,7 @@ function App() {
           <Route path="budgets" element={<BudgetsPage />} />
           <Route path="cards" element={<CardsPage />} />
           <Route path="categories" element={<CategoriesPage />} />
+          <Route path="settings" element={<SettingsPage />} />
         </Route>
 
         <Route path="/" element={<Navigate to="/app" />} />

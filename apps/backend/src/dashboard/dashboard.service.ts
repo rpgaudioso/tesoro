@@ -1,12 +1,15 @@
-import { Injectable } from '@nestjs/common';
-import { DashboardData } from '@tesoro/shared';
-import { PrismaService } from '../prisma/prisma.service';
+import { Injectable } from "@nestjs/common";
+import { DashboardData } from "@tesoro/shared";
+import { PrismaService } from "../prisma/prisma.service";
 
 @Injectable()
 export class DashboardService {
   constructor(private prisma: PrismaService) {}
 
-  async getDashboard(workspaceId: string, month: string): Promise<DashboardData> {
+  async getDashboard(
+    workspaceId: string,
+    month: string
+  ): Promise<DashboardData> {
     const startDate = new Date(`${month}-01`);
     const endDate = new Date(startDate);
     endDate.setMonth(endDate.getMonth() + 1);
@@ -25,11 +28,11 @@ export class DashboardService {
 
     // Calculate income and expenses
     const income = transactions
-      .filter((t) => t.type === 'INCOME')
+      .filter((t) => t.type === "INCOME")
       .reduce((sum, t) => sum + t.amount, 0);
 
     const expenses = transactions
-      .filter((t) => t.type === 'EXPENSE')
+      .filter((t) => t.type === "EXPENSE")
       .reduce((sum, t) => sum + t.amount, 0);
 
     const balance = income - expenses;
@@ -41,15 +44,19 @@ export class DashboardService {
     });
 
     const spentByCategory = transactions
-      .filter((t) => t.type === 'EXPENSE')
-      .reduce((acc, t) => {
-        acc[t.categoryId] = (acc[t.categoryId] || 0) + t.amount;
-        return acc;
-      }, {} as Record<string, number>);
+      .filter((t) => t.type === "EXPENSE")
+      .reduce(
+        (acc, t) => {
+          acc[t.categoryId] = (acc[t.categoryId] || 0) + t.amount;
+          return acc;
+        },
+        {} as Record<string, number>
+      );
 
     const budgetSummary = budgets.map((budget) => {
       const spent = spentByCategory[budget.categoryId] || 0;
-      const percentage = budget.limitAmount > 0 ? (spent / budget.limitAmount) * 100 : 0;
+      const percentage =
+        budget.limitAmount > 0 ? (spent / budget.limitAmount) * 100 : 0;
 
       return {
         categoryId: budget.categoryId,
@@ -65,9 +72,13 @@ export class DashboardService {
 
     budgetSummary.forEach((item) => {
       if (item.percentage >= 100) {
-        alerts.push(`⚠️ Orçamento de "${item.categoryName}" estourado (${item.percentage.toFixed(0)}%)`);
+        alerts.push(
+          `⚠️ Orçamento de "${item.categoryName}" estourado (${item.percentage.toFixed(0)}%)`
+        );
       } else if (item.percentage >= 80) {
-        alerts.push(`⚡ "${item.categoryName}" perto do limite (${item.percentage.toFixed(0)}%)`);
+        alerts.push(
+          `⚡ "${item.categoryName}" perto do limite (${item.percentage.toFixed(0)}%)`
+        );
       }
     });
 
@@ -98,7 +109,7 @@ export class DashboardService {
     for (let i = 1; i <= 6; i++) {
       const futureDate = new Date(currentDate);
       futureDate.setMonth(futureDate.getMonth() + i);
-      const futureMonth = `${futureDate.getFullYear()}-${String(futureDate.getMonth() + 1).padStart(2, '0')}`;
+      const futureMonth = `${futureDate.getFullYear()}-${String(futureDate.getMonth() + 1).padStart(2, "0")}`;
 
       const installments = await this.prisma.installment.findMany({
         where: {
@@ -107,7 +118,10 @@ export class DashboardService {
         },
       });
 
-      const totalAmount = installments.reduce((sum, inst) => sum + inst.amount, 0);
+      const totalAmount = installments.reduce(
+        (sum, inst) => sum + inst.amount,
+        0
+      );
 
       if (totalAmount > 0) {
         nextMonths.push({
@@ -118,5 +132,113 @@ export class DashboardService {
     }
 
     return { nextMonths };
+  }
+
+  async getYearlyBalance(workspaceId: string, isLastYear: boolean = false) {
+    const now = new Date();
+    const year = isLastYear ? now.getFullYear() - 1 : now.getFullYear();
+
+    const monthlyBalances: Array<{
+      month: string;
+      monthName: string;
+      income: number;
+      expenses: number;
+      balance: number;
+    }> = [];
+
+    // Get all 12 months of the year (January to December)
+    for (let monthIndex = 0; monthIndex < 12; monthIndex++) {
+      const date = new Date(year, monthIndex, 1);
+      const month = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}`;
+
+      const startDate = new Date(`${month}-01`);
+      const endDate = new Date(startDate);
+      endDate.setMonth(endDate.getMonth() + 1);
+
+      const transactions = await this.prisma.transaction.findMany({
+        where: {
+          workspaceId,
+          date: {
+            gte: startDate,
+            lt: endDate,
+          },
+        },
+      });
+
+      const income = transactions
+        .filter((t) => t.type === "INCOME")
+        .reduce((sum, t) => sum + t.amount, 0);
+
+      const expenses = transactions
+        .filter((t) => t.type === "EXPENSE")
+        .reduce((sum, t) => sum + t.amount, 0);
+
+      const balance = income - expenses;
+
+      monthlyBalances.push({
+        month,
+        monthName: date
+          .toLocaleDateString("pt-BR", { month: "short" })
+          .toUpperCase(),
+        income,
+        expenses,
+        balance,
+      });
+    }
+
+    return monthlyBalances;
+  }
+
+  async getLast12MonthsBalance(workspaceId: string) {
+    const now = new Date();
+    const monthlyBalances: Array<{
+      month: string;
+      monthName: string;
+      income: number;
+      expenses: number;
+      balance: number;
+    }> = [];
+
+    // Get last 12 months from current date
+    for (let i = 11; i >= 0; i--) {
+      const date = new Date(now.getFullYear(), now.getMonth() - i, 1);
+      const month = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}`;
+
+      const startDate = new Date(`${month}-01`);
+      const endDate = new Date(startDate);
+      endDate.setMonth(endDate.getMonth() + 1);
+
+      const transactions = await this.prisma.transaction.findMany({
+        where: {
+          workspaceId,
+          date: {
+            gte: startDate,
+            lt: endDate,
+          },
+        },
+      });
+
+      const income = transactions
+        .filter((t) => t.type === "INCOME")
+        .reduce((sum, t) => sum + t.amount, 0);
+
+      const expenses = transactions
+        .filter((t) => t.type === "EXPENSE")
+        .reduce((sum, t) => sum + t.amount, 0);
+
+      const balance = income - expenses;
+
+      monthlyBalances.push({
+        month,
+        monthName: date
+          .toLocaleDateString("pt-BR", { month: "short" })
+          .toUpperCase(),
+        income,
+        expenses,
+        balance,
+      });
+    }
+
+    return monthlyBalances;
   }
 }

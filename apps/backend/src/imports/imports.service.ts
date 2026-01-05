@@ -194,8 +194,8 @@ export class ImportsService {
       personId?: string;
     }
   ) {
-    console.log('🔄 Backend - updateImportRow:', { rowId, data });
-    
+    console.log("🔄 Backend - updateImportRow:", { rowId, data });
+
     // Verificar se o batch pertence ao workspace
     const batch = await this.prisma.importBatch.findFirst({
       where: { id: batchId, workspaceId },
@@ -213,13 +213,13 @@ export class ImportsService {
         personId: data.personId,
       },
     });
-    
-    console.log('✅ Backend - Linha atualizada:', { 
-      id: updated.id, 
+
+    console.log("✅ Backend - Linha atualizada:", {
+      id: updated.id,
       categoryId: updated.categoryId,
-      confirmed: updated.confirmed 
+      confirmed: updated.confirmed,
     });
-    
+
     return updated;
   }
 
@@ -250,7 +250,7 @@ export class ImportsService {
     const createdTransactions = await Promise.all(
       confirmedRows.map((row) => {
         const categoryId = row.categoryId || row.suggestedCategoryId;
-        
+
         if (!categoryId) {
           throw new BadRequestException(
             `Categoria é obrigatória para a transação: ${row.description}`

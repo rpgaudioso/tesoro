@@ -1,10 +1,25 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, UseGuards } from '@nestjs/common';
-import { CreatePersonDto, UpdatePersonDto } from '@tesoro/shared';
-import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
-import { WorkspaceGuard, WorkspaceId } from '../auth/guards/workspace.guard';
-import { PeopleService } from './people.service';
+import {
+  Body,
+  Controller,
+  Delete,
+  FileTypeValidator,
+  Get,
+  MaxFileSizeValidator,
+  Param,
+  ParseFilePipe,
+  Patch,
+  Post,
+  UploadedFile,
+  UseGuards,
+  UseInterceptors,
+} from "@nestjs/common";
+import { FileInterceptor } from "@nestjs/platform-express";
+import { CreatePersonDto, UpdatePersonDto } from "@tesoro/shared";
+import { JwtAuthGuard } from "../auth/guards/jwt-auth.guard";
+import { WorkspaceGuard, WorkspaceId } from "../auth/guards/workspace.guard";
+import { PeopleService } from "./people.service";
 
-@Controller('people')
+@Controller("people")
 @UseGuards(JwtAuthGuard, WorkspaceGuard)
 export class PeopleController {
   constructor(private peopleService: PeopleService) {}
@@ -19,22 +34,33 @@ export class PeopleController {
     return this.peopleService.findAll(workspaceId);
   }
 
-  @Get(':id')
-  findOne(@WorkspaceId() workspaceId: string, @Param('id') id: string) {
+  @Get(":id")
+  findOne(@WorkspaceId() workspaceId: string, @Param("id") id: string) {
     return this.peopleService.findOne(workspaceId, id);
   }
 
-  @Patch(':id')
+  @Patch(":id")
+  @UseInterceptors(FileInterceptor("photo"))
   update(
     @WorkspaceId() workspaceId: string,
-    @Param('id') id: string,
+    @Param("id") id: string,
     @Body() dto: UpdatePersonDto,
+    @UploadedFile(
+      new ParseFilePipe({
+        validators: [
+          new MaxFileSizeValidator({ maxSize: 5 * 1024 * 1024 }), // 5MB
+          new FileTypeValidator({ fileType: /(jpg|jpeg|png|gif)$/ }),
+        ],
+        fileIsRequired: false,
+      })
+    )
+    file?: Express.Multer.File
   ) {
-    return this.peopleService.update(workspaceId, id, dto);
+    return this.peopleService.update(workspaceId, id, dto, file);
   }
 
-  @Delete(':id')
-  remove(@WorkspaceId() workspaceId: string, @Param('id') id: string) {
+  @Delete(":id")
+  remove(@WorkspaceId() workspaceId: string, @Param("id") id: string) {
     return this.peopleService.remove(workspaceId, id);
   }
 }

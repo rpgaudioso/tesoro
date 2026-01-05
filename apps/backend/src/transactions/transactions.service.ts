@@ -1,13 +1,13 @@
-import { Injectable } from '@nestjs/common';
-import { CreateTransactionDto, UpdateTransactionDto } from '@tesoro/shared';
-import { PrismaService } from '../prisma/prisma.service';
+import { Injectable } from "@nestjs/common";
+import { CreateTransactionDto, UpdateTransactionDto } from "@tesoro/shared";
+import { PrismaService } from "../prisma/prisma.service";
 
 @Injectable()
 export class TransactionsService {
   constructor(private prisma: PrismaService) {}
 
   async create(workspaceId: string, dto: CreateTransactionDto) {
-    const date = typeof dto.date === 'string' ? new Date(dto.date) : dto.date;
+    const date = typeof dto.date === "string" ? new Date(dto.date) : dto.date;
 
     return this.prisma.transaction.create({
       data: {
@@ -38,7 +38,8 @@ export class TransactionsService {
       personId?: string;
       accountId?: string;
       cardId?: string;
-    },
+      type?: string;
+    }
   ) {
     const where: any = { workspaceId };
 
@@ -57,6 +58,7 @@ export class TransactionsService {
     if (filters.personId) where.personId = filters.personId;
     if (filters.accountId) where.accountId = filters.accountId;
     if (filters.cardId) where.cardId = filters.cardId;
+    if (filters.type) where.type = filters.type;
 
     return this.prisma.transaction.findMany({
       where,
@@ -66,7 +68,7 @@ export class TransactionsService {
         card: true,
         person: true,
       },
-      orderBy: { date: 'desc' },
+      orderBy: { date: "desc" },
     });
   }
 
@@ -86,7 +88,7 @@ export class TransactionsService {
     const data: any = { ...dto };
 
     if (dto.date) {
-      data.date = typeof dto.date === 'string' ? new Date(dto.date) : dto.date;
+      data.date = typeof dto.date === "string" ? new Date(dto.date) : dto.date;
     }
 
     return this.prisma.transaction.update({

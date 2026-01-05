@@ -1,3 +1,4 @@
+import { useAuth } from '@/contexts/AuthContext';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import {
@@ -68,6 +69,7 @@ interface CardType {
 
 export function Imports() {
   const navigate = useNavigate();
+  const { currentWorkspace } = useAuth();
   const [uploading, setUploading] = useState(false);
   const [importBatch, setImportBatch] = useState<ImportBatch | null>(null);
   const [categories, setCategories] = useState<Category[]>([]);
@@ -84,7 +86,7 @@ export function Imports() {
     loadPeople();
     loadAccounts();
     loadCards();
-  }, []);
+  }, [currentWorkspace?.id]);
 
   async function loadCategories() {
     try {
@@ -260,7 +262,7 @@ export function Imports() {
   return (
     <div className={styles.page}>
       <div className={styles.header}>
-        <h1 className={styles.title}>Importar Lançamentos</h1>
+        <h1 className={styles.title}>Importar Transações</h1>
         <p className={styles.subtitle}>
           Importe extratos bancários e de cartão de crédito
         </p>
