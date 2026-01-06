@@ -28,43 +28,22 @@ export class AuthService {
     // Hash password
     const passwordHash = await bcrypt.hash(dto.password, 10);
 
-    // Create user, workspace, and member in transaction
-    const result = await this.prisma.$transaction(async (tx) => {
-      const user = await tx.user.create({
-        data: {
-          email: dto.email,
-          passwordHash,
-        },
-      });
-
-      const workspace = await tx.workspace.create({
-        data: {
-          name: dto.workspaceName,
-        },
-      });
-
-      await tx.member.create({
-        data: {
-          workspaceId: workspace.id,
-          userId: user.id,
-          role: "OWNER",
-        },
-      });
-
-      return { user, workspace };
+    // Create user only (workspace will be created in welcome tour)
+    const user = await this.prisma.user.create({
+      data: {
+        email: dto.email,
+        passwordHash,
+      },
     });
 
-    const token = this.generateToken(result.user.id);
+    const token = this.generateToken(user.id);
 
     return {
       user: {
-        id: result.user.id,
-        email: result.user.email,
+        id: user.id,
+        email: user.email,
       },
-      workspace: {
-        id: result.workspace.id,
-        name: result.workspace.name,
-      },
+      workspaces: [],
       token,
     };
   }

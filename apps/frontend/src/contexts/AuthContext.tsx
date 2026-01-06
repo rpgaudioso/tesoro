@@ -8,7 +8,7 @@ interface AuthContextType {
   currentWorkspace: Workspace | null;
   isAuthenticated: boolean;
   login: (email: string, password: string) => Promise<void>;
-  register: (email: string, password: string, workspaceName: string) => Promise<void>;
+  register: (email: string, password: string) => Promise<void>;
   logout: () => void;
   selectWorkspace: (workspaceId: string) => void;
   refreshWorkspaces: () => Promise<void>;
@@ -58,17 +58,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  const register = async (email: string, password: string, workspaceName: string) => {
+  const register = async (email: string, password: string) => {
     const { data } = await api.post('/auth/register', {
       email,
       password,
-      workspaceName,
     });
 
     localStorage.setItem('token', data.token);
     setUser(data.user);
-    setWorkspaces([{ ...data.workspace, role: 'OWNER' }]);
-    selectWorkspace(data.workspace.id);
+    setWorkspaces(data.workspaces || []);
+    // No workspace created yet - user will be redirected to welcome tour
   };
 
   const logout = () => {

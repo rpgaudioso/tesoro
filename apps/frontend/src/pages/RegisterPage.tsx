@@ -9,7 +9,6 @@ import styles from './AuthPages.module.css';
 export default function RegisterPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [workspaceName, setWorkspaceName] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   
@@ -22,8 +21,8 @@ export default function RegisterPage() {
     setLoading(true);
 
     try {
-      await register(email, password, workspaceName);
-      navigate('/app/dashboard');
+      await register(email, password);
+      navigate('/app/welcome');
     } catch (err: any) {
       setError(err.response?.data?.message || 'Erro ao criar conta');
     } finally {
@@ -57,15 +56,6 @@ export default function RegisterPage() {
             placeholder="••••••••"
             required
             minLength={8}
-          />
-
-          <Input
-            type="text"
-            label="Nome do Workspace"
-            value={workspaceName}
-            onChange={(e) => setWorkspaceName(e.target.value)}
-            placeholder="Minha Família"
-            required
           />
 
           {error && <div className={styles.error}>{error}</div>}

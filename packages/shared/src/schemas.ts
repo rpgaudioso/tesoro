@@ -5,7 +5,6 @@ import { AccountType, TransactionType } from "./enums";
 export const registerSchema = z.object({
   email: z.string().email(),
   password: z.string().min(8),
-  workspaceName: z.string().min(1),
 });
 
 export const loginSchema = z.object({
