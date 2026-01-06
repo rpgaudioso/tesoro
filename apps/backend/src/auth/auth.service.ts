@@ -209,7 +209,12 @@ export class AuthService {
 
         // Create default categories
         const categories = [
-          { name: "Alimentação", type: "EXPENSE", icon: "🍔", color: "#FF6B6B" },
+          {
+            name: "Alimentação",
+            type: "EXPENSE",
+            icon: "🍔",
+            color: "#FF6B6B",
+          },
           { name: "Transporte", type: "EXPENSE", icon: "🚗", color: "#4ECDC4" },
           { name: "Moradia", type: "EXPENSE", icon: "🏠", color: "#45B7D1" },
           { name: "Saúde", type: "EXPENSE", icon: "⚕️", color: "#96CEB4" },
@@ -217,7 +222,12 @@ export class AuthService {
           { name: "Lazer", type: "EXPENSE", icon: "🎮", color: "#DFE6E9" },
           { name: "Vestuário", type: "EXPENSE", icon: "👕", color: "#A29BFE" },
           { name: "Salário", type: "INCOME", icon: "💰", color: "#00B894" },
-          { name: "Investimentos", type: "INCOME", icon: "📈", color: "#6C5CE7" },
+          {
+            name: "Investimentos",
+            type: "INCOME",
+            icon: "📈",
+            color: "#6C5CE7",
+          },
           { name: "Outros", type: "EXPENSE", icon: "📦", color: "#B2BEC3" },
         ];
 
