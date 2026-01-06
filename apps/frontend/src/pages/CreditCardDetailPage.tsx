@@ -1,6 +1,6 @@
-import { Alert } from '@/components/UI/Alert';
-import { Badge } from '@/components/UI/Badge';
-import { Card } from '@/components/UI/Card';
+import Alert from '@/components/UI/Alert';
+import Badge from '@/components/UI/Badge';
+import Card from '@/components/UI/Card';
 import { useCreditCard, useInvoices } from '@/hooks/useCreditCards';
 import { AlertCircle, ArrowLeft, CreditCard as CreditCardIcon, FileText } from 'lucide-react';
 import { Link, useParams } from 'react-router-dom';

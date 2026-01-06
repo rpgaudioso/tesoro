@@ -1,7 +1,7 @@
-import { Alert } from '@/components/UI/Alert';
-import { Badge } from '@/components/UI/Badge';
-import { Card } from '@/components/UI/Card';
-import { ProgressBar } from '@/components/UI/ProgressBar';
+import Alert from '@/components/UI/Alert';
+import Badge from '@/components/UI/Badge';
+import Card from '@/components/UI/Card';
+import ProgressBar from '@/components/UI/ProgressBar';
 import { useInvoice } from '@/hooks/useCreditCards';
 import { AlertCircle, ArrowLeft, FileText, PieChart } from 'lucide-react';
 import { Link, useParams } from 'react-router-dom';
