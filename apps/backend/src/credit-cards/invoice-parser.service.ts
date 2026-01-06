@@ -1,5 +1,5 @@
-import { Injectable, BadRequestException } from '@nestjs/common';
-import * as XLSX from 'xlsx';
+import { BadRequestException, Injectable } from "@nestjs/common";
+import * as XLSX from "xlsx";
 
 export interface ParsedCharge {
   date: Date;
@@ -29,21 +29,23 @@ export class InvoiceParserService {
   parseInvoiceFile(buffer: Buffer): ParsedInvoiceData {
     try {
       // Read the workbook from buffer
-      const workbook = XLSX.read(buffer, { type: 'buffer', cellDates: true });
-      
+      const workbook = XLSX.read(buffer, { type: "buffer", cellDates: true });
+
       // Get the first sheet
       const sheetName = workbook.SheetNames[0];
       const worksheet = workbook.Sheets[sheetName];
-      
+
       // Convert to JSON with header starting at row 1
-      const data: any[][] = XLSX.utils.sheet_to_json(worksheet, { 
+      const data: any[][] = XLSX.utils.sheet_to_json(worksheet, {
         header: 1,
         raw: false,
-        defval: null
+        defval: null,
       });
 
       if (!data || data.length < 5) {
-        throw new BadRequestException('Arquivo de fatura inválido: formato não reconhecido');
+        throw new BadRequestException(
+          "Arquivo de fatura inválido: formato não reconhecido"
+        );
       }
 
       // Parse card info from row 2 (index 1)
@@ -58,14 +60,16 @@ export class InvoiceParserService {
       let chargesStartRow = -1;
       for (let i = 0; i < Math.min(data.length, 10); i++) {
         const row = data[i];
-        if (row && row[0] === 'Data' && row[1] === 'Descrição') {
+        if (row && row[0] === "Data" && row[1] === "Descrição") {
           chargesStartRow = i + 1;
           break;
         }
       }
 
       if (chargesStartRow === -1) {
-        throw new BadRequestException('Não foi possível encontrar o início dos lançamentos');
+        throw new BadRequestException(
+          "Não foi possível encontrar o início dos lançamentos"
+        );
       }
 
       // Parse charges until we hit "Subtotal" or another card section
@@ -74,13 +78,16 @@ export class InvoiceParserService {
 
       for (let i = chargesStartRow; i < data.length; i++) {
         const row = data[i];
-        
+
         // Stop if we hit a subtotal or new section
-        if (!row || row.length === 0 || 
-            row[0] === 'Subtotal' || 
-            row[0] === 'Cartão' ||
-            row[0] === 'Cartão on-line' ||
-            row[1] === 'Subtotal') {
+        if (
+          !row ||
+          row.length === 0 ||
+          row[0] === "Subtotal" ||
+          row[0] === "Cartão" ||
+          row[0] === "Cartão on-line" ||
+          row[1] === "Subtotal"
+        ) {
           break;
         }
 
@@ -93,34 +100,38 @@ export class InvoiceParserService {
       }
 
       if (charges.length === 0) {
-        throw new BadRequestException('Nenhum lançamento encontrado na fatura');
+        throw new BadRequestException("Nenhum lançamento encontrado na fatura");
       }
 
       return {
         cardLast4: cardInfo,
         holderName,
         charges,
-        totalAmount
+        totalAmount,
       };
     } catch (error) {
       if (error instanceof BadRequestException) {
         throw error;
       }
-      throw new BadRequestException(`Erro ao processar arquivo: ${error.message}`);
+      throw new BadRequestException(
+        `Erro ao processar arquivo: ${error.message}`
+      );
     }
   }
 
   private extractCardLast4(row: any[]): string {
     if (!row || row.length < 2) {
-      throw new BadRequestException('Informações do cartão não encontradas');
+      throw new BadRequestException("Informações do cartão não encontradas");
     }
 
-    const cardText = String(row[1] || '').trim();
-    
+    const cardText = String(row[1] || "").trim();
+
     // Extract last 4 digits from formats like "Final 3415" or just "3415"
     const match = cardText.match(/(\d{4})/);
     if (!match) {
-      throw new BadRequestException('Número do cartão não encontrado no formato esperado');
+      throw new BadRequestException(
+        "Número do cartão não encontrado no formato esperado"
+      );
     }
 
     return match[1];
@@ -128,12 +139,12 @@ export class InvoiceParserService {
 
   private extractHolderName(row: any[]): string {
     if (!row || row.length < 2) {
-      throw new BadRequestException('Nome do titular não encontrado');
+      throw new BadRequestException("Nome do titular não encontrado");
     }
 
-    const name = String(row[1] || '').trim();
+    const name = String(row[1] || "").trim();
     if (!name || name.length === 0) {
-      throw new BadRequestException('Nome do titular está vazio');
+      throw new BadRequestException("Nome do titular está vazio");
     }
 
     return name;
@@ -146,7 +157,7 @@ export class InvoiceParserService {
     }
 
     const dateValue = row[0];
-    const description = String(row[1] || '').trim();
+    const description = String(row[1] || "").trim();
     const amountUSDValue = row[2];
     const amountBRLValue = row[3];
 
@@ -162,7 +173,7 @@ export class InvoiceParserService {
     } else {
       // Try to parse date string in DD/MM/YYYY format
       const dateStr = String(dateValue).trim();
-      const parts = dateStr.split('/');
+      const parts = dateStr.split("/");
       if (parts.length === 3) {
         const day = parseInt(parts[0], 10);
         const month = parseInt(parts[1], 10) - 1; // JS months are 0-based
@@ -191,21 +202,19 @@ export class InvoiceParserService {
       date,
       description,
       amountUSD,
-      amountBRL
+      amountBRL,
     };
   }
 
   private parseAmount(value: any): number {
-    if (typeof value === 'number') {
+    if (typeof value === "number") {
       return Math.abs(value);
     }
 
-    if (typeof value === 'string') {
+    if (typeof value === "string") {
       // Remove currency symbols, spaces, and convert comma to dot
-      const cleaned = value
-        .replace(/[R$\s]/g, '')
-        .replace(',', '.');
-      
+      const cleaned = value.replace(/[R$\s]/g, "").replace(",", ".");
+
       const parsed = parseFloat(cleaned);
       return isNaN(parsed) ? 0 : Math.abs(parsed);
     }

@@ -16,7 +16,7 @@ import { InvoiceParserService } from "./invoice-parser.service";
 export class CreditCardsService {
   constructor(
     private prisma: PrismaService,
-    private invoiceParser: InvoiceParserService,
+    private invoiceParser: InvoiceParserService
   ) {}
 
   // ==================== CREDIT CARDS ====================
@@ -159,25 +159,26 @@ export class CreditCardsService {
     month: string,
     file: Express.Multer.File
   ) {
-    // Verify card exists and belongs to workspace
-    const card = await this.findCardById(workspaceId, cardId);
+    try {
+      // Verify card exists and belongs to workspace
+      const card = await this.findCardById(workspaceId, cardId);
 
-    if (!card) {
-      throw new NotFoundException("Cartão não encontrado");
-    }
+      if (!card) {
+        throw new NotFoundException("Cartão não encontrado");
+      }
 
-    // Check file type - only accept XLSX files for import
-    const fileExtension = file.originalname.split('.').pop()?.toLowerCase();
-    const isExcelFile = fileExtension === 'xlsx' || fileExtension === 'xls';
+      // Check file type - only accept XLSX files for import
+      const fileExtension = file.originalname.split(".").pop()?.toLowerCase();
+      const isExcelFile = fileExtension === "xlsx" || fileExtension === "xls";
 
-    if (!isExcelFile) {
-      throw new BadRequestException(
-        'Formato de arquivo inválido. Por favor, envie um arquivo Excel (.xlsx ou .xls)'
-      );
-    }
+      if (!isExcelFile) {
+        throw new BadRequestException(
+          "Formato de arquivo inválido. Por favor, envie um arquivo Excel (.xlsx ou .xls)"
+        );
+      }
 
-    // Parse the Excel file to extract charges
-    const parsedData = this.invoiceParser.parseInvoiceFile(file.buffer);
+      // Parse the Excel file to extract charges
+      const parsedData = this.invoiceParser.parseInvoiceFile(file.buffer);
 
     // Validate that the card last4 matches
     if (card.last4 && card.last4 !== parsedData.cardLast4) {
@@ -191,12 +192,15 @@ export class CreditCardsService {
 
     // Create charges from parsed data
     const chargesCreated = await Promise.all(
-      parsedData.charges.map(charge =>
+      parsedData.charges.map((charge) =>
         this.createCharge(workspaceId, invoice.id, {
-          date: charge.date,
+          purchaseDate: charge.date,
           description: charge.description,
           amount: charge.amountBRL,
-          type: charge.amountBRL > 0 ? CreditCardChargeType.PURCHASE : CreditCardChargeType.REFUND,
+          type:
+            charge.amountBRL > 0
+              ? CreditCardChargeType.PURCHASE
+              : CreditCardChargeType.REFUND,
         })
       )
     );
@@ -216,7 +220,7 @@ export class CreditCardsService {
             category: true,
           },
           orderBy: {
-            createdAt: 'desc',
+            createdAt: "desc",
           },
         },
       },
@@ -230,6 +234,18 @@ export class CreditCardsService {
         holderName: parsedData.holderName,
       },
     };
+    } catch (error) {
+      // Re-throw BadRequestException and NotFoundException as-is
+      if (error instanceof BadRequestException || error instanceof NotFoundException) {
+        throw error;
+      }
+      
+      // Log unexpected errors and throw generic message
+      console.error('Error uploading invoice:', error);
+      throw new BadRequestException(
+        'Erro ao processar o arquivo. Verifique se o formato está correto.'
+      );
+    }
   }
 
   async findInvoices(
