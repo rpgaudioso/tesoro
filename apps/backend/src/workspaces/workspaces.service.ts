@@ -2,6 +2,20 @@ import { Injectable } from "@nestjs/common";
 import { CreateWorkspaceDto } from "@tesoro/shared";
 import { PrismaService } from "../prisma/prisma.service";
 
+// Default categories for new workspaces
+const DEFAULT_CATEGORIES = [
+  { name: "Alimentação", type: "EXPENSE", icon: "🍔", color: "#FF6B6B" },
+  { name: "Transporte", type: "EXPENSE", icon: "🚗", color: "#4ECDC4" },
+  { name: "Moradia", type: "EXPENSE", icon: "🏠", color: "#45B7D1" },
+  { name: "Saúde", type: "EXPENSE", icon: "⚕️", color: "#96CEB4" },
+  { name: "Educação", type: "EXPENSE", icon: "📚", color: "#FFEAA7" },
+  { name: "Lazer", type: "EXPENSE", icon: "🎮", color: "#DFE6E9" },
+  { name: "Vestuário", type: "EXPENSE", icon: "👕", color: "#A29BFE" },
+  { name: "Salário", type: "INCOME", icon: "💰", color: "#00B894" },
+  { name: "Investimentos", type: "INCOME", icon: "📈", color: "#6C5CE7" },
+  { name: "Outros", type: "EXPENSE", icon: "📦", color: "#B2BEC3" },
+];
+
 @Injectable()
 export class WorkspacesService {
   constructor(private prisma: PrismaService) {}
@@ -18,6 +32,17 @@ export class WorkspacesService {
           userId,
           role: "OWNER",
         },
+      });
+
+      // Create default categories for the workspace
+      await tx.category.createMany({
+        data: DEFAULT_CATEGORIES.map((cat) => ({
+          workspaceId: workspace.id,
+          name: cat.name,
+          type: cat.type,
+          icon: cat.icon,
+          color: cat.color,
+        })),
       });
 
       return workspace;

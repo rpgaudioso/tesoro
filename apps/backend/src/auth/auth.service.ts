@@ -209,36 +209,27 @@ export class AuthService {
 
         // Create default categories
         const categories = [
-          {
-            name: "Alimentação",
-            icon: "🍔",
-            color: "#10b981",
-            type: "EXPENSE",
-          },
-          { name: "Transporte", icon: "🚗", color: "#3b82f6", type: "EXPENSE" },
-          { name: "Moradia", icon: "🏠", color: "#8b5cf6", type: "EXPENSE" },
-          { name: "Saúde", icon: "⚕️", color: "#ef4444", type: "EXPENSE" },
-          { name: "Educação", icon: "📚", color: "#f59e0b", type: "EXPENSE" },
-          { name: "Lazer", icon: "🎮", color: "#ec4899", type: "EXPENSE" },
-          { name: "Outros", icon: "📦", color: "#6b7280", type: "EXPENSE" },
-          { name: "Salário", icon: "💰", color: "#10b981", type: "INCOME" },
-          {
-            name: "Investimentos",
-            icon: "📈",
-            color: "#3b82f6",
-            type: "INCOME",
-          },
-          { name: "Outros", icon: "💵", color: "#6b7280", type: "INCOME" },
+          { name: "Alimentação", type: "EXPENSE", icon: "🍔", color: "#FF6B6B" },
+          { name: "Transporte", type: "EXPENSE", icon: "🚗", color: "#4ECDC4" },
+          { name: "Moradia", type: "EXPENSE", icon: "🏠", color: "#45B7D1" },
+          { name: "Saúde", type: "EXPENSE", icon: "⚕️", color: "#96CEB4" },
+          { name: "Educação", type: "EXPENSE", icon: "📚", color: "#FFEAA7" },
+          { name: "Lazer", type: "EXPENSE", icon: "🎮", color: "#DFE6E9" },
+          { name: "Vestuário", type: "EXPENSE", icon: "👕", color: "#A29BFE" },
+          { name: "Salário", type: "INCOME", icon: "💰", color: "#00B894" },
+          { name: "Investimentos", type: "INCOME", icon: "📈", color: "#6C5CE7" },
+          { name: "Outros", type: "EXPENSE", icon: "📦", color: "#B2BEC3" },
         ];
 
-        for (const cat of categories) {
-          await tx.category.create({
-            data: {
-              ...cat,
-              workspaceId: workspace.id,
-            },
-          });
-        }
+        await tx.category.createMany({
+          data: categories.map((cat) => ({
+            workspaceId: workspace.id,
+            name: cat.name,
+            type: cat.type,
+            icon: cat.icon,
+            color: cat.color,
+          })),
+        });
 
         // Create default person
         await tx.person.create({
