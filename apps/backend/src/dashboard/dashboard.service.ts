@@ -23,7 +23,7 @@ export class DashboardService {
           lt: endDate,
         },
         kind: {
-          not: 'CREDIT_CARD_PAYMENT', // Exclude card payments from dashboard
+          not: "CREDIT_CARD_PAYMENT", // Exclude card payments from dashboard
         },
       },
       include: { category: true },
@@ -49,8 +49,10 @@ export class DashboardService {
       .filter((t) => t.type === "EXPENSE")
       .reduce((sum, t) => sum + t.amount, 0);
 
-    const expensesFromCreditCard = creditCardCharges
-      .reduce((sum, c) => sum + c.amount, 0);
+    const expensesFromCreditCard = creditCardCharges.reduce(
+      (sum, c) => sum + c.amount,
+      0
+    );
 
     const expenses = expensesFromTransactions + expensesFromCreditCard;
     const balance = income - expenses;
@@ -67,12 +69,14 @@ export class DashboardService {
     transactions
       .filter((t) => t.type === "EXPENSE")
       .forEach((t) => {
-        spentByCategory[t.categoryId] = (spentByCategory[t.categoryId] || 0) + t.amount;
+        spentByCategory[t.categoryId] =
+          (spentByCategory[t.categoryId] || 0) + t.amount;
       });
 
     creditCardCharges.forEach((charge) => {
       if (charge.categoryId) {
-        spentByCategory[charge.categoryId] = (spentByCategory[charge.categoryId] || 0) + charge.amount;
+        spentByCategory[charge.categoryId] =
+          (spentByCategory[charge.categoryId] || 0) + charge.amount;
       }
     });
 

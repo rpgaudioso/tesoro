@@ -1,10 +1,10 @@
+import { Alert } from '@/components/UI/Alert';
+import { Badge } from '@/components/UI/Badge';
+import { Card } from '@/components/UI/Card';
+import { ProgressBar } from '@/components/UI/ProgressBar';
 import { useInvoice } from '@/hooks/useCreditCards';
-import { useParams, Link } from 'react-router-dom';
-import { ArrowLeft, FileText, AlertCircle, PieChart } from 'lucide-react';
-import { Card } from '@/components/ui/Card';
-import { Alert } from '@/components/ui/Alert';
-import { Badge } from '@/components/ui/Badge';
-import { ProgressBar } from '@/components/ui/ProgressBar';
+import { AlertCircle, ArrowLeft, FileText, PieChart } from 'lucide-react';
+import { Link, useParams } from 'react-router-dom';
 import styles from './InvoiceDetailPage.module.css';
 
 export default function InvoiceDetailPage() {

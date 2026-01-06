@@ -1,10 +1,9 @@
+import { Alert } from '@/components/UI/Alert';
+import { Badge } from '@/components/UI/Badge';
+import { Card } from '@/components/UI/Card';
 import { useCreditCard, useInvoices } from '@/hooks/useCreditCards';
-import { useParams, Link } from 'react-router-dom';
-import { ArrowLeft, CreditCard as CreditCardIcon, FileText, AlertCircle } from 'lucide-react';
-import { Card } from '@/components/ui/Card';
-import { Button } from '@/components/ui/Button';
-import { Alert } from '@/components/ui/Alert';
-import { Badge } from '@/components/ui/Badge';
+import { AlertCircle, ArrowLeft, CreditCard as CreditCardIcon, FileText } from 'lucide-react';
+import { Link, useParams } from 'react-router-dom';
 import styles from './CreditCardDetailPage.module.css';
 
 export default function CreditCardDetailPage() {

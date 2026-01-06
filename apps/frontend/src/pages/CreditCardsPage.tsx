@@ -1,10 +1,10 @@
+import { Alert } from '@/components/UI/Alert';
+import { Badge } from '@/components/UI/Badge';
+import { Button } from '@/components/UI/Button';
+import { Card } from '@/components/UI/Card';
 import { useCreditCards } from '@/hooks/useCreditCards';
-import { CreditCard as CreditCardIcon, Plus, AlertCircle } from 'lucide-react';
+import { AlertCircle, CreditCard as CreditCardIcon, Plus } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { Card } from '@/components/ui/Card';
-import { Button } from '@/components/ui/Button';
-import { Alert } from '@/components/ui/Alert';
-import { Badge } from '@/components/ui/Badge';
 import styles from './CreditCardsPage.module.css';
 
 export default function CreditCardsPage() {

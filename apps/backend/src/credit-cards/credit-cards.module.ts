@@ -1,11 +1,11 @@
-import { Module } from '@nestjs/common';
-import { CreditCardsService } from './credit-cards.service';
+import { Module } from "@nestjs/common";
+import { PrismaModule } from "../prisma/prisma.module";
 import {
+  ChargesController,
   CreditCardsController,
   InvoicesController,
-  ChargesController,
-} from './credit-cards.controller';
-import { PrismaModule } from '../prisma/prisma.module';
+} from "./credit-cards.controller";
+import { CreditCardsService } from "./credit-cards.service";
 
 @Module({
   imports: [PrismaModule],

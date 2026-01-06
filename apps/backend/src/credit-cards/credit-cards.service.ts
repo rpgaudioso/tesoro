@@ -1,11 +1,15 @@
-import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
-import { PrismaService } from '../prisma/prisma.service';
 import {
-  CreditCardStatus,
-  CreditCardInvoiceStatus,
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from "@nestjs/common";
+import {
   CreditCardChargeType,
+  CreditCardInvoiceStatus,
+  CreditCardStatus,
   TransactionKind,
-} from '@prisma/client';
+} from "@prisma/client";
+import { PrismaService } from "../prisma/prisma.service";
 
 @Injectable()
 export class CreditCardsService {
@@ -20,7 +24,7 @@ export class CreditCardsService {
         name: data.name,
         brand: data.brand,
         last4: data.last4,
-        currency: data.currency || 'BRL',
+        currency: data.currency || "BRL",
         creditLimit: data.creditLimit,
         closingDay: data.closingDay,
         dueDay: data.dueDay,
@@ -44,7 +48,7 @@ export class CreditCardsService {
           },
         },
       },
-      orderBy: { createdAt: 'desc' },
+      orderBy: { createdAt: "desc" },
     });
   }
 
@@ -54,14 +58,14 @@ export class CreditCardsService {
       include: {
         paymentAccount: true,
         invoices: {
-          orderBy: { month: 'desc' },
+          orderBy: { month: "desc" },
           take: 6,
         },
       },
     });
 
     if (!card) {
-      throw new NotFoundException('Cartão não encontrado');
+      throw new NotFoundException("Cartão não encontrado");
     }
 
     return card;
@@ -100,7 +104,11 @@ export class CreditCardsService {
 
   // ==================== INVOICES ====================
 
-  async ensureInvoice(workspaceId: string, creditCardId: string, month: string) {
+  async ensureInvoice(
+    workspaceId: string,
+    creditCardId: string,
+    month: string
+  ) {
     // Validate card exists
     const card = await this.findCardById(workspaceId, creditCardId);
 
@@ -136,7 +144,7 @@ export class CreditCardsService {
     workspaceId: string,
     creditCardId: string,
     from?: string,
-    to?: string,
+    to?: string
   ) {
     const where: any = {
       workspaceId,
@@ -160,7 +168,7 @@ export class CreditCardsService {
           },
         },
       },
-      orderBy: { month: 'desc' },
+      orderBy: { month: "desc" },
     });
   }
 
@@ -174,7 +182,7 @@ export class CreditCardsService {
             category: true,
             person: true,
           },
-          orderBy: { purchaseDate: 'desc' },
+          orderBy: { purchaseDate: "desc" },
         },
         payment: {
           include: {
@@ -185,7 +193,7 @@ export class CreditCardsService {
     });
 
     if (!invoice) {
-      throw new NotFoundException('Fatura não encontrada');
+      throw new NotFoundException("Fatura não encontrada");
     }
 
     // Calculate totals by category
@@ -201,7 +209,7 @@ export class CreditCardsService {
     const invoice = await this.findInvoiceById(workspaceId, invoiceId);
 
     if (invoice.status !== CreditCardInvoiceStatus.OPEN) {
-      throw new BadRequestException('Fatura já está fechada ou paga');
+      throw new BadRequestException("Fatura já está fechada ou paga");
     }
 
     // Recalculate total
@@ -223,7 +231,9 @@ export class CreditCardsService {
     const invoice = await this.findInvoiceById(workspaceId, invoiceId);
 
     if (invoice.status === CreditCardInvoiceStatus.PAID) {
-      throw new BadRequestException('Não é possível adicionar lançamentos a uma fatura paga');
+      throw new BadRequestException(
+        "Não é possível adicionar lançamentos a uma fatura paga"
+      );
     }
 
     const charge = await this.prisma.creditCardCharge.create({
@@ -256,7 +266,7 @@ export class CreditCardsService {
     workspaceId: string,
     invoiceId: string,
     categoryId?: string,
-    q?: string,
+    q?: string
   ) {
     const where: any = {
       workspaceId,
@@ -270,7 +280,7 @@ export class CreditCardsService {
     if (q) {
       where.description = {
         contains: q,
-        mode: 'insensitive',
+        mode: "insensitive",
       };
     }
 
@@ -280,7 +290,7 @@ export class CreditCardsService {
         category: true,
         person: true,
       },
-      orderBy: { purchaseDate: 'desc' },
+      orderBy: { purchaseDate: "desc" },
     });
   }
 
@@ -290,7 +300,7 @@ export class CreditCardsService {
     });
 
     if (!charge) {
-      throw new NotFoundException('Lançamento não encontrado');
+      throw new NotFoundException("Lançamento não encontrado");
     }
 
     const updated = await this.prisma.creditCardCharge.update({
@@ -320,7 +330,7 @@ export class CreditCardsService {
     });
 
     if (!charge) {
-      throw new NotFoundException('Lançamento não encontrado');
+      throw new NotFoundException("Lançamento não encontrado");
     }
 
     await this.prisma.creditCardCharge.delete({
@@ -339,18 +349,18 @@ export class CreditCardsService {
     const invoice = await this.findInvoiceById(workspaceId, invoiceId);
 
     if (invoice.status === CreditCardInvoiceStatus.PAID) {
-      throw new BadRequestException('Fatura já está paga');
+      throw new BadRequestException("Fatura já está paga");
     }
 
     // Check if payment already exists
     if (invoice.payment) {
-      throw new BadRequestException('Fatura já possui pagamento registrado');
+      throw new BadRequestException("Fatura já possui pagamento registrado");
     }
 
     // Use provided account or card's default payment account
     const accountId = data.accountId || invoice.creditCard.paymentAccountId;
     if (!accountId) {
-      throw new BadRequestException('Conta de pagamento não especificada');
+      throw new BadRequestException("Conta de pagamento não especificada");
     }
 
     // Validate account exists and belongs to workspace
@@ -359,7 +369,7 @@ export class CreditCardsService {
     });
 
     if (!account) {
-      throw new NotFoundException('Conta não encontrada');
+      throw new NotFoundException("Conta não encontrada");
     }
 
     // Calculate amount (default to invoice total)
@@ -374,7 +384,9 @@ export class CreditCardsService {
     });
 
     if (!anyCategory) {
-      throw new BadRequestException('Nenhuma categoria disponível no workspace');
+      throw new BadRequestException(
+        "Nenhuma categoria disponível no workspace"
+      );
     }
 
     const transaction = await this.prisma.transaction.create({
@@ -383,7 +395,7 @@ export class CreditCardsService {
         date: paidAt,
         description: `Pagamento fatura cartão: ${invoice.creditCard.name} ${invoice.month}`,
         amount,
-        type: 'EXPENSE',
+        type: "EXPENSE",
         kind: TransactionKind.CREDIT_CARD_PAYMENT,
         categoryId: anyCategory.id, // Required but will be ignored in budget
         accountId,
@@ -460,12 +472,12 @@ export class CreditCardsService {
     const totals = new Map<string, any>();
 
     for (const charge of charges) {
-      const key = charge.categoryId || 'uncategorized';
-      
+      const key = charge.categoryId || "uncategorized";
+
       if (!totals.has(key)) {
         totals.set(key, {
           categoryId: charge.categoryId,
-          categoryName: charge.category?.name || 'Sem categoria',
+          categoryName: charge.category?.name || "Sem categoria",
           categoryIcon: charge.category?.icon,
           categoryColor: charge.category?.color,
           total: 0,
@@ -480,12 +492,12 @@ export class CreditCardsService {
   }
 
   private calculateDueDate(month: string, dueDay: number): Date {
-    const [year, monthNum] = month.split('-').map(Number);
-    
+    const [year, monthNum] = month.split("-").map(Number);
+
     // Due date is in the next month
     let dueYear = year;
     let dueMonth = monthNum + 1;
-    
+
     if (dueMonth > 12) {
       dueMonth = 1;
       dueYear += 1;
@@ -493,7 +505,7 @@ export class CreditCardsService {
 
     // Adjust for invalid days (e.g., Feb 30)
     const dueDate = new Date(dueYear, dueMonth - 1, Math.min(dueDay, 28));
-    
+
     return dueDate;
   }
 }

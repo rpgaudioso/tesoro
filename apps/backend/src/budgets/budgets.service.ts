@@ -1,6 +1,6 @@
-import { Injectable } from '@nestjs/common';
-import { UpdateBudgetsDto } from '@tesoro/shared';
-import { PrismaService } from '../prisma/prisma.service';
+import { Injectable } from "@nestjs/common";
+import { UpdateBudgetsDto } from "@tesoro/shared";
+import { PrismaService } from "../prisma/prisma.service";
 
 @Injectable()
 export class BudgetsService {
@@ -21,9 +21,9 @@ export class BudgetsService {
     const transactions = await this.prisma.transaction.findMany({
       where: {
         workspaceId,
-        type: 'EXPENSE',
+        type: "EXPENSE",
         kind: {
-          not: 'CREDIT_CARD_PAYMENT',
+          not: "CREDIT_CARD_PAYMENT",
         },
         date: {
           gte: startDate,
@@ -54,25 +54,33 @@ export class BudgetsService {
     const spentByCategory: Record<string, number> = {};
 
     transactions.forEach((t) => {
-      spentByCategory[t.categoryId] = (spentByCategory[t.categoryId] || 0) + t.amount;
+      spentByCategory[t.categoryId] =
+        (spentByCategory[t.categoryId] || 0) + t.amount;
     });
 
     creditCardCharges.forEach((charge) => {
       if (charge.categoryId) {
-        spentByCategory[charge.categoryId] = (spentByCategory[charge.categoryId] || 0) + charge.amount;
+        spentByCategory[charge.categoryId] =
+          (spentByCategory[charge.categoryId] || 0) + charge.amount;
       }
     });
 
     return budgets.map((budget) => ({
       ...budget,
       spent: spentByCategory[budget.categoryId] || 0,
-      percentage: budget.limitAmount > 0
-        ? ((spentByCategory[budget.categoryId] || 0) / budget.limitAmount) * 100
-        : 0,
+      percentage:
+        budget.limitAmount > 0
+          ? ((spentByCategory[budget.categoryId] || 0) / budget.limitAmount) *
+            100
+          : 0,
     }));
   }
 
-  async updateBudgets(workspaceId: string, month: string, dto: UpdateBudgetsDto) {
+  async updateBudgets(
+    workspaceId: string,
+    month: string,
+    dto: UpdateBudgetsDto
+  ) {
     const results = await Promise.all(
       dto.budgets.map((budget) =>
         this.prisma.budget.upsert({
@@ -93,8 +101,8 @@ export class BudgetsService {
             limitAmount: budget.limitAmount,
           },
           include: { category: true },
-        }),
-      ),
+        })
+      )
     );
 
     return results;

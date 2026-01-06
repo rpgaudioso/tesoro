@@ -1,12 +1,12 @@
 import {
   AccountType,
-  ImportStatus,
-  MemberRole,
-  TransactionType,
-  TransactionKind,
-  CreditCardStatus,
   CreditCardChargeType,
   CreditCardInvoiceStatus,
+  CreditCardStatus,
+  ImportStatus,
+  MemberRole,
+  TransactionKind,
+  TransactionType,
 } from "./enums";
 
 export interface User {

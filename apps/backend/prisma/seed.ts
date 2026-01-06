@@ -130,15 +130,15 @@ async function main() {
 
   // Create a sample invoice
   const now = new Date();
-  const currentMonth = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
-  
+  const currentMonth = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
+
   const invoice = await prisma.creditCardInvoice.upsert({
-    where: { 
+    where: {
       workspaceId_creditCardId_month: {
         workspaceId: workspace.id,
         creditCardId: creditCard.id,
         month: currentMonth,
-      }
+      },
     },
     update: {},
     create: {
@@ -146,7 +146,11 @@ async function main() {
       creditCardId: creditCard.id,
       month: currentMonth,
       status: "OPEN",
-      dueDate: new Date(now.getFullYear(), now.getMonth() + 1, creditCard.dueDay),
+      dueDate: new Date(
+        now.getFullYear(),
+        now.getMonth() + 1,
+        creditCard.dueDay
+      ),
       totalAmount: 0,
     },
   });
@@ -160,19 +164,19 @@ async function main() {
   const charges = [
     {
       description: "Supermercado",
-      amount: 350.50,
+      amount: 350.5,
       categoryId: alimentacaoId,
       purchaseDate: new Date(now.getFullYear(), now.getMonth(), 5),
     },
     {
       description: "Restaurante",
-      amount: 125.00,
+      amount: 125.0,
       categoryId: alimentacaoId,
       purchaseDate: new Date(now.getFullYear(), now.getMonth(), 8),
     },
     {
       description: "Posto de Gasolina",
-      amount: 280.00,
+      amount: 280.0,
       categoryId: transporteId,
       purchaseDate: new Date(now.getFullYear(), now.getMonth(), 12),
     },
@@ -198,7 +202,9 @@ async function main() {
     data: { totalAmount: totalCharges },
   });
 
-  console.log(`✅ ${charges.length} charges created, total: R$ ${totalCharges.toFixed(2)}`);
+  console.log(
+    `✅ ${charges.length} charges created, total: R$ ${totalCharges.toFixed(2)}`
+  );
 
   console.log("🎉 Seed completed!");
   console.log("\n📝 Login credentials:");
