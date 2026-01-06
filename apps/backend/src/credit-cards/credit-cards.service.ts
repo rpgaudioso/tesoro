@@ -18,6 +18,15 @@ export class CreditCardsService {
   // ==================== CREDIT CARDS ====================
 
   async createCard(workspaceId: string, data: any) {
+    // Validate workspace exists
+    const workspace = await this.prisma.workspace.findUnique({
+      where: { id: workspaceId },
+    });
+
+    if (!workspace) {
+      throw new NotFoundException(`Workspace ${workspaceId} not found`);
+    }
+
     return this.prisma.creditCard.create({
       data: {
         workspaceId,

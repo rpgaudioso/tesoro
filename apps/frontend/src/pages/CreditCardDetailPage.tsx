@@ -44,7 +44,7 @@ export default function CreditCardDetailPage() {
   };
 
   return (
-    <div className={styles.container}>
+    <div className={styles.page}>
       <div className={styles.header}>
         <Link to="/app/credit-cards" className={styles.backButton}>
           <ArrowLeft size={20} />

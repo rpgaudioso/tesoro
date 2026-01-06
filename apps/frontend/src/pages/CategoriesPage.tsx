@@ -1,3 +1,5 @@
+import PageHeader from '@/components/Layout/PageHeader';
+import Button from '@/components/UI/Button';
 import Card from '@/components/UI/Card';
 import ConfirmDialog from '@/components/UI/ConfirmDialog';
 import { useAuth } from '@/contexts/AuthContext';
@@ -164,13 +166,16 @@ export default function CategoriesPage() {
         onCancel={handleCancel}
       />
 
-      <div className={styles.header}>
-        <h1 className={styles.title}>Categorias</h1>
-        <button onClick={() => handleOpenModal()} className={styles.addButton}>
-          <Plus size={20} />
-          Nova Categoria
-        </button>
-      </div>
+      <PageHeader
+        title="Categorias"
+        subtitle="Organize suas transações em categorias personalizadas"
+        action={
+          <Button variant="primary" size="md" onClick={() => handleOpenModal()}>
+            <Plus size={18} />
+            Nova Categoria
+          </Button>
+        }
+      />
 
       <div className={styles.section}>
         <h2 className={styles.sectionTitle}>Despesas</h2>

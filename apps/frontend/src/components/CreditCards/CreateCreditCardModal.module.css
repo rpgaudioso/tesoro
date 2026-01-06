@@ -4,36 +4,50 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.5);
+  background: rgba(0, 0, 0, 0.6);
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 1000;
-  padding: var(--spacing-lg);
+  padding: var(--spacing-24);
+  backdrop-filter: blur(2px);
 }
 
 .modal {
   background: white;
-  border-radius: var(--radius-lg);
+  border-radius: var(--radius-12);
   width: 100%;
-  max-width: 600px;
+  max-width: 560px;
   max-height: 90vh;
   overflow-y: auto;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.25);
+  animation: slideUp 0.3s ease-out;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: var(--spacing-lg);
+  padding: var(--spacing-24) var(--spacing-24) var(--spacing-20) var(--spacing-24);
   border-bottom: 1px solid var(--color-border);
 }
 
 .header h2 {
   margin: 0;
-  font-size: var(--font-size-xl);
+  font-size: var(--font-xl);
   font-weight: 600;
+  color: var(--color-text);
 }
 
 .closeButton {
@@ -41,11 +55,11 @@
   border: none;
   cursor: pointer;
   color: var(--color-text-secondary);
-  padding: var(--spacing-xs);
+  padding: var(--spacing-8);
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-8);
   transition: all 0.2s;
 }
 
@@ -55,22 +69,23 @@
 }
 
 .form {
-  padding: var(--spacing-lg);
+  padding: var(--spacing-24);
   display: flex;
   flex-direction: column;
-  gap: var(--spacing-lg);
+  gap: var(--spacing-20);
 }
 
 .row {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: var(--spacing-md);
+  gap: var(--spacing-16);
 }
 
 .actions {
   display: flex;
-  gap: var(--spacing-md);
+  gap: var(--spacing-12);
   justify-content: flex-end;
-  padding-top: var(--spacing-md);
+  padding-top: var(--spacing-24);
+  margin-top: var(--spacing-8);
   border-top: 1px solid var(--color-border);
 }

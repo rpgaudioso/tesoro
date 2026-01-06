@@ -1,8 +1,8 @@
-import { useState } from 'react';
-import { X } from 'lucide-react';
-import { useCreateCreditCard } from '@/hooks/useCreditCards';
 import Button from '@/components/UI/Button';
 import Input from '@/components/UI/Input';
+import { useCreateCreditCard } from '@/hooks/useCreditCards';
+import { X } from 'lucide-react';
+import { useState } from 'react';
 import { toast } from 'sonner';
 import styles from './CreateCreditCardModal.module.css';
 
@@ -148,7 +148,7 @@ export default function CreateCreditCardModal({ onClose }: CreateCreditCardModal
             <Button
               type="button"
               variant="secondary"
-              size="medium"
+              size="md"
               onClick={onClose}
               disabled={createMutation.isPending}
             >
@@ -157,7 +157,7 @@ export default function CreateCreditCardModal({ onClose }: CreateCreditCardModal
             <Button
               type="submit"
               variant="primary"
-              size="medium"
+              size="md"
               disabled={createMutation.isPending}
             >
               {createMutation.isPending ? 'Criando...' : 'Criar Cartão'}

@@ -3,22 +3,20 @@
   align-items: center;
   justify-content: center;
   gap: var(--spacing-8);
-  font-weight: var(--font-semibold);
-  border-radius: var(--radius-12);
+  font-weight: 500;
+  border-radius: var(--radius-8);
   border: none;
   cursor: pointer;
   transition: all 0.2s;
   white-space: nowrap;
-  box-shadow: var(--shadow-xs);
 }
 
 .button:hover:not(:disabled) {
-  transform: translateY(-1px);
-  box-shadow: var(--shadow-sm);
+  opacity: 0.9;
 }
 
 .button:active:not(:disabled) {
-  transform: translateY(0);
+  opacity: 0.95;
 }
 
 .button:disabled {
@@ -28,21 +26,24 @@
 
 /* Sizes */
 .sm {
-  padding: var(--spacing-10) var(--spacing-16);
+  padding: var(--spacing-6) var(--spacing-12);
   font-size: var(--font-sm);
-  height: 36px;
+  height: 32px;
+  gap: var(--spacing-6);
 }
 
 .md {
-  padding: var(--spacing-12) var(--spacing-20);
-  font-size: var(--font-base);
-  height: 42px;
+  padding: var(--spacing-8) var(--spacing-16);
+  font-size: var(--font-sm);
+  height: 36px;
+  gap: var(--spacing-6);
 }
 
 .lg {
-  padding: var(--spacing-16) var(--spacing-24);
-  font-size: var(--font-md);
-  height: 48px;
+  padding: var(--spacing-12) var(--spacing-20);
+  font-size: var(--font-base);
+  height: 42px;
+  gap: var(--spacing-8);
 }
 
 /* Variants */

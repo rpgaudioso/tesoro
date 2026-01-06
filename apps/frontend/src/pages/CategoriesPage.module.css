@@ -1,53 +1,13 @@
 .page {
-  max-width: 1000px;
+  max-width: 1200px;
   margin: 0 auto;
-}
-
-.page > * {
-  margin-bottom: var(--spacing-24);
-}
-
-.page > *:last-child {
-  margin-bottom: 0;
 }
 
 .loading {
   text-align: center;
   padding: var(--spacing-64);
   color: var(--color-text-secondary);
-}
-
-.header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: var(--spacing-32);
-}
-
-.title {
-  font-size: var(--font-2xl);
-  font-weight: 700;
-}
-
-.addButton {
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-10);
-  padding: var(--spacing-12) var(--spacing-24);
-  background-color: var(--color-primary);
-  color: white;
-  border: none;
-  border-radius: var(--radius-8);
   font-size: var(--font-base);
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s;
-}
-
-.addButton:hover {
-  background-color: var(--color-primary-dark, #2563eb);
-  transform: translateY(-1px);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 .section {
@@ -57,13 +17,13 @@
 .sectionTitle {
   font-size: var(--font-xl);
   font-weight: 600;
-  margin-bottom: var(--spacing-20);
-  color: var(--color-text-primary);
+  margin-bottom: var(--spacing-24);
+  color: var(--color-text);
 }
 
 .categoryGrid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
   gap: var(--spacing-20);
 }
 
@@ -71,7 +31,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: var(--spacing-16);
+  padding: var(--spacing-20);
 }
 
 .categoryHeader {
@@ -85,10 +45,10 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 48px;
-  height: 48px;
-  border-radius: var(--radius-8);
-  font-size: 24px;
+  width: 56px;
+  height: 56px;
+  border-radius: var(--radius-12);
+  font-size: 28px;
   flex-shrink: 0;
 }
 
@@ -146,81 +106,104 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: rgba(0, 0, 0, 0.5);
+  background-color: rgba(0, 0, 0, 0.6);
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 1000;
   padding: var(--spacing-24);
+  backdrop-filter: blur(2px);
 }
 
 .modalContent {
   background-color: white;
   border-radius: var(--radius-12);
-  max-width: 500px;
+  max-width: 560px;
   width: 100%;
   max-height: 90vh;
   overflow-y: auto;
-  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1),
-              0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.25);
+  animation: slideUp 0.3s ease-out;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .modalHeader {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: var(--spacing-24);
+  padding: var(--spacing-24) var(--spacing-24) var(--spacing-20) var(--spacing-24);
   border-bottom: 1px solid var(--color-border);
 }
 
 .modalHeader h2 {
   margin: 0;
   font-size: var(--font-xl);
+  font-weight: 600;
+  color: var(--color-text);
 }
 
 .closeButton {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 32px;
-  height: 32px;
+  width: 36px;
+  height: 36px;
   border: none;
   background-color: transparent;
-  border-radius: var(--radius-6);
+  border-radius: var(--radius-8);
   cursor: pointer;
   color: var(--color-text-secondary);
   transition: all 0.2s;
 }
 
 .closeButton:hover {
-  background-color: var(--color-bg-secondary);
-  color: var(--color-text-primary);
+  background-color: var(--color-background);
+  color: var(--color-text);
 }
 
 /* Form */
 .form {
   padding: var(--spacing-24);
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-20);
 }
 
 .formGroup {
-  margin-bottom: var(--spacing-24);
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-8);
 }
 
 .formGroup label {
-  display: block;
   font-size: var(--font-sm);
   font-weight: 600;
-  color: var(--color-text-secondary);
-  margin-bottom: var(--spacing-10);
+  color: var(--color-text);
 }
 
 .input {
   width: 100%;
-  padding: var(--spacing-12);
+  padding: var(--spacing-12) var(--spacing-16);
   border: 1px solid var(--color-border);
-  border-radius: var(--radius-6);
+  border-radius: var(--radius-8);
   font-size: var(--font-base);
-  background-color: var(--color-bg);
+  transition: all 0.2s;
+}
+
+.input:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
 }
 
 .input:focus {

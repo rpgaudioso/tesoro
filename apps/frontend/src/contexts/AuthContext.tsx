@@ -6,6 +6,7 @@ interface AuthContextType {
   user: User | null;
   workspaces: (Workspace & { role: string })[];
   currentWorkspace: Workspace | null;
+  workspaceId: string | null;
   isAuthenticated: boolean;
   login: (email: string, password: string) => Promise<void>;
   register: (email: string, password: string) => Promise<void>;
@@ -96,6 +97,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         user,
         workspaces,
         currentWorkspace,
+        workspaceId: currentWorkspace?.id || null,
         isAuthenticated: !!user || !!localStorage.getItem('token'),
         login,
         register,

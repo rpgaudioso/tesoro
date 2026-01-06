@@ -1,8 +1,9 @@
+import CreateCreditCardModal from '@/components/CreditCards/CreateCreditCardModal';
+import PageHeader from '@/components/Layout/PageHeader';
 import Alert from '@/components/UI/Alert';
 import Badge from '@/components/UI/Badge';
 import Button from '@/components/UI/Button';
 import Card from '@/components/UI/Card';
-import CreateCreditCardModal from '@/components/CreditCards/CreateCreditCardModal';
 import { useCreditCards } from '@/hooks/useCreditCards';
 import { AlertCircle, CreditCard as CreditCardIcon, Plus } from 'lucide-react';
 import { useState } from 'react';
@@ -15,7 +16,7 @@ export default function CreditCardsPage() {
 
   if (isLoading) {
     return (
-      <div className={styles.container}>
+      <div className={styles.page}>
         <div className={styles.loading}>Carregando cartões...</div>
       </div>
     );
@@ -23,7 +24,7 @@ export default function CreditCardsPage() {
 
   if (error) {
     return (
-      <div className={styles.container}>
+      <div className={styles.page}>
         <Alert variant="danger">
           <AlertCircle size={20} />
           Erro ao carregar cartões de crédito
@@ -33,34 +34,34 @@ export default function CreditCardsPage() {
   }
 
   return (
-    <div className={styles.container}>
-      <div className={styles.header}>
-        <div className={styles.titleSection}>
-          <h1>Cartões de Crédito</h1>
-          <p className={styles.subtitle}>
-            Gerencie seus cartões de crédito e acompanhe suas faturas
-          </p>
-        </div>
-        <Button variant="primary" size="medium" onClick={() => setShowCreateModal(true)}>
-          <Plus size={20} />
-          Novo Cartão
-        </Button>
-      </div>
+    <div className={styles.page}>
+      <PageHeader
+        title="Cartões de Crédito"
+        subtitle="Gerencie seus cartões de crédito e acompanhe suas faturas"
+        action={
+          <Button variant="primary" size="md" onClick={() => setShowCreateModal(true)}>
+            <Plus size={18} />
+            Novo Cartão
+          </Button>
+        }
+      />
 
       {!cards || cards.length === 0 ? (
-        <div className={styles.emptyState}>
-          <Card className={styles.empty}>
+        <Card>
+          <div className={styles.emptyState}>
             <div className={styles.emptyIcon}>
-              <CreditCardIcon size={64} strokeWidth={1.5} />
+              <CreditCardIcon size={48} strokeWidth={1.5} />
             </div>
-            <h2>Nenhum cartão cadastrado</h2>
-            <p>Adicione um cartão de crédito para começar a gerenciar suas faturas</p>
-            <Button variant="primary" size="medium" onClick={() => setShowCreateModal(true)}>
-              <Plus size={20} />
+            <h2 className={styles.emptyTitle}>Nenhum cartão cadastrado</h2>
+            <p className={styles.emptyDescription}>
+              Adicione um cartão de crédito para começar a gerenciar suas faturas
+            </p>
+            <Button variant="primary" size="md" onClick={() => setShowCreateModal(true)}>
+              <Plus size={18} />
               Adicionar Cartão
             </Button>
-          </Card>
-        </div>
+          </div>
+        </Card>
       ) : (
         <div className={styles.grid}>
           {cards.map((card) => (
