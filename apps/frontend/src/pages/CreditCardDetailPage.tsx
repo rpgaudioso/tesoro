@@ -1,8 +1,11 @@
 import Alert from '@/components/UI/Alert';
 import Badge from '@/components/UI/Badge';
+import Button from '@/components/UI/Button';
 import Card from '@/components/UI/Card';
+import UploadInvoiceModal from '@/components/CreditCards/UploadInvoiceModal';
 import { useCreditCard, useInvoices } from '@/hooks/useCreditCards';
-import { AlertCircle, ArrowLeft, CreditCard as CreditCardIcon, FileText } from 'lucide-react';
+import { AlertCircle, ArrowLeft, CreditCard as CreditCardIcon, FileText, Upload } from 'lucide-react';
+import { useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import styles from './CreditCardDetailPage.module.css';
 
@@ -10,6 +13,7 @@ export default function CreditCardDetailPage() {
   const { cardId } = useParams<{ cardId: string }>();
   const { data: card, isLoading: cardLoading, error: cardError } = useCreditCard(cardId!);
   const { data: invoices, isLoading: invoicesLoading } = useInvoices(cardId!);
+  const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
 
   if (cardLoading) {
     return (
@@ -89,10 +93,20 @@ export default function CreditCardDetailPage() {
       </Card>
 
       <div className={styles.invoicesSection}>
-        <h2>
-          <FileText size={24} />
-          Faturas
-        </h2>
+        <div className={styles.invoicesHeader}>
+          <h2>
+            <FileText size={24} />
+            Faturas
+          </h2>
+          <Button 
+            variant="primary" 
+            size="md"
+            onClick={() => setIsUploadModalOpen(true)}
+          >
+            <Upload size={18} />
+            Fazer Upload de Fatura
+          </Button>
+        </div>
 
         {invoicesLoading ? (
           <div className={styles.loading}>Carregando faturas...</div>
@@ -135,6 +149,13 @@ export default function CreditCardDetailPage() {
           </div>
         )}
       </div>
+
+      {isUploadModalOpen && (
+        <UploadInvoiceModal
+          cardId={cardId!}
+          onClose={() => setIsUploadModalOpen(false)}
+        />
+      )}
     </div>
   );
 }

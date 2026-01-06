@@ -94,6 +94,17 @@
   color: var(--color-text);
 }
 
+.invoicesSection {
+  margin-bottom: var(--spacing-32);
+}
+
+.invoicesHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--spacing-24);
+}
+
 .invoicesSection h2 {
   display: flex;
   align-items: center;

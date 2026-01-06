@@ -149,6 +149,36 @@ export class CreditCardsService {
     return invoice;
   }
 
+  async uploadInvoice(
+    workspaceId: string,
+    cardId: string,
+    month: string,
+    file: Express.Multer.File
+  ) {
+    // Verify card exists and belongs to workspace
+    const card = await this.findCardById(workspaceId, cardId);
+
+    if (!card) {
+      throw new NotFoundException('Cartão não encontrado');
+    }
+
+    // Ensure invoice exists
+    const invoice = await this.ensureInvoice(workspaceId, cardId, month);
+
+    // Update invoice to mark as uploaded/closed
+    return this.prisma.creditCardInvoice.update({
+      where: { id: invoice.id },
+      data: {
+        closedAt: invoice.closedAt || new Date(),
+        status: CreditCardInvoiceStatus.CLOSED,
+      },
+      include: {
+        creditCard: true,
+        payment: true,
+      },
+    });
+  }
+
   async findInvoices(
     workspaceId: string,
     creditCardId: string,

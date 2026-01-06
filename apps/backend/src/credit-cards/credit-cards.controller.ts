@@ -7,8 +7,11 @@ import {
   Patch,
   Post,
   Query,
+  UploadedFile,
   UseGuards,
-} from "@nestjs/common";
+  UseInterceptors,
+} from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
 import { JwtAuthGuard } from "../auth/guards/jwt-auth.guard";
 import { WorkspaceGuard } from "../auth/guards/workspace.guard";
 import { CreditCardsService } from "./credit-cards.service";
@@ -67,6 +70,26 @@ export class CreditCardsController {
       workspaceId,
       cardId,
       data.month
+    );
+  }
+
+  @Post(":cardId/invoices/upload")
+  @UseInterceptors(
+    FileInterceptor('file', {
+      dest: './uploads/invoices',
+    })
+  )
+  async uploadInvoice(
+    @Param("workspaceId") workspaceId: string,
+    @Param("cardId") cardId: string,
+    @Body('month') month: string,
+    @UploadedFile() file: Express.Multer.File
+  ) {
+    return this.creditCardsService.uploadInvoice(
+      workspaceId,
+      cardId,
+      month,
+      file
     );
   }
 
