@@ -6,7 +6,7 @@ import { useConfirm } from '@/hooks/useConfirm';
 import { useWorkspaceChange } from '@/hooks/useWorkspaceChange';
 import api from '@/lib/api';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import type { Account, Card as CardType, Category, Person, Transaction } from '@tesoro/shared';
+import type { Account, Category, Person, Transaction } from '@tesoro/shared';
 import { addMonths, format, subMonths } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { Check, ChevronLeft, ChevronRight, Edit2, Filter, Trash2, X } from 'lucide-react';
@@ -25,7 +25,6 @@ export default function TransactionsPage() {
   const [bulkEditMode, setBulkEditMode] = useState(false);
   const [bulkEditData, setBulkEditData] = useState<Partial<Transaction>>({});
   const [filterAccountId, setFilterAccountId] = useState<string>('');
-  const [filterCardId, setFilterCardId] = useState<string>('');
   const [filterType, setFilterType] = useState<string>('');
   const [filterCategoryId, setFilterCategoryId] = useState<string>('');
   const [showFilters, setShowFilters] = useState(false);
@@ -36,14 +35,13 @@ export default function TransactionsPage() {
   const buildQueryUrl = () => {
     const params = new URLSearchParams({ month: selectedMonth });
     if (filterAccountId) params.append('accountId', filterAccountId);
-    if (filterCardId) params.append('cardId', filterCardId);
     if (filterType) params.append('type', filterType);
     if (filterCategoryId) params.append('categoryId', filterCategoryId);
     return `/transactions?${params.toString()}`;
   };
 
   const { data: transactions, isLoading } = useQuery<Transaction[]>({
-    queryKey: ['transactions', selectedMonth, filterAccountId, filterCardId, filterType, filterCategoryId, currentWorkspace?.id],
+    queryKey: ['transactions', selectedMonth, filterAccountId, filterType, filterCategoryId, currentWorkspace?.id],
     queryFn: async () => {
       const { data } = await api.get(buildQueryUrl());
       return data;
@@ -70,14 +68,6 @@ export default function TransactionsPage() {
     queryKey: ['accounts', currentWorkspace?.id],
     queryFn: async () => {
       const { data } = await api.get('/accounts');
-      return data;
-    },
-  });
-
-  const { data: cards } = useQuery<CardType[]>({
-    queryKey: ['cards', currentWorkspace?.id],
-    queryFn: async () => {
-      const { data } = await api.get('/cards');
       return data;
     },
   });
@@ -116,12 +106,11 @@ export default function TransactionsPage() {
 
   const handleClearFilters = () => {
     setFilterAccountId('');
-    setFilterCardId('');
     setFilterType('');
     setFilterCategoryId('');
   };
 
-  const hasActiveFilters = filterAccountId || filterCardId || filterType || filterCategoryId;
+  const hasActiveFilters = filterAccountId || filterType || filterCategoryId;
 
   const handleEdit = (transaction: Transaction) => {
     setEditingTransaction(transaction);
@@ -320,21 +309,6 @@ export default function TransactionsPage() {
                   {accounts?.map(account => (
                     <option key={account.id} value={account.id}>
                       {account.name}
-                    </option>
-                  ))}
-                </select>
-              </div>
-              <div className={styles.filterGroup}>
-                <label>Cartão de Crédito</label>
-                <select
-                  value={filterCardId}
-                  onChange={(e) => setFilterCardId(e.target.value)}
-                  className={styles.filterSelect}
-                >
-                  <option value="">Todos os cartões</option>
-                  {cards?.map(card => (
-                    <option key={card.id} value={card.id}>
-                      {card.name} ({card.lastFourDigits})
                     </option>
                   ))}
                 </select>

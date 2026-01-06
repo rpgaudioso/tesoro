@@ -1,5 +1,5 @@
-import { createWorkspace, getPeople, getWorkspaces, updateWorkspace } from '@/lib/settingsApi';
-import { Edit2, Plus } from 'lucide-react';
+import { createWorkspace, deleteWorkspace, getPeople, getWorkspaces, updateWorkspace } from '@/lib/settingsApi';
+import { Edit2, Plus, Trash2 } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
 import styles from './WorkspaceList.module.css';
@@ -34,6 +34,7 @@ export default function WorkspaceList() {
   const [showForm, setShowForm] = useState(false);
   const [showEditForm, setShowEditForm] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
   const [formData, setFormData] = useState({ name: '' });
   const [editFormData, setEditFormData] = useState({ name: '', personIds: [] as string[] });
 
@@ -105,6 +106,17 @@ export default function WorkspaceList() {
       personIds: workspace.people?.map((p) => p.id) || [],
     });
     setShowEditForm(true);
+  };
+
+  const handleDelete = async (workspaceId: string) => {
+    try {
+      await deleteWorkspace(workspaceId);
+      toast.success('Workspace excluída com sucesso');
+      setDeletingId(null);
+      await loadData();
+    } catch (error) {
+      toast.error('Erro ao excluir workspace');
+    }
   };
 
   const togglePersonSelection = (personId: string) => {
@@ -226,6 +238,45 @@ export default function WorkspaceList() {
         </div>
       )}
 
+      {deletingId && (
+        <div className={styles.modalOverlay}>
+          <div className={styles.modal}>
+            <div className={styles.modalHeader}>
+              <h3>Confirmar Exclusão</h3>
+              <button
+                type="button"
+                className={styles.closeButton}
+                onClick={() => setDeletingId(null)}
+              >
+                ✕
+              </button>
+            </div>
+            <div className={styles.modalContent}>
+              <p>Tem certeza que deseja excluir esta workspace?</p>
+              <p className={styles.warningText}>
+                ⚠️ Esta ação não pode ser desfeita. Todos os dados associados serão removidos.
+              </p>
+            </div>
+            <div className={styles.formActions}>
+              <button
+                type="button"
+                className={styles.btnSecondary}
+                onClick={() => setDeletingId(null)}
+              >
+                Cancelar
+              </button>
+              <button
+                type="button"
+                className={styles.btnDanger}
+                onClick={() => handleDelete(deletingId)}
+              >
+                Excluir
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {loading ? (
         <div className={styles.loading}>Carregando...</div>
       ) : workspaces.length === 0 ? (
@@ -270,6 +321,13 @@ export default function WorkspaceList() {
                   title="Editar"
                 >
                   <Edit2 size={18} />
+                </button>
+                <button
+                  className={styles.btnIconDanger}
+                  onClick={() => setDeletingId(ws.id)}
+                  title="Excluir"
+                >
+                  <Trash2 size={18} />
                 </button>
               </div>
             </div>

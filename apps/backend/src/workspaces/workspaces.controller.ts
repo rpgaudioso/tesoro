@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Param,
   Patch,
@@ -37,5 +38,10 @@ export class WorkspacesController {
     @Body() dto: { name?: string; personIds?: string[] }
   ) {
     return this.workspacesService.update(id, dto);
+  }
+
+  @Delete(":id")
+  remove(@Param("id") id: string) {
+    return this.workspacesService.remove(id);
   }
 }

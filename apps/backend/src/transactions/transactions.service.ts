@@ -18,13 +18,11 @@ export class TransactionsService {
         type: dto.type,
         categoryId: dto.categoryId,
         accountId: dto.accountId,
-        cardId: dto.cardId,
         personId: dto.personId,
       },
       include: {
         category: true,
         account: true,
-        card: true,
         person: true,
       },
     });
@@ -37,7 +35,6 @@ export class TransactionsService {
       categoryId?: string;
       personId?: string;
       accountId?: string;
-      cardId?: string;
       type?: string;
     }
   ) {
@@ -57,7 +54,6 @@ export class TransactionsService {
     if (filters.categoryId) where.categoryId = filters.categoryId;
     if (filters.personId) where.personId = filters.personId;
     if (filters.accountId) where.accountId = filters.accountId;
-    if (filters.cardId) where.cardId = filters.cardId;
     if (filters.type) where.type = filters.type;
 
     return this.prisma.transaction.findMany({
@@ -65,7 +61,6 @@ export class TransactionsService {
       include: {
         category: true,
         account: true,
-        card: true,
         person: true,
       },
       orderBy: { date: "desc" },
@@ -78,7 +73,6 @@ export class TransactionsService {
       include: {
         category: true,
         account: true,
-        card: true,
         person: true,
       },
     });
@@ -97,7 +91,6 @@ export class TransactionsService {
       include: {
         category: true,
         account: true,
-        card: true,
         person: true,
       },
     });

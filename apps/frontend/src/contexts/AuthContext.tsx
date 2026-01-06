@@ -11,6 +11,7 @@ interface AuthContextType {
   register: (email: string, password: string, workspaceName: string) => Promise<void>;
   logout: () => void;
   selectWorkspace: (workspaceId: string) => void;
+  refreshWorkspaces: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -86,6 +87,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
+  const refreshWorkspaces = async () => {
+    await loadUserData();
+  };
+
   return (
     <AuthContext.Provider
       value={{
@@ -97,6 +102,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         register,
         logout,
         selectWorkspace,
+        refreshWorkspaces,
       }}
     >
       {children}

@@ -34,7 +34,6 @@ export class TransactionsController {
     @Query("categoryId") categoryId?: string,
     @Query("personId") personId?: string,
     @Query("accountId") accountId?: string,
-    @Query("cardId") cardId?: string,
     @Query("type") type?: string
   ) {
     return this.transactionsService.findAll(workspaceId, {
@@ -42,7 +41,6 @@ export class TransactionsController {
       categoryId,
       personId,
       accountId,
-      cardId,
       type,
     });
   }

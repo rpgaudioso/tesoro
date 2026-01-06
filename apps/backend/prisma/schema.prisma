@@ -15,7 +15,7 @@ model User {
   email        String   @unique
   passwordHash String   @map("password_hash")
   createdAt    DateTime @default(now()) @map("created_at")
-  
+
   members Member[]
 
   @@map("users")
@@ -25,16 +25,14 @@ model Workspace {
   id        String   @id @default(uuid())
   name      String
   createdAt DateTime @default(now()) @map("created_at")
-  
-  members          Member[]
-  people           Person[]
-  categories       Category[]
-  accounts         Account[]
-  cards            Card[]
-  budgets          Budget[]
-  transactions     Transaction[]
-  installmentPlans InstallmentPlan[]
-  importBatches    ImportBatch[]
+
+  members       Member[]
+  people        Person[]
+  categories    Category[]
+  accounts      Account[]
+  budgets       Budget[]
+  transactions  Transaction[]
+  importBatches ImportBatch[]
 
   @@map("workspaces")
 }
@@ -44,7 +42,7 @@ model Member {
   workspaceId String @map("workspace_id")
   userId      String @map("user_id")
   role        String // OWNER, EDITOR, VIEWER
-  
+
   workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
   user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 
@@ -59,11 +57,10 @@ model Person {
   color       String?
   photoUrl    String? @map("photo_url")
   active      Boolean @default(true)
-  
-  workspace     Workspace      @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
-  transactions  Transaction[]
-  accounts      AccountPerson[]
-  cards         CardPerson[]
+
+  workspace    Workspace       @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  transactions Transaction[]
+  accounts     AccountPerson[]
 
   @@map("people")
 }
@@ -76,7 +73,7 @@ model Category {
   icon         String?
   color        String?
   monthlyLimit Float?  @map("monthly_limit")
-  
+
   workspace    Workspace     @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
   budgets      Budget[]
   transactions Transaction[]
@@ -91,28 +88,12 @@ model Account {
   type           String // CHECKING, CASH, SAVINGS, INVESTMENT
   initialBalance Float   @default(0) @map("initial_balance")
   active         Boolean @default(true)
-  
-  workspace    Workspace        @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+  workspace    Workspace       @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
   transactions Transaction[]
   people       AccountPerson[]
 
   @@map("accounts")
-}
-
-model Card {
-  id          String  @id @default(uuid())
-  workspaceId String  @map("workspace_id")
-  name        String
-  closingDay  Int?    @map("closing_day")
-  dueDay      Int?    @map("due_day")
-  limit       Float?
-  active      Boolean @default(true)
-  
-  workspace    Workspace     @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
-  transactions Transaction[]
-  people       CardPerson[]
-
-  @@map("cards")
 }
 
 model Budget {
@@ -121,7 +102,7 @@ model Budget {
   categoryId  String @map("category_id")
   month       String // YYYY-MM
   limitAmount Float  @map("limit_amount")
-  
+
   workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
   category  Category  @relation(fields: [categoryId], references: [id], onDelete: Cascade)
 
@@ -130,58 +111,25 @@ model Budget {
 }
 
 model Transaction {
-  id            String   @id @default(uuid())
-  workspaceId   String   @map("workspace_id")
-  date          DateTime
-  description   String
-  amount        Float
-  type          String // INCOME, EXPENSE
-  categoryId    String   @map("category_id")
-  accountId     String?  @map("account_id")
-  cardId        String?  @map("card_id")
-  personId      String?  @map("person_id")
-  installmentId String?  @unique @map("installment_id")
-  createdAt     DateTime @default(now()) @map("created_at")
-  
-  workspace   Workspace    @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
-  category    Category     @relation(fields: [categoryId], references: [id])
-  account     Account?     @relation(fields: [accountId], references: [id])
-  card        Card?        @relation(fields: [cardId], references: [id])
-  person      Person?      @relation(fields: [personId], references: [id])
-  installment Installment? @relation(fields: [installmentId], references: [id])
+  id          String   @id @default(uuid())
+  workspaceId String   @map("workspace_id")
+  date        DateTime
+  description String
+  amount      Float
+  type        String // INCOME, EXPENSE
+  categoryId  String   @map("category_id")
+  accountId   String?  @map("account_id")
+  personId    String?  @map("person_id")
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  category  Category  @relation(fields: [categoryId], references: [id])
+  account   Account?  @relation(fields: [accountId], references: [id])
+  person    Person?   @relation(fields: [personId], references: [id])
 
   @@index([workspaceId, date])
   @@index([workspaceId, categoryId])
-  @@index([workspaceId, cardId])
   @@map("transactions")
-}
-
-model InstallmentPlan {
-  id           String @id @default(uuid())
-  workspaceId  String @map("workspace_id")
-  description  String
-  totalAmount  Float  @map("total_amount")
-  installments Int
-  startMonth   String @map("start_month") // YYYY-MM
-  
-  workspace       Workspace     @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
-  installmentList Installment[]
-
-  @@map("installment_plans")
-}
-
-model Installment {
-  id                String  @id @default(uuid())
-  planId            String  @map("plan_id")
-  installmentNumber Int     @map("installment_number")
-  month             String // YYYY-MM
-  amount            Float
-  transactionId     String? @unique @map("transaction_id")
-  
-  plan        InstallmentPlan @relation(fields: [planId], references: [id], onDelete: Cascade)
-  transaction Transaction?
-
-  @@map("installments")
 }
 
 model ImportBatch {
@@ -189,27 +137,27 @@ model ImportBatch {
   workspaceId String   @map("workspace_id")
   status      String // CREATED, UPLOADED, PARSED, CONFIRMED, FAILED
   createdAt   DateTime @default(now()) @map("created_at")
-  
-  workspace Workspace      @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+  workspace Workspace     @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
   rows      ImportedRow[]
 
   @@map("import_batches")
 }
 
 model ImportedRow {
-  id                   String   @id @default(uuid())
-  batchId              String   @map("batch_id")
-  date                 DateTime
-  description          String
-  amount               Float
-  type                 String // INCOME, EXPENSE
-  document             String?
-  suggestedCategoryId  String?  @map("suggested_category_id")
-  suggestedPersonId    String?  @map("suggested_person_id")
-  categoryId           String?  @map("category_id")
-  personId             String?  @map("person_id")
-  confirmed            Boolean  @default(false)
-  
+  id                  String   @id @default(uuid())
+  batchId             String   @map("batch_id")
+  date                DateTime
+  description         String
+  amount              Float
+  type                String // INCOME, EXPENSE
+  document            String?
+  suggestedCategoryId String?  @map("suggested_category_id")
+  suggestedPersonId   String?  @map("suggested_person_id")
+  categoryId          String?  @map("category_id")
+  personId            String?  @map("person_id")
+  confirmed           Boolean  @default(false)
+
   batch ImportBatch @relation(fields: [batchId], references: [id], onDelete: Cascade)
 
   @@map("imported_rows")
@@ -219,23 +167,10 @@ model AccountPerson {
   id        String @id @default(uuid())
   accountId String @map("account_id")
   personId  String @map("person_id")
-  
+
   account Account @relation(fields: [accountId], references: [id], onDelete: Cascade)
   person  Person  @relation(fields: [personId], references: [id], onDelete: Cascade)
-  
+
   @@unique([accountId, personId])
   @@map("account_people")
 }
-
-model CardPerson {
-  id       String @id @default(uuid())
-  cardId   String @map("card_id")
-  personId String @map("person_id")
-  
-  card   Card   @relation(fields: [cardId], references: [id], onDelete: Cascade)
-  person Person @relation(fields: [personId], references: [id], onDelete: Cascade)
-  
-  @@unique([cardId, personId])
-  @@map("card_people")
-}
-

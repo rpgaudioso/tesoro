@@ -62,44 +62,44 @@
   letter-spacing: -0.02em;
 }
 
-.topNav {
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-8);
-}
-
-.topNavLink {
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-8);
-  padding: var(--spacing-10) var(--spacing-20);
-  border-radius: var(--radius-8);
-  text-decoration: none;
-  color: var(--color-text-secondary);
-  font-size: var(--font-sm);
-  font-weight: var(--font-medium);
-  transition: all 0.2s;
+/* Search Container */
+.searchContainer {
+  flex: 1;
+  max-width: 600px;
+  margin: 0 var(--spacing-32);
   position: relative;
 }
 
-.topNavLink:hover {
+.searchIcon {
+  position: absolute;
+  left: var(--spacing-16);
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--color-text-tertiary);
+  pointer-events: none;
+}
+
+.searchInput {
+  width: 100%;
+  height: 40px;
+  padding: 0 var(--spacing-16) 0 var(--spacing-48);
+  border: 1px solid var(--color-border-light);
+  border-radius: var(--radius-12);
   background-color: var(--color-bg-secondary);
   color: var(--color-text);
+  font-size: var(--font-sm);
+  transition: all 0.2s;
 }
 
-.topNavActive {
-  color: var(--color-text-primary);
-  background-color: var(--color-bg-tertiary);
+.searchInput:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  background-color: var(--color-bg);
+  box-shadow: 0 0 0 3px var(--color-primary-light);
 }
 
-.topNavActive::after {
-  content: '';
-  position: absolute;
-  bottom: -1px;
-  left: 0;
-  right: 0;
-  height: 2px;
-  background-color: var(--color-primary);
+.searchInput::placeholder {
+  color: var(--color-text-tertiary);
 }
 
 .headerRight {
@@ -190,11 +190,10 @@
   color: var(--color-primary);
 }
 
-.sidebarFooter {
-  padding: 0 var(--spacing-12);
-  margin-top: auto;
-  padding-top: var(--spacing-16);
-  border-top: 1px solid var(--color-border-light);
+.sidebarDivider {
+  height: 1px;
+  background-color: var(--color-border-light);
+  margin: var(--spacing-16) 0;
 }
 
 /* Main Content */
@@ -211,7 +210,7 @@
     padding: 0 var(--spacing-16);
   }
 
-  .topNav {
+  .searchContainer {
     display: none;
   }
 

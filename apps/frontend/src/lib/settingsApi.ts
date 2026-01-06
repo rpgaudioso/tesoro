@@ -11,6 +11,8 @@ export const updateWorkspace = (
   data: { name?: string; personIds?: string[] }
 ) => api.patch(`/workspaces/${id}`, data);
 
+export const deleteWorkspace = (id: string) => api.delete(`/workspaces/${id}`);
+
 // People
 export const getPeople = () => api.get("/people");
 

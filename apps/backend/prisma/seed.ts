@@ -108,22 +108,6 @@ async function main() {
 
   console.log("✅ Account created:", account.name);
 
-  // Create default card
-  const card = await prisma.card.upsert({
-    where: { id: "card-main" },
-    update: {},
-    create: {
-      id: "card-main",
-      workspaceId: workspace.id,
-      name: "Cartão Principal",
-      closingDay: 10,
-      dueDay: 17,
-      limit: 3000,
-    },
-  });
-
-  console.log("✅ Card created:", card.name);
-
   console.log("🎉 Seed completed!");
   console.log("\n📝 Login credentials:");
   console.log("   Email: demo@tesoro.com");

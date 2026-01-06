@@ -103,4 +103,11 @@ export class WorkspacesService {
       },
     });
   }
+
+  async remove(workspaceId: string) {
+    // Cascade deletion will be handled by Prisma based on schema relationships
+    return this.prisma.workspace.delete({
+      where: { id: workspaceId },
+    });
+  }
 }

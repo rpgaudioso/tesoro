@@ -1,5 +1,4 @@
 import Alert from '@/components/UI/Alert';
-import Badge from '@/components/UI/Badge';
 import Card from '@/components/UI/Card';
 import { useAuth } from '@/contexts/AuthContext';
 import { useWorkspaceChange } from '@/hooks/useWorkspaceChange';
@@ -19,7 +18,6 @@ export default function DashboardPage() {
   const [selectedDate, setSelectedDate] = useState(new Date());
   const currentMonth = format(selectedDate, 'yyyy-MM');
   const currentYear = format(selectedDate, 'yyyy');
-  const lastMonth = format(subMonths(new Date(), 1), 'yyyy-MM');
   const lastYear = format(new Date(new Date().getFullYear() - 1, 0, 1), 'yyyy');
   const [statisticsPeriod, setStatisticsPeriod] = useState<'currentMonth' | 'currentYear' | 'lastYear'>('currentMonth');
   const [statisticsType, setStatisticsType] = useState<'EXPENSE' | 'INCOME' | 'ALL'>('EXPENSE');
@@ -43,6 +41,15 @@ export default function DashboardPage() {
     },
   });
 
+  // Buscar categorias
+  const { data: categories } = useQuery<Array<{ id: string; name: string; icon?: string; color: string; monthlyLimit?: number }>>({
+    queryKey: ['categories', currentWorkspace?.id],
+    queryFn: async () => {
+      const { data } = await api.get('/categories');
+      return data;
+    },
+  });
+
   // Query para últimos 12 meses (usa o endpoint de last-12-months)
   const { data: last12MonthsBalance } = useQuery({
     queryKey: ['last-12-months-balance', currentWorkspace?.id],
@@ -52,6 +59,12 @@ export default function DashboardPage() {
     },
     enabled: cashflowPeriod === 'last12Months',
   });
+
+  // Helper para obter categoria por ID
+  const getCategoryById = (categoryId: string | undefined) => {
+    if (!categoryId || !categories) return null;
+    return categories.find(c => c.id === categoryId);
+  };
 
   // Buscar transações do ano para estatísticas
   const { data: yearTransactions } = useQuery<Transaction[]>({
@@ -128,14 +141,15 @@ export default function DashboardPage() {
       .forEach(t => {
         const key = t.categoryId || 'sem-categoria';
         const existing = categoryMap.get(key);
+        const category = getCategoryById(t.categoryId);
         
         if (existing) {
           existing.total += t.amount;
         } else {
           categoryMap.set(key, {
-            name: t.category?.name || 'Sem categoria',
+            name: category?.name || 'Sem categoria',
             total: t.amount,
-            color: getRandomColor(key),
+            color: category?.color || getRandomColor(key),
           });
         }
       });
@@ -193,16 +207,17 @@ export default function DashboardPage() {
     filteredTransactions.forEach(t => {
       const key = t.categoryId || 'sem-categoria';
       const existing = categoryMap.get(key);
+      const category = getCategoryById(t.categoryId);
       
       if (existing) {
         existing.total += t.amount;
       } else {
         categoryMap.set(key, {
-          name: t.category?.name || 'Sem categoria',
+          name: category?.name || 'Sem categoria',
           total: t.amount,
-          color: getRandomColor(key),
-          icon: t.category?.icon,
-          monthlyLimit: t.category?.monthlyLimit,
+          color: category?.color || getRandomColor(key),
+          icon: category?.icon,
+          monthlyLimit: category?.monthlyLimit,
           categoryId: t.categoryId,
         });
       }
@@ -263,8 +278,6 @@ export default function DashboardPage() {
     return <div>Erro ao carregar dados</div>;
   }
 
-  const monthName = format(new Date(data.month + '-01'), 'MMMM yyyy', { locale: ptBR });
-
   return (
     <div className={styles.page}>
       <div className={styles.headerRow}>
@@ -303,8 +316,8 @@ export default function DashboardPage() {
       {/* Alerts */}
       {data.alerts.length > 0 && (
         <div className={styles.alerts}>
-          {data.alerts.map((alert, idx) => (
-            <Alert key={idx} variant="warning">
+          {data.alerts.map((alert) => (
+            <Alert key={alert} variant="warning">
               {alert}
             </Alert>
           ))}
@@ -348,8 +361,8 @@ export default function DashboardPage() {
       {/* Cashflow Chart */}
       {cashflowData && cashflowData.length > 0 && (() => {
         // Encontrar o valor máximo entre receitas e despesas para escala do gráfico
-        const maxIncome = Math.max(...cashflowData.map(i => i.income), 0);
-        const maxExpense = Math.max(...cashflowData.map(i => i.expenses), 0);
+        const maxIncome = Math.max(...cashflowData.map((i: any) => i.income), 0);
+        const maxExpense = Math.max(...cashflowData.map((i: any) => i.expenses), 0);
         const maxAbsValue = Math.max(maxIncome, maxExpense);
         
         // DEBUG
@@ -378,9 +391,9 @@ export default function DashboardPage() {
         ];
         
         // Calcular totais para exibição
-        const totalBalance = cashflowData.reduce((sum, item) => sum + item.balance, 0);
-        const totalIncome = cashflowData.reduce((sum, item) => sum + item.income, 0);
-        const totalExpenses = cashflowData.reduce((sum, item) => sum + item.expenses, 0);
+        const totalBalance = cashflowData.reduce((sum: number, item: any) => sum + item.balance, 0);
+        const totalIncome = cashflowData.reduce((sum: number, item: any) => sum + item.income, 0);
+        const totalExpenses = cashflowData.reduce((sum: number, item: any) => sum + item.expenses, 0);
 
         return (
           <Card>
@@ -420,8 +433,8 @@ export default function DashboardPage() {
 
             <div className={styles.cashflowChartContainer}>
               <div className={styles.cashflowYAxis}>
-                {yAxisLabels.map((label, idx) => (
-                  <div key={idx} className={styles.yAxisLabel}>
+                {yAxisLabels.map((label) => (
+                  <div key={label} className={styles.yAxisLabel}>
                     {Math.abs(label) >= 1000 
                       ? `${label >= 0 ? '' : '-'}${(Math.abs(label) / 1000).toFixed(Math.abs(label) % 1000 === 0 ? 0 : 1)}k` 
                       : label.toFixed(0)}
@@ -431,20 +444,20 @@ export default function DashboardPage() {
               
               <div className={styles.cashflowChart}>
                 <div className={styles.cashflowGridLines}>
-                  {yAxisLabels.map((_, idx) => (
-                    <div key={idx} className={`${styles.gridLine} ${idx === 2 ? styles.zeroLine : ''}`} />
+                  {yAxisLabels.map((label, idx) => (
+                    <div key={`grid-${label}`} className={`${styles.gridLine} ${idx === 2 ? styles.zeroLine : ''}`} />
                   ))}
                 </div>
                 
                 <div className={styles.cashflowBars}>
-                  {cashflowData.map((item, idx) => {
+                  {cashflowData.map((item: any, idx: number) => {
                     // Calcular altura como percentual de 50% (metade do espaço disponível)
                     const incomePercent = maxValue > 0 ? (item.income / maxValue) * 50 : 0;
                     const expensePercent = maxValue > 0 ? (item.expenses / maxValue) * 50 : 0;
                     
                     return (
                       <div 
-                        key={idx} 
+                        key={item.month} 
                         className={styles.cashflowBarGroup}
                         onMouseEnter={() => setHoveredBar(idx)}
                         onMouseLeave={() => setHoveredBar(null)}
@@ -519,12 +532,12 @@ export default function DashboardPage() {
             <p className={styles.emptyState}>Nenhuma despesa registrada neste período</p>
           ) : (
             <div className={styles.categoryExpenses}>
-              {expensesByCategory.map((cat, idx) => {
+              {expensesByCategory.map((cat) => {
                 const maxValue = expensesByCategory[0]?.total || 1;
                 const percentage = (cat.total / maxValue) * 100;
                 
                 return (
-                  <div key={idx} className={styles.categoryExpenseItem}>
+                  <div key={cat.name} className={styles.categoryExpenseItem}>
                     <div className={styles.categoryExpenseHeader}>
                       <span className={styles.categoryExpenseName}>
                         <span 
@@ -597,7 +610,7 @@ export default function DashboardPage() {
                     <svg viewBox="0 0 200 200" className={styles.donutChart}>
                       {(() => {
                         let currentAngle = -90;
-                        return periodStatistics.topCategories.map((cat, idx) => {
+                        return periodStatistics.topCategories.map((cat) => {
                           const angle = (cat.percentage / 100) * 360;
                           const startAngle = currentAngle;
                           currentAngle += angle;
@@ -621,7 +634,7 @@ export default function DashboardPage() {
                           
                           return (
                             <path
-                              key={idx}
+                              key={cat.name}
                               d={pathData}
                               fill={cat.color}
                               opacity="0.9"
@@ -651,8 +664,8 @@ export default function DashboardPage() {
                   </div>
 
                   <div className={styles.categoryList}>
-                    {periodStatistics.topCategories.map((cat, idx) => (
-                      <div key={idx} className={styles.categoryListItem}>
+                    {periodStatistics.topCategories.map((cat) => (
+                      <div key={cat.name} className={styles.categoryListItem}>
                         <div className={styles.categoryListContent}>
                           <div className={styles.categoryListTop}>
                             <div className={styles.categoryListLeft}>
@@ -733,34 +746,20 @@ export default function DashboardPage() {
                     <span className={styles.transactionDate}>
                       {format(new Date(transaction.date), 'dd/MM/yyyy', { locale: ptBR })}
                     </span>
-                    {transaction.category && (
-                      <>
-                        <span className={styles.transactionSeparator}>•</span>
-                        <span className={styles.transactionCategory}>{transaction.category.name}</span>
-                      </>
-                    )}
+                    {transaction.categoryId && (() => {
+                      const category = getCategoryById(transaction.categoryId);
+                      return category ? (
+                        <>
+                          <span className={styles.transactionSeparator}>•</span>
+                          <span className={styles.transactionCategory}>{category.name}</span>
+                        </>
+                      ) : null;
+                    })()}
                   </div>
                 </div>
                 <div className={`${styles.transactionAmount} ${transaction.type === 'INCOME' ? styles.income : styles.expense}`}>
                   {transaction.type === 'INCOME' ? '+' : '-'} R$ {transaction.amount.toFixed(2)}
                 </div>
-              </div>
-            ))}
-          </div>
-        </Card>
-      )}
-
-      {/* Card Impact */}
-      {data.cardImpact.nextMonths.length > 0 && (
-        <Card>
-          <h2 className={styles.sectionTitle}>Impacto de Parcelas Futuras</h2>
-          <div className={styles.cardImpactList}>
-            {data.cardImpact.nextMonths.map((item) => (
-              <div key={item.month} className={styles.impactItem}>
-                <span className={styles.impactMonth}>
-                  {format(new Date(item.month + '-01'), 'MMM/yyyy', { locale: ptBR })}
-                </span>
-                <Badge variant="warning">R$ {item.amount.toFixed(2)}</Badge>
               </div>
             ))}
           </div>

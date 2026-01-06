@@ -51,16 +51,6 @@ export interface Account {
   active: boolean;
 }
 
-export interface Card {
-  id: string;
-  workspaceId: string;
-  name: string;
-  closingDay?: number;
-  dueDay?: number;
-  limit?: number;
-  active: boolean;
-}
-
 export interface Budget {
   id: string;
   workspaceId: string;
@@ -78,7 +68,6 @@ export interface Transaction {
   type: TransactionType;
   categoryId: string;
   accountId?: string;
-  cardId?: string;
   personId?: string;
   installmentId?: string;
   createdAt: Date;
@@ -129,9 +118,6 @@ export interface DashboardData {
   budgetSummary: BudgetSummaryItem[];
   alerts: string[];
   upcomingBills: any[];
-  cardImpact: {
-    nextMonths: CardImpactMonth[];
-  };
 }
 
 export interface BudgetSummaryItem {
@@ -140,9 +126,4 @@ export interface BudgetSummaryItem {
   limit: number;
   spent: number;
   percentage: number;
-}
-
-export interface CardImpactMonth {
-  month: string;
-  amount: number;
 }

@@ -1,14 +1,18 @@
-import { ConflictException, Injectable, UnauthorizedException } from '@nestjs/common';
-import { JwtService } from '@nestjs/jwt';
-import { LoginDto, RegisterDto } from '@tesoro/shared';
-import * as bcrypt from 'bcrypt';
-import { PrismaService } from '../prisma/prisma.service';
+import {
+  ConflictException,
+  Injectable,
+  UnauthorizedException,
+} from "@nestjs/common";
+import { JwtService } from "@nestjs/jwt";
+import { LoginDto, RegisterDto } from "@tesoro/shared";
+import * as bcrypt from "bcrypt";
+import { PrismaService } from "../prisma/prisma.service";
 
 @Injectable()
 export class AuthService {
   constructor(
     private prisma: PrismaService,
-    private jwtService: JwtService,
+    private jwtService: JwtService
   ) {}
 
   async register(dto: RegisterDto) {
@@ -18,7 +22,7 @@ export class AuthService {
     });
 
     if (existingUser) {
-      throw new ConflictException('Email já cadastrado');
+      throw new ConflictException("Email já cadastrado");
     }
 
     // Hash password
@@ -43,7 +47,7 @@ export class AuthService {
         data: {
           workspaceId: workspace.id,
           userId: user.id,
-          role: 'OWNER',
+          role: "OWNER",
         },
       });
 
@@ -78,13 +82,16 @@ export class AuthService {
     });
 
     if (!user) {
-      throw new UnauthorizedException('Credenciais inválidas');
+      throw new UnauthorizedException("Credenciais inválidas");
     }
 
-    const isPasswordValid = await bcrypt.compare(dto.password, user.passwordHash);
+    const isPasswordValid = await bcrypt.compare(
+      dto.password,
+      user.passwordHash
+    );
 
     if (!isPasswordValid) {
-      throw new UnauthorizedException('Credenciais inválidas');
+      throw new UnauthorizedException("Credenciais inválidas");
     }
 
     const token = this.generateToken(user.id);
@@ -123,9 +130,168 @@ export class AuthService {
     });
 
     if (!user) {
-      throw new UnauthorizedException('Usuário não encontrado');
+      throw new UnauthorizedException("Usuário não encontrado");
     }
 
     return user;
+  }
+
+  async resetUserData(userId: string, autoSeed: boolean = false) {
+    // Get all workspaces for this user
+    const members = await this.prisma.member.findMany({
+      where: { userId },
+      include: { workspace: true },
+    });
+
+    const workspaceIds = members.map((m) => m.workspaceId);
+
+    // Delete all data in transaction
+    await this.prisma.$transaction(async (tx) => {
+      // Delete in correct order to respect foreign keys
+      for (const workspaceId of workspaceIds) {
+        // Delete import batch rows first
+        const batches = await tx.importBatch.findMany({
+          where: { workspaceId },
+          select: { id: true },
+        });
+        for (const batch of batches) {
+          await tx.importedRow.deleteMany({
+            where: { batchId: batch.id },
+          });
+        }
+
+        // Delete import batches
+        await tx.importBatch.deleteMany({
+          where: { workspaceId },
+        });
+
+        // Delete transactions
+        await tx.transaction.deleteMany({
+          where: { workspaceId },
+        });
+
+        // Delete budgets
+        await tx.budget.deleteMany({
+          where: { workspaceId },
+        });
+
+        // Delete account-person relations
+        const accounts = await tx.account.findMany({
+          where: { workspaceId },
+          select: { id: true },
+        });
+        for (const account of accounts) {
+          await tx.accountPerson.deleteMany({
+            where: { accountId: account.id },
+          });
+        }
+
+        // Delete accounts
+        await tx.account.deleteMany({
+          where: { workspaceId },
+        });
+
+        // Delete people
+        await tx.person.deleteMany({
+          where: { workspaceId },
+        });
+
+        // Delete categories
+        await tx.category.deleteMany({
+          where: { workspaceId },
+        });
+
+        // Delete members
+        await tx.member.deleteMany({
+          where: { workspaceId },
+        });
+
+        // Delete workspace
+        await tx.workspace.delete({
+          where: { id: workspaceId },
+        });
+      }
+    });
+
+    // If autoSeed, create initial data
+    if (autoSeed) {
+      const result = await this.prisma.$transaction(async (tx) => {
+        const workspace = await tx.workspace.create({
+          data: { name: "Minha Workspace" },
+        });
+
+        await tx.member.create({
+          data: {
+            workspaceId: workspace.id,
+            userId,
+            role: "OWNER",
+          },
+        });
+
+        // Create default categories
+        const categories = [
+          {
+            name: "Alimentação",
+            icon: "🍔",
+            color: "#10b981",
+            type: "EXPENSE",
+          },
+          { name: "Transporte", icon: "🚗", color: "#3b82f6", type: "EXPENSE" },
+          { name: "Moradia", icon: "🏠", color: "#8b5cf6", type: "EXPENSE" },
+          { name: "Saúde", icon: "⚕️", color: "#ef4444", type: "EXPENSE" },
+          { name: "Educação", icon: "📚", color: "#f59e0b", type: "EXPENSE" },
+          { name: "Lazer", icon: "🎮", color: "#ec4899", type: "EXPENSE" },
+          { name: "Outros", icon: "📦", color: "#6b7280", type: "EXPENSE" },
+          { name: "Salário", icon: "💰", color: "#10b981", type: "INCOME" },
+          {
+            name: "Investimentos",
+            icon: "📈",
+            color: "#3b82f6",
+            type: "INCOME",
+          },
+          { name: "Outros", icon: "💵", color: "#6b7280", type: "INCOME" },
+        ];
+
+        for (const cat of categories) {
+          await tx.category.create({
+            data: {
+              ...cat,
+              workspaceId: workspace.id,
+            },
+          });
+        }
+
+        // Create default person
+        await tx.person.create({
+          data: {
+            name: "Pessoal",
+            color: "#3b82f6",
+            workspaceId: workspace.id,
+          },
+        });
+
+        // Create default account
+        await tx.account.create({
+          data: {
+            name: "Conta Corrente",
+            type: "CHECKING",
+            workspaceId: workspace.id,
+          },
+        });
+
+        return workspace;
+      });
+
+      return {
+        message: "Dados resetados com sucesso",
+        autoSeed: true,
+        workspace: result,
+      };
+    }
+
+    return {
+      message: "Dados resetados com sucesso",
+      autoSeed: false,
+    };
   }
 }

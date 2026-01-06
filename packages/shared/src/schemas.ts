@@ -51,34 +51,16 @@ export const updateAccountSchema = createAccountSchema.partial().extend({
   active: z.boolean().optional(),
 });
 
-// Card schemas
-export const createCardSchema = z.object({
-  name: z.string().min(1).max(100),
-  closingDay: z.number().min(1).max(31).optional(),
-  dueDay: z.number().min(1).max(31).optional(),
-  limit: z.number().positive().optional(),
-});
-
-export const updateCardSchema = createCardSchema.partial().extend({
-  active: z.boolean().optional(),
-});
-
 // Transaction schemas
-export const createTransactionSchema = z
-  .object({
-    date: z.string().or(z.date()),
-    description: z.string().min(1).max(500),
-    amount: z.number().positive(),
-    type: z.nativeEnum(TransactionType),
-    categoryId: z.string().uuid(),
-    accountId: z.string().uuid().optional(),
-    cardId: z.string().uuid().optional(),
-    personId: z.string().uuid().optional(),
-  })
-  .refine((data) => data.accountId || data.cardId, {
-    message: "Deve ter accountId ou cardId",
-    path: ["accountId"],
-  });
+export const createTransactionSchema = z.object({
+  date: z.string().or(z.date()),
+  description: z.string().min(1).max(500),
+  amount: z.number().positive(),
+  type: z.nativeEnum(TransactionType),
+  categoryId: z.string().uuid(),
+  accountId: z.string().uuid().optional(),
+  personId: z.string().uuid().optional(),
+});
 
 export const updateTransactionSchema = z.object({
   date: z.union([z.string(), z.date()]).optional(),
@@ -87,7 +69,6 @@ export const updateTransactionSchema = z.object({
   type: z.nativeEnum(TransactionType).optional(),
   categoryId: z.string().optional(),
   accountId: z.string().optional(),
-  cardId: z.string().optional(),
   personId: z.string().optional(),
 });
 
@@ -101,16 +82,6 @@ export const updateBudgetsSchema = z.object({
   budgets: z.array(upsertBudgetSchema),
 });
 
-// Card purchase schema
-export const createPurchaseSchema = z.object({
-  description: z.string().min(1).max(500),
-  date: z.string().or(z.date()),
-  amount: z.number().positive(),
-  categoryId: z.string().uuid(),
-  personId: z.string().uuid().optional(),
-  installments: z.number().int().min(1).max(48).default(1),
-});
-
 export type RegisterDto = z.infer<typeof registerSchema>;
 export type LoginDto = z.infer<typeof loginSchema>;
 export type CreateWorkspaceDto = z.infer<typeof createWorkspaceSchema>;
@@ -120,10 +91,7 @@ export type CreateCategoryDto = z.infer<typeof createCategorySchema>;
 export type UpdateCategoryDto = z.infer<typeof updateCategorySchema>;
 export type CreateAccountDto = z.infer<typeof createAccountSchema>;
 export type UpdateAccountDto = z.infer<typeof updateAccountSchema>;
-export type CreateCardDto = z.infer<typeof createCardSchema>;
-export type UpdateCardDto = z.infer<typeof updateCardSchema>;
 export type CreateTransactionDto = z.infer<typeof createTransactionSchema>;
 export type UpdateTransactionDto = z.infer<typeof updateTransactionSchema>;
 export type UpsertBudgetDto = z.infer<typeof upsertBudgetSchema>;
 export type UpdateBudgetsDto = z.infer<typeof updateBudgetsSchema>;
-export type CreatePurchaseDto = z.infer<typeof createPurchaseSchema>;

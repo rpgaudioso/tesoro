@@ -1,9 +1,9 @@
 import { Navigate, Route, Routes } from 'react-router-dom';
 import { Toaster } from 'sonner';
 import AppLayout from './components/Layout/AppLayout';
+import WelcomeTour from './components/Onboarding/WelcomeTour';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import BudgetsPage from './pages/BudgetsPage';
-import CardsPage from './pages/CardsPage';
 import CategoriesPage from './pages/CategoriesPage';
 import DashboardPage from './pages/DashboardPage';
 import { Imports } from './pages/Imports';
@@ -25,6 +25,16 @@ function App() {
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
         
+        {/* Welcome Tour Route (outside AppLayout) */}
+        <Route
+          path="/app/welcome"
+          element={
+            <PrivateRoute>
+              <WelcomeTour />
+            </PrivateRoute>
+          }
+        />
+        
         <Route
           path="/app"
           element={
@@ -38,7 +48,6 @@ function App() {
           <Route path="transactions" element={<TransactionsPage />} />
           <Route path="imports" element={<Imports />} />
           <Route path="budgets" element={<BudgetsPage />} />
-          <Route path="cards" element={<CardsPage />} />
           <Route path="categories" element={<CategoriesPage />} />
           <Route path="settings" element={<SettingsPage />} />
         </Route>

@@ -62,11 +62,6 @@ interface Card {
   name: string;
 }
 
-interface CardType {
-  id: string;
-  name: string;
-}
-
 export function Imports() {
   const navigate = useNavigate();
   const { currentWorkspace } = useAuth();
@@ -75,9 +70,7 @@ export function Imports() {
   const [categories, setCategories] = useState<Category[]>([]);
   const [people, setPeople] = useState<Person[]>([]);
   const [accounts, setAccounts] = useState<Account[]>([]);
-  const [cards, setCards] = useState<CardType[]>([]);
   const [selectedAccount, setSelectedAccount] = useState<string>('');
-  const [selectedCard, setSelectedCard] = useState<string>('');
   const [error, setError] = useState<string | null>(null);
   const [confirming, setConfirming] = useState(false);
 
@@ -85,7 +78,6 @@ export function Imports() {
     loadCategories();
     loadPeople();
     loadAccounts();
-    loadCards();
   }, [currentWorkspace?.id]);
 
   async function loadCategories() {
@@ -113,15 +105,6 @@ export function Imports() {
       setAccounts(response.data);
     } catch (err) {
       console.error('Erro ao carregar contas:', err);
-    }
-  }
-
-  async function loadCards() {
-    try {
-      const response = await api.get('/cards');
-      setCards(response.data);
-    } catch (err) {
-      console.error('Erro ao carregar cartões:', err);
     }
   }
 
@@ -229,9 +212,9 @@ export function Imports() {
     
     console.log('✅ Todas as linhas têm categoria!');
 
-    // Validar que foi selecionada uma conta ou cartão
-    if (!selectedAccount && !selectedCard) {
-      setError('Selecione uma conta ou cartão para importar');
+    // Validar que foi selecionada uma conta
+    if (!selectedAccount) {
+      setError('Selecione uma conta para importar');
       return;
     }
 
@@ -240,8 +223,7 @@ export function Imports() {
 
     try {
       await api.post(`/imports/${importBatch.id}/confirm`, {
-        accountId: selectedAccount || undefined,
-        cardId: selectedCard || undefined,
+        accountId: selectedAccount,
       });
 
       navigate('/app/transactions');
@@ -264,7 +246,7 @@ export function Imports() {
       <div className={styles.header}>
         <h1 className={styles.title}>Importar Transações</h1>
         <p className={styles.subtitle}>
-          Importe extratos bancários e de cartão de crédito
+          Importe extratos bancários
         </p>
       </div>
 
@@ -286,8 +268,7 @@ export function Imports() {
             </div>
             <h2 className={styles.uploadTitle}>Selecione um arquivo</h2>
             <p className={styles.uploadDescription}>
-              Formatos suportados: Santander (Conta Corrente e Cartão de
-              Crédito)
+              Formatos suportados: Santander Conta Corrente
             </p>
 
             <label className={styles.uploadButton}>
@@ -341,32 +322,12 @@ export function Imports() {
                   value={selectedAccount}
                   onChange={(e) => {
                     setSelectedAccount(e.target.value);
-                    if (e.target.value) setSelectedCard('');
                   }}
                 >
                   <option value="">Selecione uma conta</option>
                   {accounts.map((account) => (
                     <option key={account.id} value={account.id}>
                       {account.name}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              <div className={styles.formGroup}>
-                <label className={styles.label}>Cartão de Crédito</label>
-                <select
-                  className={styles.select}
-                  value={selectedCard}
-                  onChange={(e) => {
-                    setSelectedCard(e.target.value);
-                    if (e.target.value) setSelectedAccount('');
-                  }}
-                >
-                  <option value="">Selecione um cartão</option>
-                  {cards.map((card) => (
-                    <option key={card.id} value={card.id}>
-                      {card.name}
                     </option>
                   ))}
                 </select>
@@ -539,7 +500,6 @@ export function Imports() {
                   onClick={() => {
                     setImportBatch(null);
                     setSelectedAccount('');
-                    setSelectedCard('');
                   }}
                 >
                   Cancelar
@@ -551,7 +511,7 @@ export function Imports() {
                   disabled={
                     confirming ||
                     importBatch._count.confirmedRows === 0 ||
-                    (!selectedAccount && !selectedCard)
+                    !selectedAccount
                   }
                 >
                   {confirming ? (

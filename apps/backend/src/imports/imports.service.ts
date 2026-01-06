@@ -223,12 +223,7 @@ export class ImportsService {
     return updated;
   }
 
-  async confirm(
-    workspaceId: string,
-    batchId: string,
-    accountId?: string,
-    cardId?: string
-  ) {
+  async confirm(workspaceId: string, batchId: string, accountId?: string) {
     const batch = await this.prisma.importBatch.findFirst({
       where: { id: batchId, workspaceId },
       include: { rows: true },
@@ -266,7 +261,6 @@ export class ImportsService {
             type: row.type,
             categoryId: categoryId,
             accountId: accountId || undefined,
-            cardId: cardId || undefined,
             personId: row.personId || row.suggestedPersonId || undefined,
           },
         });

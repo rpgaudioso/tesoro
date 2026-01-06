@@ -76,15 +76,10 @@ export class ImportsController {
   async confirm(
     @Req() req,
     @Param("id") id: string,
-    @Body() body: { accountId?: string; cardId?: string }
+    @Body() body: { accountId?: string }
   ) {
     const workspaceId = req.headers["x-workspace-id"];
-    return this.importsService.confirm(
-      workspaceId,
-      id,
-      body.accountId,
-      body.cardId
-    );
+    return this.importsService.confirm(workspaceId, id, body.accountId);
   }
 
   @Delete(":id")

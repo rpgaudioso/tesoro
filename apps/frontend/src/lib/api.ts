@@ -38,4 +38,7 @@ api.interceptors.response.use(
   }
 );
 
+export const resetUserData = (autoSeed: boolean = false) =>
+  api.post("/auth/reset-user-data", { autoSeed });
+
 export default api;

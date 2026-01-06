@@ -86,9 +86,6 @@ export class DashboardService {
       alerts.push(`💸 Saldo negativo no mês: R$ ${balance.toFixed(2)}`);
     }
 
-    // Calculate card impact (future installments)
-    const cardImpact = await this.calculateCardImpact(workspaceId, month);
-
     return {
       month,
       income,
@@ -97,41 +94,7 @@ export class DashboardService {
       budgetSummary,
       alerts,
       upcomingBills: [], // Can be implemented later
-      cardImpact,
     };
-  }
-
-  private async calculateCardImpact(workspaceId: string, currentMonth: string) {
-    const currentDate = new Date(`${currentMonth}-01`);
-    const nextMonths: Array<{ month: string; amount: number }> = [];
-
-    // Get next 6 months
-    for (let i = 1; i <= 6; i++) {
-      const futureDate = new Date(currentDate);
-      futureDate.setMonth(futureDate.getMonth() + i);
-      const futureMonth = `${futureDate.getFullYear()}-${String(futureDate.getMonth() + 1).padStart(2, "0")}`;
-
-      const installments = await this.prisma.installment.findMany({
-        where: {
-          month: futureMonth,
-          plan: { workspaceId },
-        },
-      });
-
-      const totalAmount = installments.reduce(
-        (sum, inst) => sum + inst.amount,
-        0
-      );
-
-      if (totalAmount > 0) {
-        nextMonths.push({
-          month: futureMonth,
-          amount: totalAmount,
-        });
-      }
-    }
-
-    return { nextMonths };
   }
 
   async getYearlyBalance(workspaceId: string, isLastYear: boolean = false) {
