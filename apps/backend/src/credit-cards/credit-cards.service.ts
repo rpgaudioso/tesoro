@@ -10,10 +10,14 @@ import {
   TransactionKind,
 } from "@prisma/client";
 import { PrismaService } from "../prisma/prisma.service";
+import { InvoiceParserService } from "./invoice-parser.service";
 
 @Injectable()
 export class CreditCardsService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private invoiceParser: InvoiceParserService,
+  ) {}
 
   // ==================== CREDIT CARDS ====================
 
@@ -159,24 +163,74 @@ export class CreditCardsService {
     const card = await this.findCardById(workspaceId, cardId);
 
     if (!card) {
-      throw new NotFoundException('Cartão não encontrado');
+      throw new NotFoundException("Cartão não encontrado");
+    }
+
+    // Check file type - only accept XLSX files for import
+    const fileExtension = file.originalname.split('.').pop()?.toLowerCase();
+    const isExcelFile = fileExtension === 'xlsx' || fileExtension === 'xls';
+
+    if (!isExcelFile) {
+      throw new BadRequestException(
+        'Formato de arquivo inválido. Por favor, envie um arquivo Excel (.xlsx ou .xls)'
+      );
+    }
+
+    // Parse the Excel file to extract charges
+    const parsedData = this.invoiceParser.parseInvoiceFile(file.buffer);
+
+    // Validate that the card last4 matches
+    if (card.last4 && card.last4 !== parsedData.cardLast4) {
+      throw new BadRequestException(
+        `O arquivo parece ser de outro cartão (final ${parsedData.cardLast4}). Este cartão termina em ${card.last4}.`
+      );
     }
 
     // Ensure invoice exists
     const invoice = await this.ensureInvoice(workspaceId, cardId, month);
 
-    // Update invoice to mark as uploaded/closed
-    return this.prisma.creditCardInvoice.update({
+    // Create charges from parsed data
+    const chargesCreated = await Promise.all(
+      parsedData.charges.map(charge =>
+        this.createCharge(workspaceId, invoice.id, {
+          date: charge.date,
+          description: charge.description,
+          amount: charge.amountBRL,
+          type: charge.amountBRL > 0 ? CreditCardChargeType.PURCHASE : CreditCardChargeType.REFUND,
+        })
+      )
+    );
+
+    // Update invoice to mark as closed
+    const updatedInvoice = await this.prisma.creditCardInvoice.update({
       where: { id: invoice.id },
       data: {
-        closedAt: invoice.closedAt || new Date(),
+        closedAt: new Date(),
         status: CreditCardInvoiceStatus.CLOSED,
       },
       include: {
         creditCard: true,
         payment: true,
+        charges: {
+          include: {
+            transaction: true,
+            category: true,
+          },
+          orderBy: {
+            date: 'desc',
+          },
+        },
       },
     });
+
+    return {
+      ...updatedInvoice,
+      importSummary: {
+        totalCharges: chargesCreated.length,
+        totalAmount: parsedData.totalAmount,
+        holderName: parsedData.holderName,
+      },
+    };
   }
 
   async findInvoices(

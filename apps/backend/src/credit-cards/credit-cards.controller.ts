@@ -10,8 +10,9 @@ import {
   UploadedFile,
   UseGuards,
   UseInterceptors,
-} from '@nestjs/common';
-import { FileInterceptor } from '@nestjs/platform-express';
+} from "@nestjs/common";
+import { FileInterceptor } from "@nestjs/platform-express";
+import { memoryStorage } from "multer";
 import { JwtAuthGuard } from "../auth/guards/jwt-auth.guard";
 import { WorkspaceGuard } from "../auth/guards/workspace.guard";
 import { CreditCardsService } from "./credit-cards.service";
@@ -75,14 +76,29 @@ export class CreditCardsController {
 
   @Post(":cardId/invoices/upload")
   @UseInterceptors(
-    FileInterceptor('file', {
-      dest: './uploads/invoices',
+    FileInterceptor("file", {
+      storage: memoryStorage(),
+      limits: {
+        fileSize: 10 * 1024 * 1024, // 10MB
+      },
+      fileFilter: (req, file, cb) => {
+        const allowedMimes = [
+          'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', // .xlsx
+          'application/vnd.ms-excel', // .xls
+        ];
+        
+        if (allowedMimes.includes(file.mimetype)) {
+          cb(null, true);
+        } else {
+          cb(new Error('Apenas arquivos Excel (.xlsx, .xls) são permitidos'), false);
+        }
+      },
     })
   )
   async uploadInvoice(
     @Param("workspaceId") workspaceId: string,
     @Param("cardId") cardId: string,
-    @Body('month') month: string,
+    @Body("month") month: string,
     @UploadedFile() file: Express.Multer.File
   ) {
     return this.creditCardsService.uploadInvoice(

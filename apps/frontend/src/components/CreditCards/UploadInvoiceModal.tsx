@@ -65,16 +65,24 @@ export default function UploadInvoiceModal({ cardId, onClose }: UploadInvoiceMod
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFile = e.target.files?.[0];
     if (selectedFile) {
-      // Validar tipo de arquivo (PDF, imagens, etc)
-      const validTypes = ['application/pdf', 'image/png', 'image/jpeg', 'image/jpg'];
-      if (!validTypes.includes(selectedFile.type)) {
-        toast.error('Tipo de arquivo inválido. Use PDF ou imagens');
+      // Validar tipo de arquivo (apenas Excel)
+      const validTypes = [
+        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', // .xlsx
+        'application/vnd.ms-excel', // .xls
+      ];
+      const fileName = selectedFile.name.toLowerCase();
+      const isExcel = validTypes.includes(selectedFile.type) || 
+                      fileName.endsWith('.xlsx') || 
+                      fileName.endsWith('.xls');
+      
+      if (!isExcel) {
+        toast.error('Tipo de arquivo inválido. Use arquivos Excel (.xlsx ou .xls)');
         return;
       }
 
-      // Validar tamanho (máximo 5MB)
-      if (selectedFile.size > 5 * 1024 * 1024) {
-        toast.error('Arquivo muito grande. Máximo 5MB');
+      // Validar tamanho (máximo 10MB)
+      if (selectedFile.size > 10 * 1024 * 1024) {
+        toast.error('Arquivo muito grande. Máximo 10MB');
         return;
       }
 
@@ -104,11 +112,11 @@ export default function UploadInvoiceModal({ cardId, onClose }: UploadInvoiceMod
           <div className={styles.fileInput}>
             <label htmlFor="file-upload" className={styles.fileLabel}>
               <Upload size={24} />
-              <span>{file ? file.name : 'Selecionar arquivo'}</span>
+              <span>{file ? file.name : 'Selecionar arquivo Excel (.xlsx ou .xls)'}</span>
               <input
                 id="file-upload"
                 type="file"
-                accept=".pdf,.png,.jpg,.jpeg"
+                accept=".xlsx,.xls,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel"
                 onChange={handleFileChange}
                 className={styles.hiddenInput}
               />
