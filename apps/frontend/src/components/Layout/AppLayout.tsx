@@ -1,4 +1,4 @@
-import { Bell, LayoutDashboard, Menu, RotateCcw, Search, Tag, TrendingUp, Upload, Wallet } from 'lucide-react';
+import { Bell, CreditCard, LayoutDashboard, Menu, RotateCcw, Search, Tag, TrendingUp, Upload, Wallet } from 'lucide-react';
 import { useState } from 'react';
 import { NavLink, Outlet, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
@@ -108,6 +108,16 @@ export default function AppLayout() {
             >
               <Tag size={20} />
               {!sidebarCollapsed && <span>Categorias</span>}
+            </NavLink>
+            <NavLink
+              to="/app/credit-cards"
+              className={({ isActive }) =>
+                `${styles.sidebarLink} ${isActive ? styles.sidebarActive : ''}`
+              }
+              title="Cartões de Crédito"
+            >
+              <CreditCard size={20} />
+              {!sidebarCollapsed && <span>Cartões</span>}
             </NavLink>
             
             <div className={styles.sidebarDivider}></div>

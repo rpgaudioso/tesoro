@@ -4,6 +4,7 @@ import { AccountsModule } from "./accounts/accounts.module";
 import { AuthModule } from "./auth/auth.module";
 import { BudgetsModule } from "./budgets/budgets.module";
 import { CategoriesModule } from "./categories/categories.module";
+import { CreditCardsModule } from "./credit-cards/credit-cards.module";
 import { DashboardModule } from "./dashboard/dashboard.module";
 import { ImportsModule } from "./imports/imports.module";
 import { PeopleModule } from "./people/people.module";
@@ -24,6 +25,7 @@ import { WorkspacesModule } from "./workspaces/workspaces.module";
     AccountsModule,
     BudgetsModule,
     TransactionsModule,
+    CreditCardsModule,
     DashboardModule,
     ImportsModule,
   ],

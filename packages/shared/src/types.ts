@@ -3,6 +3,10 @@ import {
   ImportStatus,
   MemberRole,
   TransactionType,
+  TransactionKind,
+  CreditCardStatus,
+  CreditCardChargeType,
+  CreditCardInvoiceStatus,
 } from "./enums";
 
 export interface User {
@@ -66,10 +70,11 @@ export interface Transaction {
   description: string;
   amount: number;
   type: TransactionType;
+  kind: TransactionKind;
   categoryId: string;
   accountId?: string;
   personId?: string;
-  installmentId?: string;
+  competenceMonth?: string;
   createdAt: Date;
 }
 
@@ -126,4 +131,77 @@ export interface BudgetSummaryItem {
   limit: number;
   spent: number;
   percentage: number;
+}
+
+export interface CreditCard {
+  id: string;
+  workspaceId: string;
+  name: string;
+  brand?: string;
+  last4?: string;
+  currency: string;
+  creditLimit: number;
+  closingDay: number;
+  dueDay: number;
+  paymentAccountId?: string;
+  status: CreditCardStatus;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface CreditCardInvoice {
+  id: string;
+  workspaceId: string;
+  creditCardId: string;
+  month: string;
+  status: CreditCardInvoiceStatus;
+  closedAt?: Date;
+  dueDate?: Date;
+  totalAmount: number;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface CreditCardCharge {
+  id: string;
+  workspaceId: string;
+  creditCardId: string;
+  invoiceId: string;
+  type: CreditCardChargeType;
+  description: string;
+  purchaseDate: Date;
+  postedAt?: Date;
+  amount: number;
+  categoryId?: string;
+  personId?: string;
+  externalId?: string;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface CreditCardInvoicePayment {
+  id: string;
+  workspaceId: string;
+  invoiceId: string;
+  transactionId?: string;
+  accountId: string;
+  paidAt: Date;
+  amount: number;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface InvoiceWithDetails extends CreditCardInvoice {
+  creditCard?: CreditCard;
+  charges?: CreditCardCharge[];
+  totalsByCategory?: CategoryTotal[];
+  payment?: CreditCardInvoicePayment;
+}
+
+export interface CategoryTotal {
+  categoryId: string;
+  categoryName: string;
+  categoryIcon?: string;
+  categoryColor?: string;
+  total: number;
 }

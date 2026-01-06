@@ -108,6 +108,98 @@ async function main() {
 
   console.log("✅ Account created:", account.name);
 
+  // Create default credit card
+  const creditCard = await prisma.creditCard.upsert({
+    where: { id: "card-main" },
+    update: {},
+    create: {
+      id: "card-main",
+      workspaceId: workspace.id,
+      name: "Cartão Visa",
+      brand: "Visa",
+      last4: "1234",
+      creditLimit: 10000,
+      closingDay: 10,
+      dueDay: 20,
+      paymentAccountId: account.id,
+      status: "ACTIVE",
+    },
+  });
+
+  console.log("✅ Credit card created:", creditCard.name);
+
+  // Create a sample invoice
+  const now = new Date();
+  const currentMonth = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+  
+  const invoice = await prisma.creditCardInvoice.upsert({
+    where: { 
+      workspaceId_creditCardId_month: {
+        workspaceId: workspace.id,
+        creditCardId: creditCard.id,
+        month: currentMonth,
+      }
+    },
+    update: {},
+    create: {
+      workspaceId: workspace.id,
+      creditCardId: creditCard.id,
+      month: currentMonth,
+      status: "OPEN",
+      dueDate: new Date(now.getFullYear(), now.getMonth() + 1, creditCard.dueDay),
+      totalAmount: 0,
+    },
+  });
+
+  console.log("✅ Invoice created for:", currentMonth);
+
+  // Create sample charges
+  const alimentacaoId = `cat-alimentação`;
+  const transporteId = `cat-transporte`;
+
+  const charges = [
+    {
+      description: "Supermercado",
+      amount: 350.50,
+      categoryId: alimentacaoId,
+      purchaseDate: new Date(now.getFullYear(), now.getMonth(), 5),
+    },
+    {
+      description: "Restaurante",
+      amount: 125.00,
+      categoryId: alimentacaoId,
+      purchaseDate: new Date(now.getFullYear(), now.getMonth(), 8),
+    },
+    {
+      description: "Posto de Gasolina",
+      amount: 280.00,
+      categoryId: transporteId,
+      purchaseDate: new Date(now.getFullYear(), now.getMonth(), 12),
+    },
+  ];
+
+  let totalCharges = 0;
+  for (const charge of charges) {
+    await prisma.creditCardCharge.create({
+      data: {
+        workspaceId: workspace.id,
+        creditCardId: creditCard.id,
+        invoiceId: invoice.id,
+        type: "PURCHASE",
+        ...charge,
+      },
+    });
+    totalCharges += charge.amount;
+  }
+
+  // Update invoice total
+  await prisma.creditCardInvoice.update({
+    where: { id: invoice.id },
+    data: { totalAmount: totalCharges },
+  });
+
+  console.log(`✅ ${charges.length} charges created, total: R$ ${totalCharges.toFixed(2)}`);
+
   console.log("🎉 Seed completed!");
   console.log("\n📝 Login credentials:");
   console.log("   Email: demo@tesoro.com");

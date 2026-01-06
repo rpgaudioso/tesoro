@@ -5,6 +5,9 @@ import WelcomeTour from './components/Onboarding/WelcomeTour';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import BudgetsPage from './pages/BudgetsPage';
 import CategoriesPage from './pages/CategoriesPage';
+import CreditCardsPage from './pages/CreditCardsPage';
+import CreditCardDetailPage from './pages/CreditCardDetailPage';
+import InvoiceDetailPage from './pages/InvoiceDetailPage';
 import DashboardPage from './pages/DashboardPage';
 import { Imports } from './pages/Imports';
 import LoginPage from './pages/LoginPage';
@@ -49,6 +52,9 @@ function App() {
           <Route path="imports" element={<Imports />} />
           <Route path="budgets" element={<BudgetsPage />} />
           <Route path="categories" element={<CategoriesPage />} />
+          <Route path="credit-cards" element={<CreditCardsPage />} />
+          <Route path="credit-cards/:cardId" element={<CreditCardDetailPage />} />
+          <Route path="invoices/:invoiceId" element={<InvoiceDetailPage />} />
           <Route path="settings" element={<SettingsPage />} />
         </Route>
 

@@ -12,15 +12,19 @@ export class BudgetsService {
       include: { category: true },
     });
 
-    // Calculate spent for each category
+    // Calculate spent for each category (transactions + credit card charges)
     const startDate = new Date(`${month}-01`);
     const endDate = new Date(startDate);
     endDate.setMonth(endDate.getMonth() + 1);
 
+    // Get transactions (excluding credit card payments)
     const transactions = await this.prisma.transaction.findMany({
       where: {
         workspaceId,
         type: 'EXPENSE',
+        kind: {
+          not: 'CREDIT_CARD_PAYMENT',
+        },
         date: {
           gte: startDate,
           lt: endDate,
@@ -32,10 +36,32 @@ export class BudgetsService {
       },
     });
 
-    const spentByCategory = transactions.reduce((acc, t) => {
-      acc[t.categoryId] = (acc[t.categoryId] || 0) + t.amount;
-      return acc;
-    }, {} as Record<string, number>);
+    // Get credit card charges for invoices of this month
+    const creditCardCharges = await this.prisma.creditCardCharge.findMany({
+      where: {
+        workspaceId,
+        invoice: {
+          month: month,
+        },
+      },
+      select: {
+        categoryId: true,
+        amount: true,
+      },
+    });
+
+    // Aggregate spent by category
+    const spentByCategory: Record<string, number> = {};
+
+    transactions.forEach((t) => {
+      spentByCategory[t.categoryId] = (spentByCategory[t.categoryId] || 0) + t.amount;
+    });
+
+    creditCardCharges.forEach((charge) => {
+      if (charge.categoryId) {
+        spentByCategory[charge.categoryId] = (spentByCategory[charge.categoryId] || 0) + charge.amount;
+      }
+    });
 
     return budgets.map((budget) => ({
       ...budget,

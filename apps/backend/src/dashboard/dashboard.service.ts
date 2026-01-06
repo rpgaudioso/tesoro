@@ -14,13 +14,27 @@ export class DashboardService {
     const endDate = new Date(startDate);
     endDate.setMonth(endDate.getMonth() + 1);
 
-    // Get transactions for the month
+    // Get transactions for the month (excluding credit card payments)
     const transactions = await this.prisma.transaction.findMany({
       where: {
         workspaceId,
         date: {
           gte: startDate,
           lt: endDate,
+        },
+        kind: {
+          not: 'CREDIT_CARD_PAYMENT', // Exclude card payments from dashboard
+        },
+      },
+      include: { category: true },
+    });
+
+    // Get credit card charges for invoices of this month
+    const creditCardCharges = await this.prisma.creditCardCharge.findMany({
+      where: {
+        workspaceId,
+        invoice: {
+          month: month,
         },
       },
       include: { category: true },
@@ -31,10 +45,14 @@ export class DashboardService {
       .filter((t) => t.type === "INCOME")
       .reduce((sum, t) => sum + t.amount, 0);
 
-    const expenses = transactions
+    const expensesFromTransactions = transactions
       .filter((t) => t.type === "EXPENSE")
       .reduce((sum, t) => sum + t.amount, 0);
 
+    const expensesFromCreditCard = creditCardCharges
+      .reduce((sum, c) => sum + c.amount, 0);
+
+    const expenses = expensesFromTransactions + expensesFromCreditCard;
     const balance = income - expenses;
 
     // Get budgets and calculate spent
@@ -43,15 +61,20 @@ export class DashboardService {
       include: { category: true },
     });
 
-    const spentByCategory = transactions
+    // Calculate spent by category (transactions + credit card charges)
+    const spentByCategory: Record<string, number> = {};
+
+    transactions
       .filter((t) => t.type === "EXPENSE")
-      .reduce(
-        (acc, t) => {
-          acc[t.categoryId] = (acc[t.categoryId] || 0) + t.amount;
-          return acc;
-        },
-        {} as Record<string, number>
-      );
+      .forEach((t) => {
+        spentByCategory[t.categoryId] = (spentByCategory[t.categoryId] || 0) + t.amount;
+      });
+
+    creditCardCharges.forEach((charge) => {
+      if (charge.categoryId) {
+        spentByCategory[charge.categoryId] = (spentByCategory[charge.categoryId] || 0) + charge.amount;
+      }
+    });
 
     const budgetSummary = budgets.map((budget) => {
       const spent = spentByCategory[budget.categoryId] || 0;

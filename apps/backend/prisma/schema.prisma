@@ -10,6 +10,31 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum CreditCardStatus {
+  ACTIVE
+  INACTIVE
+}
+
+enum CreditCardChargeType {
+  PURCHASE
+  REFUND
+  FEE
+  INTEREST
+  ADJUSTMENT
+}
+
+enum CreditCardInvoiceStatus {
+  OPEN
+  CLOSED
+  PAID
+}
+
+enum TransactionKind {
+  DEFAULT
+  TRANSFER
+  CREDIT_CARD_PAYMENT
+}
+
 model User {
   id           String   @id @default(uuid())
   email        String   @unique
@@ -33,6 +58,10 @@ model Workspace {
   budgets       Budget[]
   transactions  Transaction[]
   importBatches ImportBatch[]
+  creditCards   CreditCard[]
+  creditCardInvoices CreditCardInvoice[]
+  creditCardCharges CreditCardCharge[]
+  creditCardInvoicePayments CreditCardInvoicePayment[]
 
   @@map("workspaces")
 }
@@ -61,6 +90,7 @@ model Person {
   workspace    Workspace       @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
   transactions Transaction[]
   accounts     AccountPerson[]
+  creditCardCharges CreditCardCharge[]
 
   @@map("people")
 }
@@ -77,6 +107,7 @@ model Category {
   workspace    Workspace     @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
   budgets      Budget[]
   transactions Transaction[]
+  creditCardCharges CreditCardCharge[]
 
   @@map("categories")
 }
@@ -92,6 +123,7 @@ model Account {
   workspace    Workspace       @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
   transactions Transaction[]
   people       AccountPerson[]
+  creditCardPayments CreditCard[]
 
   @@map("accounts")
 }
@@ -111,24 +143,28 @@ model Budget {
 }
 
 model Transaction {
-  id          String   @id @default(uuid())
-  workspaceId String   @map("workspace_id")
-  date        DateTime
-  description String
-  amount      Float
-  type        String // INCOME, EXPENSE
-  categoryId  String   @map("category_id")
-  accountId   String?  @map("account_id")
-  personId    String?  @map("person_id")
-  createdAt   DateTime @default(now()) @map("created_at")
+  id              String          @id @default(uuid())
+  workspaceId     String          @map("workspace_id")
+  date            DateTime
+  description     String
+  amount          Float
+  type            String // INCOME, EXPENSE
+  kind            TransactionKind @default(DEFAULT)
+  categoryId      String          @map("category_id")
+  accountId       String?         @map("account_id")
+  personId        String?         @map("person_id")
+  competenceMonth String?         @map("competence_month") // YYYY-MM
+  createdAt       DateTime        @default(now()) @map("created_at")
 
-  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
-  category  Category  @relation(fields: [categoryId], references: [id])
-  account   Account?  @relation(fields: [accountId], references: [id])
-  person    Person?   @relation(fields: [personId], references: [id])
+  workspace             Workspace                   @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  category              Category                    @relation(fields: [categoryId], references: [id])
+  account               Account?                    @relation(fields: [accountId], references: [id])
+  person                Person?                     @relation(fields: [personId], references: [id])
+  creditCardPaymentLink CreditCardInvoicePayment?
 
   @@index([workspaceId, date])
   @@index([workspaceId, categoryId])
+  @@index([workspaceId, competenceMonth])
   @@map("transactions")
 }
 
@@ -173,4 +209,98 @@ model AccountPerson {
 
   @@unique([accountId, personId])
   @@map("account_people")
+}
+
+model CreditCard {
+  id               String            @id @default(uuid())
+  workspaceId      String            @map("workspace_id")
+  name             String
+  brand            String?
+  last4            String?
+  currency         String            @default("BRL")
+  creditLimit      Float             @map("credit_limit")
+  closingDay       Int               @map("closing_day") // 1-31
+  dueDay           Int               @map("due_day") // 1-31
+  paymentAccountId String?           @map("payment_account_id")
+  status           CreditCardStatus  @default(ACTIVE)
+  createdAt        DateTime          @default(now()) @map("created_at")
+  updatedAt        DateTime          @updatedAt @map("updated_at")
+
+  workspace      Workspace           @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  paymentAccount Account?            @relation(fields: [paymentAccountId], references: [id])
+  invoices       CreditCardInvoice[]
+  charges        CreditCardCharge[]
+
+  @@index([workspaceId])
+  @@map("credit_cards")
+}
+
+model CreditCardInvoice {
+  id           String                   @id @default(uuid())
+  workspaceId  String                   @map("workspace_id")
+  creditCardId String                   @map("credit_card_id")
+  month        String // YYYY-MM
+  status       CreditCardInvoiceStatus  @default(OPEN)
+  closedAt     DateTime?                @map("closed_at")
+  dueDate      DateTime?                @map("due_date")
+  totalAmount  Float                    @default(0) @map("total_amount")
+  createdAt    DateTime                 @default(now()) @map("created_at")
+  updatedAt    DateTime                 @updatedAt @map("updated_at")
+
+  workspace  Workspace                  @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  creditCard CreditCard                 @relation(fields: [creditCardId], references: [id], onDelete: Cascade)
+  charges    CreditCardCharge[]
+  payment    CreditCardInvoicePayment?
+
+  @@unique([workspaceId, creditCardId, month])
+  @@index([workspaceId, creditCardId, month])
+  @@index([workspaceId, month])
+  @@map("credit_card_invoices")
+}
+
+model CreditCardCharge {
+  id           String                 @id @default(uuid())
+  workspaceId  String                 @map("workspace_id")
+  creditCardId String                 @map("credit_card_id")
+  invoiceId    String                 @map("invoice_id")
+  type         CreditCardChargeType
+  description  String
+  purchaseDate DateTime               @map("purchase_date")
+  postedAt     DateTime?              @map("posted_at")
+  amount       Float
+  categoryId   String?                @map("category_id")
+  personId     String?                @map("person_id")
+  externalId   String?                @map("external_id")
+  createdAt    DateTime               @default(now()) @map("created_at")
+  updatedAt    DateTime               @updatedAt @map("updated_at")
+
+  workspace  Workspace           @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  creditCard CreditCard          @relation(fields: [creditCardId], references: [id], onDelete: Cascade)
+  invoice    CreditCardInvoice   @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+  category   Category?           @relation(fields: [categoryId], references: [id])
+  person     Person?             @relation(fields: [personId], references: [id])
+
+  @@index([workspaceId, invoiceId])
+  @@index([workspaceId, creditCardId])
+  @@index([workspaceId, categoryId])
+  @@map("credit_card_charges")
+}
+
+model CreditCardInvoicePayment {
+  id            String   @id @default(uuid())
+  workspaceId   String   @map("workspace_id")
+  invoiceId     String   @unique @map("invoice_id")
+  transactionId String?  @unique @map("transaction_id")
+  accountId     String   @map("account_id")
+  paidAt        DateTime @map("paid_at")
+  amount        Float
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+
+  workspace   Workspace         @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  invoice     CreditCardInvoice @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+  transaction Transaction?      @relation(fields: [transactionId], references: [id])
+
+  @@unique([workspaceId, invoiceId])
+  @@map("credit_card_invoice_payments")
 }
