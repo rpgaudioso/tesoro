@@ -33,18 +33,18 @@ export default function InvoiceDetailPage() {
   const getStatusBadge = (status: string) => {
     switch (status) {
       case 'OPEN':
-        return <Badge variant="info">Aberta</Badge>;
+        return <Badge variant="primary">Aberta</Badge>;
       case 'CLOSED':
         return <Badge variant="warning">Fechada</Badge>;
       case 'PAID':
         return <Badge variant="success">Paga</Badge>;
       default:
-        return <Badge variant="secondary">{status}</Badge>;
+        return <Badge variant="default">{status}</Badge>;
     }
   };
 
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('pt-BR');
+  const formatDate = (date: string | Date) => {
+    return new Date(date).toLocaleDateString('pt-BR');
   };
 
   const formatCurrency = (amount: number) => {
@@ -107,7 +107,7 @@ export default function InvoiceDetailPage() {
             Despesas por Categoria
           </h2>
           <div className={styles.categoriesList}>
-            {invoice.totalsByCategory.map((cat) => {
+            {invoice.totalsByCategory.map((cat: any) => {
               const percentage = invoice.totalAmount > 0
                 ? (cat.total / invoice.totalAmount) * 100
                 : 0;
@@ -124,7 +124,6 @@ export default function InvoiceDetailPage() {
                   <ProgressBar
                     value={percentage}
                     max={100}
-                    color={cat.categoryColor}
                   />
                   <div className={styles.categoryPercentage}>
                     {percentage.toFixed(1)}% do total
@@ -151,13 +150,13 @@ export default function InvoiceDetailPage() {
                 </tr>
               </thead>
               <tbody>
-                {invoice.charges.map((charge) => (
+                {invoice.charges.map((charge: any) => (
                   <tr key={charge.id}>
                     <td>{formatDate(charge.purchaseDate)}</td>
                     <td>{charge.description}</td>
                     <td>
                       {charge.category ? (
-                        <Badge variant="secondary">{charge.category.name}</Badge>
+                        <Badge variant="default">{charge.category.name}</Badge>
                       ) : (
                         <span className={styles.uncategorized}>Sem categoria</span>
                       )}
@@ -165,9 +164,9 @@ export default function InvoiceDetailPage() {
                     <td>
                       <Badge
                         variant={
-                          charge.type === 'PURCHASE' ? 'info' :
+                          charge.type === 'PURCHASE' ? 'primary' :
                           charge.type === 'REFUND' ? 'success' :
-                          'secondary'
+                          'default'
                         }
                       >
                         {charge.type}

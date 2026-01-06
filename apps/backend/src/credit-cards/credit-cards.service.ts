@@ -213,11 +213,10 @@ export class CreditCardsService {
         payment: true,
         charges: {
           include: {
-            transaction: true,
             category: true,
           },
           orderBy: {
-            date: 'desc',
+            createdAt: 'desc',
           },
         },
       },

@@ -37,13 +37,13 @@ export default function CreditCardDetailPage() {
   const getStatusBadge = (status: string) => {
     switch (status) {
       case 'OPEN':
-        return <Badge variant="info">Aberta</Badge>;
+        return <Badge variant="primary">Aberta</Badge>;
       case 'CLOSED':
         return <Badge variant="warning">Fechada</Badge>;
       case 'PAID':
         return <Badge variant="success">Paga</Badge>;
       default:
-        return <Badge variant="secondary">{status}</Badge>;
+        return <Badge variant="default">{status}</Badge>;
     }
   };
 
@@ -69,7 +69,7 @@ export default function CreditCardDetailPage() {
               )}
             </div>
           </div>
-          <Badge variant={card.status === 'ACTIVE' ? 'success' : 'secondary'}>
+          <Badge variant={card.status === 'ACTIVE' ? 'success' : 'default'}>
             {card.status === 'ACTIVE' ? 'Ativo' : 'Inativo'}
           </Badge>
         </div>

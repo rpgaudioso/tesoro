@@ -17,10 +17,6 @@
   padding: var(--spacing-64);
 }
 
-.empty {
-  /* Removido - não mais necessário */
-}
-
 .emptyIcon {
   width: 64px;
   height: 64px;

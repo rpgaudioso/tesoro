@@ -72,7 +72,7 @@ export default function CreditCardsPage() {
                     <CreditCardIcon size={24} />
                     <h3>{card.name}</h3>
                   </div>
-                  <Badge variant={card.status === 'ACTIVE' ? 'success' : 'secondary'}>
+                  <Badge variant={card.status === 'ACTIVE' ? 'success' : 'default'}>
                     {card.status === 'ACTIVE' ? 'Ativo' : 'Inativo'}
                   </Badge>
                 </div>
