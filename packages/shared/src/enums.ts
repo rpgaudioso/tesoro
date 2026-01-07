@@ -30,6 +30,12 @@ export enum TransactionKind {
   CREDIT_CARD_PAYMENT = "CREDIT_CARD_PAYMENT",
 }
 
+export enum TransactionStatus {
+  PENDING = "PENDING",
+  PAID = "PAID",
+  CANCELLED = "CANCELLED",
+}
+
 export enum CreditCardStatus {
   ACTIVE = "ACTIVE",
   INACTIVE = "INACTIVE",

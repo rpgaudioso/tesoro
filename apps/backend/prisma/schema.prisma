@@ -35,6 +35,12 @@ enum TransactionKind {
   CREDIT_CARD_PAYMENT
 }
 
+enum TransactionStatus {
+  PENDING
+  PAID
+  CANCELLED
+}
+
 model User {
   id           String   @id @default(uuid())
   email        String   @unique
@@ -143,18 +149,19 @@ model Budget {
 }
 
 model Transaction {
-  id              String          @id @default(uuid())
-  workspaceId     String          @map("workspace_id")
+  id              String            @id @default(uuid())
+  workspaceId     String            @map("workspace_id")
   date            DateTime
   description     String
   amount          Float
   type            String // INCOME, EXPENSE
-  kind            TransactionKind @default(DEFAULT)
-  categoryId      String          @map("category_id")
-  accountId       String?         @map("account_id")
-  personId        String?         @map("person_id")
-  competenceMonth String?         @map("competence_month") // YYYY-MM
-  createdAt       DateTime        @default(now()) @map("created_at")
+  status          TransactionStatus @default(PENDING)
+  kind            TransactionKind   @default(DEFAULT)
+  categoryId      String            @map("category_id")
+  accountId       String?           @map("account_id")
+  personId        String?           @map("person_id")
+  competenceMonth String?           @map("competence_month") // YYYY-MM
+  createdAt       DateTime          @default(now()) @map("created_at")
 
   workspace             Workspace                   @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
   category              Category                    @relation(fields: [categoryId], references: [id])

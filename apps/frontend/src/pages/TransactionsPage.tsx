@@ -9,6 +9,7 @@ import { useWorkspaceChange } from '@/hooks/useWorkspaceChange';
 import api from '@/lib/api';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import type { Account, Category, Person, Transaction } from '@tesoro/shared';
+import { TransactionStatus } from '@tesoro/shared';
 import {
     ArrowDownCircle,
     ArrowUpCircle,
@@ -19,12 +20,11 @@ import {
     Edit2,
     FileDown,
     Filter,
-    MoreHorizontal,
     Plus,
     Search,
     Trash2,
     Upload,
-    X,
+    X
 } from 'lucide-react';
 import { useState } from 'react';
 import { toast } from 'sonner';
@@ -105,7 +105,7 @@ export default function TransactionsPage() {
         acc.expense += Math.abs(t.amount);
       }
       // Despesas pendentes (não pagas)
-      if (t.type === 'EXPENSE' && !t.paid) {
+      if (t.type === 'EXPENSE' && t.status === TransactionStatus.PENDING) {
         acc.pending += Math.abs(t.amount);
       }
       return acc;
@@ -153,19 +153,27 @@ export default function TransactionsPage() {
     return <Badge variant="danger">Despesa</Badge>;
   };
 
-  const getStatusBadge = (paid: boolean) => {
-    if (paid) {
+  const getStatusBadge = (status: string, type: string) => {
+    if (status === TransactionStatus.PAID) {
       return (
         <Badge variant="success">
           <Check size={14} />
-          Pago
+          {type === 'INCOME' ? 'Recebido' : 'Pago'}
+        </Badge>
+      );
+    }
+    if (status === TransactionStatus.CANCELLED) {
+      return (
+        <Badge variant="danger">
+          <X size={14} />
+          Cancelado
         </Badge>
       );
     }
     return (
       <Badge variant="warning">
         <X size={14} />
-        Pendente
+        {type === 'INCOME' ? 'A Receber' : 'A Pagar'}
       </Badge>
     );
   };
@@ -497,7 +505,7 @@ export default function TransactionsPage() {
                       {formatCurrency(transaction.amount)}
                     </td>
                     <td>{getTypeBadge(transaction.type)}</td>
-                    <td>{getStatusBadge(transaction.paid)}</td>
+                    <td>{getStatusBadge(transaction.status, transaction.type)}</td>
                     <td>
                       <div className={styles.actionsCell}>
                         <button 

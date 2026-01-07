@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { AccountType, TransactionType } from "./enums";
+import { AccountType, TransactionStatus, TransactionType } from "./enums";
 
 // Auth schemas
 export const registerSchema = z.object({
@@ -56,6 +56,7 @@ export const createTransactionSchema = z.object({
   description: z.string().min(1).max(500),
   amount: z.number().positive(),
   type: z.nativeEnum(TransactionType),
+  status: z.nativeEnum(TransactionStatus).default(TransactionStatus.PENDING),
   categoryId: z.string().uuid(),
   accountId: z.string().uuid().optional(),
   personId: z.string().uuid().optional(),
@@ -66,6 +67,7 @@ export const updateTransactionSchema = z.object({
   description: z.string().optional(),
   amount: z.number().positive().optional(),
   type: z.nativeEnum(TransactionType).optional(),
+  status: z.nativeEnum(TransactionStatus).optional(),
   categoryId: z.string().optional(),
   accountId: z.string().optional(),
   personId: z.string().optional(),

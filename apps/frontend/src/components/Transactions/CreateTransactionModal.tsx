@@ -5,6 +5,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import api from '@/lib/api';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import type { Account, Category, Person } from '@tesoro/shared';
+import { TransactionStatus } from '@tesoro/shared';
 import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
 import styles from './CreateTransactionModal.module.css';
@@ -22,7 +23,7 @@ const initialFormData = {
   categoryId: '',
   accountId: '',
   personId: '',
-  paid: false,
+  status: TransactionStatus.PENDING,
   kind: 'MANUAL' as const,
   paymentMethod: 'cash' as 'cash' | 'credit_card',
   creditCardId: '',
@@ -114,20 +115,27 @@ export default function CreateTransactionModal({ isOpen, onClose }: CreateTransa
       return;
     }
 
-    if (formData.paymentMethod === 'cash' && !formData.accountId) {
+    // Account is required for INCOME or for EXPENSE with cash payment
+    if (formData.type === 'INCOME' && !formData.accountId) {
       toast.error('Selecione uma conta');
       return;
     }
 
-    if (formData.paymentMethod === 'credit_card' && !formData.creditCardId) {
+    if (formData.type === 'EXPENSE' && formData.paymentMethod === 'cash' && !formData.accountId) {
+      toast.error('Selecione uma conta');
+      return;
+    }
+
+    if (formData.type === 'EXPENSE' && formData.paymentMethod === 'credit_card' && !formData.creditCardId) {
       toast.error('Selecione um cartão de crédito');
       return;
     }
 
     // For credit card payments, accountId is not required
+    // For INCOME, always use accountId
     const dataToSubmit = {
       ...formData,
-      accountId: formData.paymentMethod === 'cash' ? formData.accountId : undefined,
+      accountId: formData.type === 'INCOME' || formData.paymentMethod === 'cash' ? formData.accountId : undefined,
     };
 
     createMutation.mutate(dataToSubmit);
@@ -160,6 +168,9 @@ export default function CreateTransactionModal({ isOpen, onClose }: CreateTransa
             onClick={() => {
               handleChange('type', 'INCOME');
               handleChange('categoryId', '');
+              handleChange('paymentMethod', 'cash');
+              handleChange('creditCardId', '');
+              handleChange('installments', 1);
             }}
           >
             Receita
@@ -215,8 +226,8 @@ export default function CreateTransactionModal({ isOpen, onClose }: CreateTransa
           </select>
         </div>
 
-        {/* Account - Only for cash payments */}
-        {formData.paymentMethod === 'cash' && (
+        {/* Account - Always for INCOME, conditional for EXPENSE */}
+        {(formData.type === 'INCOME' || formData.paymentMethod === 'cash') && (
           <div className={styles.formGroup}>
             <label>Conta *</label>
             <select
@@ -235,26 +246,27 @@ export default function CreateTransactionModal({ isOpen, onClose }: CreateTransa
           </div>
         )}
 
-        {/* Payment Method */}
-        <div className={styles.formGroup}>
-          <label>Forma de Pagamento *</label>
-          <select
-            value={formData.paymentMethod}
-            onChange={(e) => {
-              handleChange('paymentMethod', e.target.value);
-              if (e.target.value === 'cash') {
-                handleChange('creditCardId', '');
-                handleChange('installments', 1);
-                handleChange('paid', false);
-              }
-            }}
-            className={styles.select}
-            required
-          >
-            <option value="cash">À Vista (Conta Corrente)</option>
-            <option value="credit_card">Cartão de Crédito</option>
-          </select>
-        </div>
+        {/* Payment Method - Only for EXPENSE */}
+        {formData.type === 'EXPENSE' && (
+          <div className={styles.formGroup}>
+            <label>Forma de Pagamento *</label>
+            <select
+              value={formData.paymentMethod}
+              onChange={(e) => {
+                handleChange('paymentMethod', e.target.value);
+                if (e.target.value === 'cash') {
+                  handleChange('creditCardId', '');
+                  handleChange('installments', 1);
+                }
+              }}
+              className={styles.select}
+              required
+            >
+              <option value="cash">À Vista (Conta Corrente)</option>
+              <option value="credit_card">Cartão de Crédito</option>
+            </select>
+          </div>
+        )}
 
         {/* Credit Card (only if payment method is credit card) */}
         {formData.paymentMethod === 'credit_card' && (
@@ -313,21 +325,26 @@ export default function CreateTransactionModal({ isOpen, onClose }: CreateTransa
           </select>
         </div>
 
-        {/* Paid Checkbox - Only for cash payments */}
-        {formData.paymentMethod === 'cash' && (
-          <div className={styles.checkboxGroup}>
-            <label className={styles.checkboxLabel}>
-              <input
-                type="checkbox"
-                checked={formData.paid}
-                onChange={(e) => handleChange('paid', e.target.checked)}
-              />
-              <span>Marcar como pago</span>
-            </label>
-          </div>
-        )}
+        {/* Status */}
+        <div className={styles.formGroup}>
+          <label>Status *</label>
+          <select
+            value={formData.status}
+            onChange={(e) => handleChange('status', e.target.value)}
+            className={styles.select}
+            required
+          >
+            <option value={TransactionStatus.PENDING}>
+              {formData.type === 'INCOME' ? 'Pendente (A Receber)' : 'Pendente (A Pagar)'}
+            </option>
+            <option value={TransactionStatus.PAID}>
+              {formData.type === 'INCOME' ? 'Recebido' : 'Pago'}
+            </option>
+            <option value={TransactionStatus.CANCELLED}>Cancelado</option>
+          </select>
+        </div>
 
-        {formData.paymentMethod === 'credit_card' && (
+        {formData.type === 'EXPENSE' && formData.paymentMethod === 'credit_card' && (
           <div className={styles.infoBox}>
             <span>💳 Transações no cartão de crédito são pagas quando a fatura é quitada</span>
           </div>

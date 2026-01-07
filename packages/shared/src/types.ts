@@ -6,6 +6,7 @@ import {
   ImportStatus,
   MemberRole,
   TransactionKind,
+  TransactionStatus,
   TransactionType,
 } from "./enums";
 
@@ -70,6 +71,7 @@ export interface Transaction {
   description: string;
   amount: number;
   type: TransactionType;
+  status: TransactionStatus;
   kind: TransactionKind;
   categoryId: string;
   accountId?: string;

@@ -16,6 +16,7 @@ export class TransactionsService {
         description: dto.description,
         amount: dto.amount,
         type: dto.type,
+        status: dto.status,
         categoryId: dto.categoryId,
         accountId: dto.accountId,
         personId: dto.personId,

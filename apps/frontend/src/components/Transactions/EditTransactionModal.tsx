@@ -5,6 +5,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import api from '@/lib/api';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import type { Account, Category, Person, Transaction } from '@tesoro/shared';
+import { TransactionStatus } from '@tesoro/shared';
 import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
 import styles from './CreateTransactionModal.module.css';
@@ -24,6 +25,7 @@ export default function EditTransactionModal({ isOpen, onClose, transaction }: E
     date: new Date(transaction.date).toISOString().split('T')[0],
     amount: String(Math.abs(transaction.amount)),
     type: transaction.type as 'INCOME' | 'EXPENSE',
+    status: transaction.status || TransactionStatus.PENDING,
     categoryId: transaction.categoryId || '',
     accountId: transaction.accountId || '',
     personId: transaction.personId || '',
@@ -40,6 +42,7 @@ export default function EditTransactionModal({ isOpen, onClose, transaction }: E
         date: new Date(transaction.date).toISOString().split('T')[0],
         amount: String(Math.abs(transaction.amount)),
         type: transaction.type as 'INCOME' | 'EXPENSE',
+        status: transaction.status || TransactionStatus.PENDING,
         categoryId: transaction.categoryId || '',
         accountId: transaction.accountId || '',
         personId: transaction.personId || '',
@@ -84,11 +87,18 @@ export default function EditTransactionModal({ isOpen, onClose, transaction }: E
 
   const updateMutation = useMutation({
     mutationFn: async (data: any) => {
-      const { data: response } = await api.patch(`/transactions/${transaction.id}`, {
+      const dataToSubmit = {
         ...data,
         amount: parseFloat(data.amount),
         personId: data.personId || null,
-      });
+        // Include accountId only for INCOME or EXPENSE with cash payment
+        accountId:
+          data.type === 'INCOME' || (data.type === 'EXPENSE' && data.paymentMethod === 'cash')
+            ? data.accountId
+            : null,
+      };
+
+      const { data: response } = await api.patch(`/transactions/${transaction.id}`, dataToSubmit);
       return response;
     },
     onSuccess: () => {
@@ -119,9 +129,20 @@ export default function EditTransactionModal({ isOpen, onClose, transaction }: E
       return;
     }
 
-    if (!formData.accountId) {
-      toast.error('Selecione uma conta');
-      return;
+    // Account is required for INCOME or EXPENSE with cash payment
+    if (formData.type === 'INCOME' || (formData.type === 'EXPENSE' && formData.paymentMethod === 'cash')) {
+      if (!formData.accountId) {
+        toast.error('Selecione uma conta');
+        return;
+      }
+    }
+
+    // Credit card is required for EXPENSE with credit_card payment
+    if (formData.type === 'EXPENSE' && formData.paymentMethod === 'credit_card') {
+      if (!formData.creditCardId) {
+        toast.error('Selecione um cartão de crédito');
+        return;
+      }
     }
 
     updateMutation.mutate(formData);
@@ -154,6 +175,9 @@ export default function EditTransactionModal({ isOpen, onClose, transaction }: E
             onClick={() => {
               handleChange('type', 'INCOME');
               handleChange('categoryId', '');
+              handleChange('paymentMethod', 'cash');
+              handleChange('creditCardId', '');
+              handleChange('installments', 1);
             }}
           >
             Receita
@@ -191,25 +215,42 @@ export default function EditTransactionModal({ isOpen, onClose, transaction }: E
           />
         </div>
 
-        {/* Category and Account */}
-        <div className={styles.row}>
+        {/* Category */}
+        <div className={styles.formGroup}>
+          <label>Categoria *</label>
+          <select
+            value={formData.categoryId}
+            onChange={(e) => handleChange('categoryId', e.target.value)}
+            className={styles.select}
+            required
+          >
+            <option value="">Selecione uma categoria</option>
+            {filteredCategories.map((cat) => (
+              <option key={cat.id} value={cat.id}>
+                {cat.icon} {cat.name}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        {/* Payment Method - Only for EXPENSE */}
+        {formData.type === 'EXPENSE' && (
           <div className={styles.formGroup}>
-            <label>Categoria *</label>
+            <label>Forma de Pagamento *</label>
             <select
-              value={formData.categoryId}
-              onChange={(e) => handleChange('categoryId', e.target.value)}
+              value={formData.paymentMethod}
+              onChange={(e) => handleChange('paymentMethod', e.target.value)}
               className={styles.select}
               required
             >
-              <option value="">Selecione uma categoria</option>
-              {filteredCategories.map((cat) => (
-                <option key={cat.id} value={cat.id}>
-                  {cat.icon} {cat.name}
-                </option>
-              ))}
+              <option value="cash">À Vista (Conta)</option>
+              <option value="credit_card">Cartão de Crédito</option>
             </select>
           </div>
+        )}
 
+        {/* Account - Show for INCOME or EXPENSE with cash payment */}
+        {(formData.type === 'INCOME' || (formData.type === 'EXPENSE' && formData.paymentMethod === 'cash')) && (
           <div className={styles.formGroup}>
             <label>Conta *</label>
             <select
@@ -226,7 +267,51 @@ export default function EditTransactionModal({ isOpen, onClose, transaction }: E
               ))}
             </select>
           </div>
-        </div>
+        )}
+
+        {/* Credit Card - Only for EXPENSE with credit_card payment */}
+        {formData.type === 'EXPENSE' && formData.paymentMethod === 'credit_card' && (
+          <>
+            <div className={styles.row}>
+              <div className={styles.formGroup}>
+                <label>Cartão de Crédito *</label>
+                <select
+                  value={formData.creditCardId}
+                  onChange={(e) => handleChange('creditCardId', e.target.value)}
+                  className={styles.select}
+                  required
+                >
+                  <option value="">Selecione um cartão</option>
+                  {creditCards.map((card) => (
+                    <option key={card.id} value={card.id}>
+                      {card.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div className={styles.formGroup}>
+                <label>Parcelamento</label>
+                <select
+                  value={formData.installments}
+                  onChange={(e) => handleChange('installments', parseInt(e.target.value))}
+                  className={styles.select}
+                >
+                  {Array.from({ length: 12 }, (_, i) => i + 1).map((num) => (
+                    <option key={num} value={num}>
+                      {num}x
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
+
+            <div className={styles.infoBox}>
+              <strong>💳 Pagamento via Cartão:</strong> O valor será debitado apenas quando a fatura do
+              cartão for paga.
+            </div>
+          </>
+        )}
 
         {/* Person */}
         <div className={styles.formGroup}>
@@ -242,6 +327,25 @@ export default function EditTransactionModal({ isOpen, onClose, transaction }: E
                 {person.name}
               </option>
             ))}
+          </select>
+        </div>
+
+        {/* Status */}
+        <div className={styles.formGroup}>
+          <label>Status *</label>
+          <select
+            value={formData.status}
+            onChange={(e) => handleChange('status', e.target.value)}
+            className={styles.select}
+            required
+          >
+            <option value={TransactionStatus.PENDING}>
+              {formData.type === 'INCOME' ? 'Pendente (A Receber)' : 'Pendente (A Pagar)'}
+            </option>
+            <option value={TransactionStatus.PAID}>
+              {formData.type === 'INCOME' ? 'Recebido' : 'Pago'}
+            </option>
+            <option value={TransactionStatus.CANCELLED}>Cancelado</option>
           </select>
         </div>
 
