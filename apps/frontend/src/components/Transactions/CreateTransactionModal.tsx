@@ -1,5 +1,6 @@
 import Button from '@/components/UI/Button';
 import Input from '@/components/UI/Input';
+import Portal from '@/components/UI/Portal';
 import { useAuth } from '@/contexts/AuthContext';
 import api from '@/lib/api';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
@@ -105,7 +106,8 @@ export default function CreateTransactionModal({ onClose }: CreateTransactionMod
   const filteredCategories = categories.filter((cat) => cat.type === formData.type);
 
   return (
-    <div className={styles.overlay} onClick={onClose}>
+    <Portal>
+      <div className={styles.overlay} onClick={onClose}>
       <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
         <div className={styles.header}>
           <h2>Nova Transação</h2>
@@ -254,5 +256,6 @@ export default function CreateTransactionModal({ onClose }: CreateTransactionMod
         </form>
       </div>
     </div>
+    </Portal>
   );
 }
