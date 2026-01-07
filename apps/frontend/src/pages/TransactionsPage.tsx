@@ -9,18 +9,18 @@ import api from '@/lib/api';
 import { useQuery } from '@tanstack/react-query';
 import type { Account, Category, Person, Transaction } from '@tesoro/shared';
 import {
-  ArrowDownCircle,
-  ArrowUpCircle,
-  Calendar,
-  Check,
-  DollarSign,
-  Download,
-  FileDown,
-  Filter,
-  Plus,
-  Search,
-  Upload,
-  X,
+    ArrowDownCircle,
+    ArrowUpCircle,
+    Calendar,
+    Check,
+    DollarSign,
+    Download,
+    FileDown,
+    Filter,
+    Plus,
+    Search,
+    Upload,
+    X,
 } from 'lucide-react';
 import { useState } from 'react';
 import styles from './TransactionsPage.module.css';
