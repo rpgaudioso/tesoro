@@ -80,9 +80,11 @@ export default function EditTransactionModal({ isOpen, onClose, transaction }: E
   const { data: creditCards = [] } = useQuery<any[]>({
     queryKey: ['creditCards', currentWorkspace?.id],
     queryFn: async () => {
-      const { data } = await api.get('/credit-cards');
+      if (!currentWorkspace?.id) return [];
+      const { data } = await api.get(`/workspaces/${currentWorkspace.id}/credit-cards`);
       return data;
     },
+    enabled: !!currentWorkspace?.id,
   });
 
   const updateMutation = useMutation({
