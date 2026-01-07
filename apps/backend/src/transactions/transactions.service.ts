@@ -20,11 +20,15 @@ export class TransactionsService {
         categoryId: dto.categoryId,
         accountId: dto.accountId,
         personId: dto.personId,
+        paymentMethod: dto.paymentMethod,
+        creditCardId: dto.creditCardId,
+        installments: dto.installments,
       },
       include: {
         category: true,
         account: true,
         person: true,
+        creditCard: true,
       },
     });
   }
@@ -33,6 +37,7 @@ export class TransactionsService {
     workspaceId: string,
     filters: {
       month?: string;
+      year?: string;
       categoryId?: string;
       personId?: string;
       accountId?: string;
@@ -50,6 +55,15 @@ export class TransactionsService {
         gte: startDate,
         lt: endDate,
       };
+    } else if (filters.year) {
+      // Se não há mês, filtra apenas por ano
+      const startDate = new Date(`${filters.year}-01-01`);
+      const endDate = new Date(`${filters.year}-12-31T23:59:59.999Z`);
+
+      where.date = {
+        gte: startDate,
+        lte: endDate,
+      };
     }
 
     if (filters.categoryId) where.categoryId = filters.categoryId;
@@ -63,6 +77,7 @@ export class TransactionsService {
         category: true,
         account: true,
         person: true,
+        creditCard: true,
       },
       orderBy: { date: "desc" },
     });
@@ -75,6 +90,7 @@ export class TransactionsService {
         category: true,
         account: true,
         person: true,
+        creditCard: true,
       },
     });
   }
@@ -90,6 +106,9 @@ export class TransactionsService {
     if (dto.categoryId !== undefined) data.categoryId = dto.categoryId;
     if (dto.accountId !== undefined) data.accountId = dto.accountId;
     if (dto.personId !== undefined) data.personId = dto.personId;
+    if (dto.paymentMethod !== undefined) data.paymentMethod = dto.paymentMethod;
+    if (dto.creditCardId !== undefined) data.creditCardId = dto.creditCardId;
+    if (dto.installments !== undefined) data.installments = dto.installments;
 
     if (dto.date) {
       data.date = typeof dto.date === "string" ? new Date(dto.date) : dto.date;
@@ -102,6 +121,7 @@ export class TransactionsService {
         category: true,
         account: true,
         person: true,
+        creditCard: true,
       },
     });
   }

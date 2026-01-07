@@ -82,11 +82,32 @@ export default function CreateTransactionModal({ isOpen, onClose }: CreateTransa
 
   const createMutation = useMutation({
     mutationFn: async (data: any) => {
-      const { data: response } = await api.post('/transactions', {
-        ...data,
+      const dataToSubmit: any = {
+        description: data.description,
+        date: data.date,
         amount: parseFloat(data.amount),
+        type: data.type,
+        status: data.status,
+        categoryId: data.categoryId,
         personId: data.personId || null,
-      });
+      };
+
+      // Handle accountId and payment method fields
+      if (data.type === 'INCOME') {
+        dataToSubmit.accountId = data.accountId;
+        // No payment method for income
+      } else if (data.type === 'EXPENSE') {
+        dataToSubmit.paymentMethod = data.paymentMethod;
+        
+        if (data.paymentMethod === 'cash') {
+          dataToSubmit.accountId = data.accountId;
+        } else if (data.paymentMethod === 'credit_card') {
+          dataToSubmit.creditCardId = data.creditCardId;
+          dataToSubmit.installments = data.installments;
+        }
+      }
+
+      const { data: response } = await api.post('/transactions', dataToSubmit);
       return response;
     },
     onSuccess: () => {
@@ -144,7 +165,16 @@ export default function CreateTransactionModal({ isOpen, onClose }: CreateTransa
   };
 
   const handleChange = (field: string, value: any) => {
-    setFormData((prev) => ({ ...prev, [field]: value }));
+    setFormData((prev) => {
+      const updated = { ...prev, [field]: value };
+      
+      // Se for despesa à vista, status é sempre PAID
+      if (updated.type === 'EXPENSE' && updated.paymentMethod === 'cash') {
+        updated.status = TransactionStatus.PAID;
+      }
+      
+      return updated;
+    });
   };
 
   const filteredCategories = categories.filter((cat) => cat.type === formData.type);
@@ -228,26 +258,6 @@ export default function CreateTransactionModal({ isOpen, onClose }: CreateTransa
           </select>
         </div>
 
-        {/* Account - Always for INCOME, conditional for EXPENSE */}
-        {(formData.type === 'INCOME' || formData.paymentMethod === 'cash') && (
-          <div className={styles.formGroup}>
-            <label>Conta *</label>
-            <select
-              value={formData.accountId}
-              onChange={(e) => handleChange('accountId', e.target.value)}
-              className={styles.select}
-              required
-            >
-              <option value="">Selecione uma conta</option>
-              {accounts.map((account) => (
-                <option key={account.id} value={account.id}>
-                  {account.name}
-                </option>
-              ))}
-            </select>
-          </div>
-        )}
-
         {/* Payment Method - Only for EXPENSE */}
         {formData.type === 'EXPENSE' && (
           <div className={styles.formGroup}>
@@ -270,8 +280,28 @@ export default function CreateTransactionModal({ isOpen, onClose }: CreateTransa
           </div>
         )}
 
-        {/* Credit Card (only if payment method is credit card) */}
-        {formData.paymentMethod === 'credit_card' && (
+        {/* Account - Show for INCOME or EXPENSE with cash payment */}
+        {(formData.type === 'INCOME' || (formData.type === 'EXPENSE' && formData.paymentMethod === 'cash')) && (
+          <div className={styles.formGroup}>
+            <label>Conta *</label>
+            <select
+              value={formData.accountId}
+              onChange={(e) => handleChange('accountId', e.target.value)}
+              className={styles.select}
+              required
+            >
+              <option value="">Selecione uma conta</option>
+              {accounts.map((account) => (
+                <option key={account.id} value={account.id}>
+                  {account.name}
+                </option>
+              ))}
+            </select>
+          </div>
+        )}
+
+        {/* Credit Card - Only for EXPENSE with credit_card payment */}
+        {formData.type === 'EXPENSE' && formData.paymentMethod === 'credit_card' && (
           <>
             <div className={styles.row}>
               <div className={styles.formGroup}>
@@ -327,24 +357,26 @@ export default function CreateTransactionModal({ isOpen, onClose }: CreateTransa
           </select>
         </div>
 
-        {/* Status */}
-        <div className={styles.formGroup}>
-          <label>Status *</label>
-          <select
-            value={formData.status}
-            onChange={(e) => handleChange('status', e.target.value)}
-            className={styles.select}
-            required
-          >
-            <option value={TransactionStatus.PENDING}>
-              {formData.type === 'INCOME' ? 'Pendente (A Receber)' : 'Pendente (A Pagar)'}
-            </option>
-            <option value={TransactionStatus.PAID}>
-              {formData.type === 'INCOME' ? 'Recebido' : 'Pago'}
-            </option>
-            <option value={TransactionStatus.CANCELLED}>Cancelado</option>
-          </select>
-        </div>
+        {/* Status - Oculto para despesas à vista */}
+        {!(formData.type === 'EXPENSE' && formData.paymentMethod === 'cash') && (
+          <div className={styles.formGroup}>
+            <label>Status *</label>
+            <select
+              value={formData.status}
+              onChange={(e) => handleChange('status', e.target.value)}
+              className={styles.select}
+              required
+            >
+              <option value={TransactionStatus.PENDING}>
+                {formData.type === 'INCOME' ? 'Pendente (A Receber)' : 'Pendente (A Pagar)'}
+              </option>
+              <option value={TransactionStatus.PAID}>
+                {formData.type === 'INCOME' ? 'Recebido' : 'Pago'}
+              </option>
+              <option value={TransactionStatus.CANCELLED}>Cancelado</option>
+            </select>
+          </div>
+        )}
 
         {formData.type === 'EXPENSE' && formData.paymentMethod === 'credit_card' && (
           <div className={styles.infoBox}>

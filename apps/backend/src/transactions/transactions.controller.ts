@@ -31,6 +31,7 @@ export class TransactionsController {
   findAll(
     @WorkspaceId() workspaceId: string,
     @Query("month") month?: string,
+    @Query("year") year?: string,
     @Query("categoryId") categoryId?: string,
     @Query("personId") personId?: string,
     @Query("accountId") accountId?: string,
@@ -38,6 +39,7 @@ export class TransactionsController {
   ) {
     return this.transactionsService.findAll(workspaceId, {
       month,
+      year,
       categoryId,
       personId,
       accountId,

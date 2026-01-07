@@ -60,6 +60,9 @@ export const createTransactionSchema = z.object({
   categoryId: z.string().uuid(),
   accountId: z.string().uuid().optional(),
   personId: z.string().uuid().optional(),
+  paymentMethod: z.string().optional(),
+  creditCardId: z.string().uuid().optional(),
+  installments: z.number().int().min(1).max(99).optional(),
 });
 
 export const updateTransactionSchema = z.object({
@@ -71,6 +74,9 @@ export const updateTransactionSchema = z.object({
   categoryId: z.string().optional(),
   accountId: z.string().optional(),
   personId: z.string().optional(),
+  paymentMethod: z.string().optional(),
+  creditCardId: z.string().uuid().optional(),
+  installments: z.number().int().min(1).max(99).optional(),
 });
 
 // Budget schemas

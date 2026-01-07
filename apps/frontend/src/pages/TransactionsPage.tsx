@@ -49,7 +49,12 @@ export default function TransactionsPage() {
   // Build query params
   const buildQueryUrl = () => {
     const params = new URLSearchParams();
-    if (selectedMonth) params.append('month', `${selectedYear}-${selectedMonth.padStart(2, '0')}`);
+    if (selectedMonth) {
+      params.append('month', `${selectedYear}-${selectedMonth.padStart(2, '0')}`);
+    } else {
+      // Se não há mês selecionado, filtra apenas por ano
+      params.append('year', String(selectedYear));
+    }
     if (filterType) params.append('type', filterType);
     if (filterAccountId) params.append('accountId', filterAccountId);
     if (filterCategoryId) params.append('categoryId', filterCategoryId);
@@ -99,11 +104,15 @@ export default function TransactionsPage() {
   // Calculate summary
   const summary = transactions.reduce(
     (acc, t) => {
-      if (t.type === 'INCOME') {
-        acc.income += t.amount;
-      } else {
-        acc.expense += Math.abs(t.amount);
+      // Apenas transações PAGAS afetam receitas e despesas
+      if (t.status === TransactionStatus.PAID) {
+        if (t.type === 'INCOME') {
+          acc.income += t.amount;
+        } else {
+          acc.expense += Math.abs(t.amount);
+        }
       }
+      
       // Despesas pendentes (não pagas)
       if (t.type === 'EXPENSE' && t.status === TransactionStatus.PENDING) {
         acc.pending += Math.abs(t.amount);
@@ -140,7 +149,7 @@ export default function TransactionsPage() {
     if (!category) return <span className={styles.noCategory}>Sem categoria</span>;
     return (
       <Badge variant="default">
-        {category.icon && <span>{category.icon}</span>}
+        {category.icon && <span className={styles.categoryIcon}>{category.icon}</span>}
         {category.name}
       </Badge>
     );
@@ -482,7 +491,13 @@ export default function TransactionsPage() {
                       )}
                     </td>
                     <td>
-                      <span className={styles.noData}>-</span>
+                      {transaction.creditCard ? (
+                        <span className={styles.creditCardName}>
+                          {transaction.creditCard.name}
+                        </span>
+                      ) : (
+                        <span className={styles.noData}>-</span>
+                      )}
                     </td>
                     <td>
                       {transaction.person ? (

@@ -76,8 +76,16 @@ export interface Transaction {
   categoryId: string;
   accountId?: string;
   personId?: string;
+  paymentMethod?: string;
+  creditCardId?: string;
+  installments?: number;
   competenceMonth?: string;
   createdAt: Date;
+  // Relations
+  category?: Category;
+  account?: Account;
+  person?: Person;
+  creditCard?: CreditCard;
 }
 
 export interface InstallmentPlan {

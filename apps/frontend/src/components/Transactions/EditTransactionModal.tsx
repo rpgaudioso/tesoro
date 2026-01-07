@@ -29,9 +29,9 @@ export default function EditTransactionModal({ isOpen, onClose, transaction }: E
     categoryId: transaction.categoryId || '',
     accountId: transaction.accountId || '',
     personId: transaction.personId || '',
-    paymentMethod: 'cash' as 'cash' | 'credit_card',
-    creditCardId: '',
-    installments: 1,
+    paymentMethod: (transaction.paymentMethod || 'cash') as 'cash' | 'credit_card',
+    creditCardId: transaction.creditCardId || '',
+    installments: transaction.installments || 1,
   });
 
   // Update form when transaction changes
@@ -46,9 +46,9 @@ export default function EditTransactionModal({ isOpen, onClose, transaction }: E
         categoryId: transaction.categoryId || '',
         accountId: transaction.accountId || '',
         personId: transaction.personId || '',
-        paymentMethod: 'cash' as 'cash' | 'credit_card',
-        creditCardId: '',
-        installments: 1,
+        paymentMethod: (transaction.paymentMethod || 'cash') as 'cash' | 'credit_card',
+        creditCardId: transaction.creditCardId || '',
+        installments: transaction.installments || 1,
       });
     }
   }, [transaction]);
@@ -89,16 +89,35 @@ export default function EditTransactionModal({ isOpen, onClose, transaction }: E
 
   const updateMutation = useMutation({
     mutationFn: async (data: any) => {
-      const dataToSubmit = {
-        ...data,
+      const dataToSubmit: any = {
+        description: data.description,
+        date: data.date,
         amount: parseFloat(data.amount),
+        type: data.type,
+        status: data.status,
+        categoryId: data.categoryId,
         personId: data.personId || null,
-        // Include accountId only for INCOME or EXPENSE with cash payment
-        accountId:
-          data.type === 'INCOME' || (data.type === 'EXPENSE' && data.paymentMethod === 'cash')
-            ? data.accountId
-            : null,
       };
+
+      // Handle accountId and payment method fields
+      if (data.type === 'INCOME') {
+        dataToSubmit.accountId = data.accountId;
+        dataToSubmit.paymentMethod = null;
+        dataToSubmit.creditCardId = null;
+        dataToSubmit.installments = null;
+      } else if (data.type === 'EXPENSE') {
+        dataToSubmit.paymentMethod = data.paymentMethod;
+        
+        if (data.paymentMethod === 'cash') {
+          dataToSubmit.accountId = data.accountId;
+          dataToSubmit.creditCardId = null;
+          dataToSubmit.installments = null;
+        } else if (data.paymentMethod === 'credit_card') {
+          dataToSubmit.accountId = null;
+          dataToSubmit.creditCardId = data.creditCardId;
+          dataToSubmit.installments = data.installments;
+        }
+      }
 
       const { data: response } = await api.patch(`/transactions/${transaction.id}`, dataToSubmit);
       return response;
@@ -151,7 +170,16 @@ export default function EditTransactionModal({ isOpen, onClose, transaction }: E
   };
 
   const handleChange = (field: string, value: any) => {
-    setFormData((prev) => ({ ...prev, [field]: value }));
+    setFormData((prev) => {
+      const updated = { ...prev, [field]: value };
+      
+      // Se for despesa à vista, status é sempre PAID
+      if (updated.type === 'EXPENSE' && updated.paymentMethod === 'cash') {
+        updated.status = TransactionStatus.PAID;
+      }
+      
+      return updated;
+    });
   };
 
   const filteredCategories = categories.filter((cat) => cat.type === formData.type);
@@ -293,15 +321,16 @@ export default function EditTransactionModal({ isOpen, onClose, transaction }: E
               </div>
 
               <div className={styles.formGroup}>
-                <label>Parcelamento</label>
+                <label>Parcelas *</label>
                 <select
                   value={formData.installments}
                   onChange={(e) => handleChange('installments', parseInt(e.target.value))}
                   className={styles.select}
+                  required
                 >
-                  {Array.from({ length: 12 }, (_, i) => i + 1).map((num) => (
+                  {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map((num) => (
                     <option key={num} value={num}>
-                      {num}x
+                      {num}x {num > 1 && `de R$ ${(parseFloat(formData.amount || '0') / num).toFixed(2)}`}
                     </option>
                   ))}
                 </select>
@@ -332,24 +361,26 @@ export default function EditTransactionModal({ isOpen, onClose, transaction }: E
           </select>
         </div>
 
-        {/* Status */}
-        <div className={styles.formGroup}>
-          <label>Status *</label>
-          <select
-            value={formData.status}
-            onChange={(e) => handleChange('status', e.target.value)}
-            className={styles.select}
-            required
-          >
-            <option value={TransactionStatus.PENDING}>
-              {formData.type === 'INCOME' ? 'Pendente (A Receber)' : 'Pendente (A Pagar)'}
-            </option>
-            <option value={TransactionStatus.PAID}>
-              {formData.type === 'INCOME' ? 'Recebido' : 'Pago'}
-            </option>
-            <option value={TransactionStatus.CANCELLED}>Cancelado</option>
-          </select>
-        </div>
+        {/* Status - Oculto para despesas à vista */}
+        {!(formData.type === 'EXPENSE' && formData.paymentMethod === 'cash') && (
+          <div className={styles.formGroup}>
+            <label>Status *</label>
+            <select
+              value={formData.status}
+              onChange={(e) => handleChange('status', e.target.value)}
+              className={styles.select}
+              required
+            >
+              <option value={TransactionStatus.PENDING}>
+                {formData.type === 'INCOME' ? 'Pendente (A Receber)' : 'Pendente (A Pagar)'}
+              </option>
+              <option value={TransactionStatus.PAID}>
+                {formData.type === 'INCOME' ? 'Recebido' : 'Pago'}
+              </option>
+              <option value={TransactionStatus.CANCELLED}>Cancelado</option>
+            </select>
+          </div>
+        )}
 
         {/* Actions */}
         <div className={styles.actions}>
