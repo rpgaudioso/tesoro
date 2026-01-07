@@ -80,7 +80,16 @@ export class TransactionsService {
   }
 
   async update(workspaceId: string, id: string, dto: UpdateTransactionDto) {
-    const data: any = { ...dto };
+    const data: any = {};
+
+    // Only include fields that exist in the Prisma schema
+    if (dto.description !== undefined) data.description = dto.description;
+    if (dto.amount !== undefined) data.amount = dto.amount;
+    if (dto.type !== undefined) data.type = dto.type;
+    if (dto.status !== undefined) data.status = dto.status;
+    if (dto.categoryId !== undefined) data.categoryId = dto.categoryId;
+    if (dto.accountId !== undefined) data.accountId = dto.accountId;
+    if (dto.personId !== undefined) data.personId = dto.personId;
 
     if (dto.date) {
       data.date = typeof dto.date === "string" ? new Date(dto.date) : dto.date;
