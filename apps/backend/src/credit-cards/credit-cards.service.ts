@@ -180,70 +180,73 @@ export class CreditCardsService {
       // Parse the Excel file to extract charges
       const parsedData = this.invoiceParser.parseInvoiceFile(file.buffer);
 
-    // Validate that the card last4 matches
-    if (card.last4 && card.last4 !== parsedData.cardLast4) {
-      throw new BadRequestException(
-        `O arquivo parece ser de outro cartão (final ${parsedData.cardLast4}). Este cartão termina em ${card.last4}.`
+      // Validate that the card last4 matches
+      if (card.last4 && card.last4 !== parsedData.cardLast4) {
+        throw new BadRequestException(
+          `O arquivo parece ser de outro cartão (final ${parsedData.cardLast4}). Este cartão termina em ${card.last4}.`
+        );
+      }
+
+      // Ensure invoice exists
+      const invoice = await this.ensureInvoice(workspaceId, cardId, month);
+
+      // Create charges from parsed data
+      const chargesCreated = await Promise.all(
+        parsedData.charges.map((charge) =>
+          this.createCharge(workspaceId, invoice.id, {
+            purchaseDate: charge.date,
+            description: charge.description,
+            amount: charge.amountBRL,
+            type:
+              charge.amountBRL > 0
+                ? CreditCardChargeType.PURCHASE
+                : CreditCardChargeType.REFUND,
+          })
+        )
       );
-    }
 
-    // Ensure invoice exists
-    const invoice = await this.ensureInvoice(workspaceId, cardId, month);
-
-    // Create charges from parsed data
-    const chargesCreated = await Promise.all(
-      parsedData.charges.map((charge) =>
-        this.createCharge(workspaceId, invoice.id, {
-          purchaseDate: charge.date,
-          description: charge.description,
-          amount: charge.amountBRL,
-          type:
-            charge.amountBRL > 0
-              ? CreditCardChargeType.PURCHASE
-              : CreditCardChargeType.REFUND,
-        })
-      )
-    );
-
-    // Update invoice to mark as closed
-    const updatedInvoice = await this.prisma.creditCardInvoice.update({
-      where: { id: invoice.id },
-      data: {
-        closedAt: new Date(),
-        status: CreditCardInvoiceStatus.CLOSED,
-      },
-      include: {
-        creditCard: true,
-        payment: true,
-        charges: {
-          include: {
-            category: true,
-          },
-          orderBy: {
-            createdAt: "desc",
+      // Update invoice to mark as closed
+      const updatedInvoice = await this.prisma.creditCardInvoice.update({
+        where: { id: invoice.id },
+        data: {
+          closedAt: new Date(),
+          status: CreditCardInvoiceStatus.CLOSED,
+        },
+        include: {
+          creditCard: true,
+          payment: true,
+          charges: {
+            include: {
+              category: true,
+            },
+            orderBy: {
+              createdAt: "desc",
+            },
           },
         },
-      },
-    });
+      });
 
-    return {
-      ...updatedInvoice,
-      importSummary: {
-        totalCharges: chargesCreated.length,
-        totalAmount: parsedData.totalAmount,
-        holderName: parsedData.holderName,
-      },
-    };
+      return {
+        ...updatedInvoice,
+        importSummary: {
+          totalCharges: chargesCreated.length,
+          totalAmount: parsedData.totalAmount,
+          holderName: parsedData.holderName,
+        },
+      };
     } catch (error) {
       // Re-throw BadRequestException and NotFoundException as-is
-      if (error instanceof BadRequestException || error instanceof NotFoundException) {
+      if (
+        error instanceof BadRequestException ||
+        error instanceof NotFoundException
+      ) {
         throw error;
       }
-      
+
       // Log unexpected errors and throw generic message
-      console.error('Error uploading invoice:', error);
+      console.error("Error uploading invoice:", error);
       throw new BadRequestException(
-        'Erro ao processar o arquivo. Verifique se o formato está correto.'
+        "Erro ao processar o arquivo. Verifique se o formato está correto."
       );
     }
   }

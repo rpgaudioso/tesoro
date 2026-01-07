@@ -1,54 +1,69 @@
+import PageHeader from '@/components/Layout/PageHeader';
 import Badge from '@/components/UI/Badge';
+import Button from '@/components/UI/Button';
 import Card from '@/components/UI/Card';
-import ConfirmDialog from '@/components/UI/ConfirmDialog';
 import { useAuth } from '@/contexts/AuthContext';
-import { useConfirm } from '@/hooks/useConfirm';
 import { useWorkspaceChange } from '@/hooks/useWorkspaceChange';
 import api from '@/lib/api';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 import type { Account, Category, Person, Transaction } from '@tesoro/shared';
-import { addMonths, format, subMonths } from 'date-fns';
-import { ptBR } from 'date-fns/locale';
-import { Check, ChevronLeft, ChevronRight, Edit2, Filter, Trash2, X } from 'lucide-react';
+import {
+  ArrowDownCircle,
+  ArrowUpCircle,
+  Calendar,
+  Check,
+  DollarSign,
+  Download,
+  FileDown,
+  Filter,
+  Plus,
+  Search,
+  Upload,
+  X,
+} from 'lucide-react';
 import { useState } from 'react';
-import { toast } from 'sonner';
+import { Link } from 'react-router-dom';
 import styles from './TransactionsPage.module.css';
 
 export default function TransactionsPage() {
   const { currentWorkspace } = useAuth();
   useWorkspaceChange();
-  
-  const [selectedDate, setSelectedDate] = useState(new Date());
-  const selectedMonth = format(selectedDate, 'yyyy-MM');
-  const [editingTransaction, setEditingTransaction] = useState<Transaction | null>(null);
-  const [selectedTransactions, setSelectedTransactions] = useState<Set<string>>(new Set());
-  const [bulkEditMode, setBulkEditMode] = useState(false);
-  const [bulkEditData, setBulkEditData] = useState<Partial<Transaction>>({});
-  const [filterAccountId, setFilterAccountId] = useState<string>('');
-  const [filterType, setFilterType] = useState<string>('');
-  const [filterCategoryId, setFilterCategoryId] = useState<string>('');
-  const [showFilters, setShowFilters] = useState(false);
-  const queryClient = useQueryClient();
-  const { confirm, confirmState, handleConfirm, handleCancel } = useConfirm();
 
-  // Construir URL com filtros
+  const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
+  const [selectedMonth, setSelectedMonth] = useState('');
+  const [filterType, setFilterType] = useState('');
+  const [showPaymentDate, setShowPaymentDate] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [filterAccountId, setFilterAccountId] = useState('');
+  const [filterCategoryId, setFilterCategoryId] = useState('');
+
+  // Build query params
   const buildQueryUrl = () => {
-    const params = new URLSearchParams({ month: selectedMonth });
-    if (filterAccountId) params.append('accountId', filterAccountId);
+    const params = new URLSearchParams();
+    if (selectedMonth) params.append('month', `${selectedYear}-${selectedMonth.padStart(2, '0')}`);
     if (filterType) params.append('type', filterType);
+    if (filterAccountId) params.append('accountId', filterAccountId);
     if (filterCategoryId) params.append('categoryId', filterCategoryId);
     return `/transactions?${params.toString()}`;
   };
 
-  const { data: transactions, isLoading } = useQuery<Transaction[]>({
-    queryKey: ['transactions', selectedMonth, filterAccountId, filterType, filterCategoryId, currentWorkspace?.id],
+  const { data: transactions = [], isLoading } = useQuery<Transaction[]>({
+    queryKey: [
+      'transactions',
+      selectedYear,
+      selectedMonth,
+      filterType,
+      filterAccountId,
+      filterCategoryId,
+      currentWorkspace?.id,
+    ],
     queryFn: async () => {
       const { data } = await api.get(buildQueryUrl());
       return data;
     },
   });
 
-  const { data: categories } = useQuery<Category[]>({
+  const { data: categories = [] } = useQuery<Category[]>({
     queryKey: ['categories', currentWorkspace?.id],
     queryFn: async () => {
       const { data } = await api.get('/categories');
@@ -56,7 +71,7 @@ export default function TransactionsPage() {
     },
   });
 
-  const { data: people } = useQuery<Person[]>({
+  const { data: people = [] } = useQuery<Person[]>({
     queryKey: ['people', currentWorkspace?.id],
     queryFn: async () => {
       const { data } = await api.get('/people');
@@ -64,7 +79,7 @@ export default function TransactionsPage() {
     },
   });
 
-  const { data: accounts } = useQuery<Account[]>({
+  const { data: accounts = [] } = useQuery<Account[]>({
     queryKey: ['accounts', currentWorkspace?.id],
     queryFn: async () => {
       const { data } = await api.get('/accounts');
@@ -72,544 +87,334 @@ export default function TransactionsPage() {
     },
   });
 
-  const updateMutation = useMutation({
-    mutationFn: async ({ id, data }: { id: string; data: Partial<Transaction> }) => {
-      const { data: response } = await api.patch(`/transactions/${id}`, data);
-      return response;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['transactions'] });
-      setEditingTransaction(null);
-    },
-  });
-
-  const deleteMutation = useMutation({
-    mutationFn: async (id: string) => {
-      await api.delete(`/transactions/${id}`);
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['transactions'] });
-    },
-  });
-
-  const handlePreviousMonth = () => {
-    setSelectedDate(prev => subMonths(prev, 1));
-  };
-
-  const handleNextMonth = () => {
-    setSelectedDate(prev => addMonths(prev, 1));
-  };
-
-  const handleToday = () => {
-    setSelectedDate(new Date());
-  };
-
-  const handleClearFilters = () => {
-    setFilterAccountId('');
-    setFilterType('');
-    setFilterCategoryId('');
-  };
-
-  const hasActiveFilters = filterAccountId || filterType || filterCategoryId;
-
-  const handleEdit = (transaction: Transaction) => {
-    setEditingTransaction(transaction);
-  };
-
-  const handleDelete = async (id: string) => {
-    const confirmed = await confirm({
-      title: 'Excluir Lançamento',
-      message: 'Tem certeza que deseja excluir este lançamento? Esta ação não pode ser desfeita.',
-      confirmLabel: 'Excluir',
-      cancelLabel: 'Cancelar',
-      variant: 'danger',
-    });
-
-    if (confirmed) {
-      await deleteMutation.mutateAsync(id);
-      toast.success('Lançamento excluído com sucesso');
-    }
-  };
-
-  const handleSaveEdit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!editingTransaction) return;
-
-    // Enviar apenas os campos editáveis, sem relações
-    const updateData: Partial<Transaction> = {
-      description: editingTransaction.description,
-      date: editingTransaction.date,
-      amount: editingTransaction.amount,
-      type: editingTransaction.type,
-      categoryId: editingTransaction.categoryId,
-      personId: editingTransaction.personId || null,
-    };
-
-    await updateMutation.mutateAsync({
-      id: editingTransaction.id,
-      data: updateData,
-    });
-  };
-
-  const toggleSelectTransaction = (id: string) => {
-    const newSelected = new Set(selectedTransactions);
-    if (newSelected.has(id)) {
-      newSelected.delete(id);
-    } else {
-      newSelected.add(id);
-    }
-    setSelectedTransactions(newSelected);
-  };
-
-  const toggleSelectAll = () => {
-    if (selectedTransactions.size === transactions?.length) {
-      setSelectedTransactions(new Set());
-    } else {
-      setSelectedTransactions(new Set(transactions?.map(t => t.id) || []));
-    }
-  };
-
-  const handleBulkEdit = async () => {
-    if (selectedTransactions.size === 0) return;
-
-    for (const id of selectedTransactions) {
-      await updateMutation.mutateAsync({ id, data: bulkEditData });
-    }
-
-    setSelectedTransactions(new Set());
-    setBulkEditMode(false);
-    setBulkEditData({});
-  };
-
-  const handleBulkDelete = async () => {
-    if (selectedTransactions.size === 0) return;
-
-    const confirmed = await confirm({
-      title: 'Excluir Múltiplas Transações',
-      message: `Tem certeza que deseja excluir ${selectedTransactions.size} lançamento(s)? Esta ação não pode ser desfeita.`,
-      confirmLabel: 'Excluir Todos',
-      cancelLabel: 'Cancelar',
-      variant: 'danger',
-    });
-
-    if (confirmed) {
-      for (const id of selectedTransactions) {
-        await deleteMutation.mutateAsync(id);
+  // Calculate summary
+  const summary = transactions.reduce(
+    (acc, t) => {
+      if (t.type === 'INCOME') {
+        acc.income += t.amount;
+      } else {
+        acc.expense += Math.abs(t.amount);
       }
-      setSelectedTransactions(new Set());
-      toast.success(`${selectedTransactions.size} lançamento(s) excluído(s) com sucesso`);
-    }
+      // Despesas pendentes (não pagas)
+      if (t.type === 'EXPENSE' && !t.paid) {
+        acc.pending += Math.abs(t.amount);
+      }
+      return acc;
+    },
+    { income: 0, expense: 0, pending: 0 }
+  );
+
+  const balance = summary.income - summary.expense;
+
+  // Filter transactions by search
+  const filteredTransactions = transactions.filter((t) => {
+    if (!searchQuery) return true;
+    const query = searchQuery.toLowerCase();
+    return (
+      t.description?.toLowerCase().includes(query) ||
+      t.category?.name?.toLowerCase().includes(query) ||
+      t.account?.name?.toLowerCase().includes(query) ||
+      t.person?.name?.toLowerCase().includes(query)
+    );
+  });
+
+  const formatCurrency = (value: number) => {
+    const absValue = Math.abs(value);
+    return `R$ ${absValue.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
   };
+
+  const formatDate = (date: string | Date) => {
+    return new Date(date).toLocaleDateString('pt-BR');
+  };
+
+  const getCategoryBadge = (category?: Category) => {
+    if (!category) return <span className={styles.noCategory}>Sem categoria</span>;
+    return (
+      <Badge variant="default">
+        {category.icon && <span>{category.icon}</span>}
+        {category.name}
+      </Badge>
+    );
+  };
+
+  const getTypeBadge = (type: string) => {
+    if (type === 'INCOME') {
+      return <Badge variant="success">Receita</Badge>;
+    }
+    return <Badge variant="danger">Despesa</Badge>;
+  };
+
+  const getStatusBadge = (paid: boolean) => {
+    if (paid) {
+      return (
+        <Badge variant="success">
+          <Check size={14} />
+          Pago
+        </Badge>
+      );
+    }
+    return (
+      <Badge variant="warning">
+        <X size={14} />
+        Pendente
+      </Badge>
+    );
+  };
+
+  const months = [
+    { value: '', label: 'Período' },
+    { value: '1', label: 'Janeiro' },
+    { value: '2', label: 'Fevereiro' },
+    { value: '3', label: 'Março' },
+    { value: '4', label: 'Abril' },
+    { value: '5', label: 'Maio' },
+    { value: '6', label: 'Junho' },
+    { value: '7', label: 'Julho' },
+    { value: '8', label: 'Agosto' },
+    { value: '9', label: 'Setembro' },
+    { value: '10', label: 'Outubro' },
+    { value: '11', label: 'Novembro' },
+    { value: '12', label: 'Dezembro' },
+  ];
 
   if (isLoading) {
-    return <div className={styles.loading}>Carregando...</div>;
+    return (
+      <div className={styles.page}>
+        <div className={styles.loading}>Carregando transações...</div>
+      </div>
+    );
   }
 
   return (
     <div className={styles.page}>
-      <ConfirmDialog
-        isOpen={confirmState.isOpen}
-        title={confirmState.title}
-        message={confirmState.message}
-        confirmLabel={confirmState.confirmLabel}
-        cancelLabel={confirmState.cancelLabel}
-        variant={confirmState.variant}
-        onConfirm={handleConfirm}
-        onCancel={handleCancel}
+      <PageHeader
+        title="Transações"
+        subtitle="Gerencie todas as suas transações financeiras"
       />
 
-      <div className={styles.header}>
-        <h1 className={styles.title}>Transações</h1>
-        <div className={styles.headerControls}>
-          <button
-            onClick={() => setShowFilters(!showFilters)}
-            className={`${styles.filterButton} ${hasActiveFilters ? styles.filterActive : ''}`}
-            title="Filtros"
-          >
-            <Filter size={20} />
-            {hasActiveFilters && <span className={styles.filterBadge}>•</span>}
-          </button>
-          <div className={styles.monthSelector}>
-            <button 
-              onClick={handlePreviousMonth}
-              className={styles.monthButton}
-              aria-label="Mês anterior"
-            >
-              <ChevronLeft size={20} />
-            </button>
-            <div className={styles.monthDisplay}>
-              <span className={styles.monthText}>
-                {format(selectedDate, 'MMMM yyyy', { locale: ptBR })}
-              </span>
-              <button 
-                onClick={handleToday}
-                className={styles.todayButton}
-              >
-                Hoje
-              </button>
-            </div>
-            <button 
-              onClick={handleNextMonth}
-              className={styles.monthButton}
-              aria-label="Próximo mês"
-            >
-              <ChevronRight size={20} />
-            </button>
+      {/* Summary Cards */}
+      <div className={styles.summaryGrid}>
+        <Card className={styles.summaryCard}>
+          <div className={styles.summaryIcon}>
+            <DollarSign size={24} />
           </div>
+          <div className={styles.summaryContent}>
+            <span className={styles.summaryLabel}>Saldo</span>
+            <span className={`${styles.summaryValue} ${balance >= 0 ? styles.positive : styles.negative}`}>
+              {formatCurrency(balance)}
+            </span>
+          </div>
+        </Card>
+
+        <Card className={styles.summaryCard}>
+          <div className={`${styles.summaryIcon} ${styles.income}`}>
+            <ArrowUpCircle size={24} />
+          </div>
+          <div className={styles.summaryContent}>
+            <span className={styles.summaryLabel}>Receitas</span>
+            <span className={`${styles.summaryValue} ${styles.positive}`}>
+              {formatCurrency(summary.income)}
+            </span>
+          </div>
+        </Card>
+
+        <Card className={styles.summaryCard}>
+          <div className={`${styles.summaryIcon} ${styles.expense}`}>
+            <ArrowDownCircle size={24} />
+          </div>
+          <div className={styles.summaryContent}>
+            <span className={styles.summaryLabel}>Despesas</span>
+            <span className={`${styles.summaryValue} ${styles.negative}`}>
+              {formatCurrency(summary.expense)}
+            </span>
+          </div>
+        </Card>
+
+        <Card className={styles.summaryCard}>
+          <div className={`${styles.summaryIcon} ${styles.pending}`}>
+            <Calendar size={24} />
+          </div>
+          <div className={styles.summaryContent}>
+            <span className={styles.summaryLabel}>Despesas Pendentes</span>
+            <span className={`${styles.summaryValue} ${styles.negative}`}>
+              {formatCurrency(summary.pending)}
+            </span>
+          </div>
+        </Card>
+      </div>
+
+      {/* Filters and Actions */}
+      <div className={styles.toolbar}>
+        <div className={styles.filters}>
+          {/* Year Selector */}
+          <select
+            value={selectedYear}
+            onChange={(e) => setSelectedYear(Number(e.target.value))}
+            className={styles.filterSelect}
+          >
+            {[2024, 2025, 2026, 2027].map((year) => (
+              <option key={year} value={year}>
+                {year}
+              </option>
+            ))}
+          </select>
+
+          {/* Month Selector */}
+          <select
+            value={selectedMonth}
+            onChange={(e) => setSelectedMonth(e.target.value)}
+            className={styles.filterSelect}
+          >
+            {months.map((month) => (
+              <option key={month.value} value={month.value}>
+                {month.label}
+              </option>
+            ))}
+          </select>
+
+          {/* Type Filter */}
+          <select
+            value={filterType}
+            onChange={(e) => setFilterType(e.target.value)}
+            className={styles.filterSelect}
+          >
+            <option value="">Todas</option>
+            <option value="INCOME">Receitas</option>
+            <option value="EXPENSE">Despesas</option>
+          </select>
+
+          {/* Payment Date Toggle */}
+          <label className={styles.toggleFilter}>
+            <input
+              type="checkbox"
+              checked={showPaymentDate}
+              onChange={(e) => setShowPaymentDate(e.target.checked)}
+            />
+            <span>Data Pagamento</span>
+          </label>
+
+          {/* Search */}
+          <div className={styles.searchBox}>
+            <Search size={18} />
+            <input
+              type="text"
+              placeholder="Buscar transações"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className={styles.searchInput}
+            />
+          </div>
+        </div>
+
+        <div className={styles.actions}>
+          <Button variant="secondary" size="md">
+            <Filter size={18} />
+            Filtro Avançado
+          </Button>
+          <Link to="/app/transactions/new">
+            <Button variant="primary" size="md">
+              <Plus size={18} />
+              Nova Transação
+            </Button>
+          </Link>
+          <Button variant="secondary" size="md">
+            <Upload size={18} />
+            Importar
+          </Button>
+          <Button variant="secondary" size="md">
+            <Download size={18} />
+            Exportar
+          </Button>
         </div>
       </div>
 
-      {showFilters && (
-        <Card>
-          <div className={styles.filterPanel}>
-            <div className={styles.filterHeader}>
-              <h3>Filtros</h3>
-              {hasActiveFilters && (
-                <button onClick={handleClearFilters} className={styles.clearFilters}>
-                  Limpar filtros
-                </button>
-              )}
-            </div>
-            <div className={styles.filterGrid}>
-              <div className={styles.filterGroup}>
-                <label>Tipo</label>
-                <select
-                  value={filterType}
-                  onChange={(e) => setFilterType(e.target.value)}
-                  className={styles.filterSelect}
-                >
-                  <option value="">Todos</option>
-                  <option value="EXPENSE">Despesa</option>
-                  <option value="INCOME">Receita</option>
-                </select>
-              </div>
-              <div className={styles.filterGroup}>
-                <label>Categoria</label>
-                <select
-                  value={filterCategoryId}
-                  onChange={(e) => setFilterCategoryId(e.target.value)}
-                  className={styles.filterSelect}
-                >
-                  <option value="">Todas as categorias</option>
-                  {categories?.map(category => (
-                    <option key={category.id} value={category.id}>
-                      {category.icon} {category.name}
-                    </option>
-                  ))}
-                </select>
-              </div>
-              <div className={styles.filterGroup}>
-                <label>Conta Corrente</label>
-                <select
-                  value={filterAccountId}
-                  onChange={(e) => setFilterAccountId(e.target.value)}
-                  className={styles.filterSelect}
-                >
-                  <option value="">Todas as contas</option>
-                  {accounts?.map(account => (
-                    <option key={account.id} value={account.id}>
-                      {account.name}
-                    </option>
-                  ))}
-                </select>
-              </div>
-            </div>
-          </div>
-        </Card>
-      )}
-
-      {selectedTransactions.size > 0 && (
-        <div className={styles.bulkActions}>
-          <span className={styles.bulkActionsText}>
-            {selectedTransactions.size} lançamento(s) selecionado(s)
-          </span>
-          <div className={styles.bulkActionsButtons}>
-            <button
-              onClick={() => setBulkEditMode(!bulkEditMode)}
-              className={styles.bulkActionButton}
-            >
-              <Edit2 size={16} /> Editar em massa
-            </button>
-            <button
-              onClick={handleBulkDelete}
-              className={`${styles.bulkActionButton} ${styles.dangerButton}`}
-            >
-              <Trash2 size={16} /> Excluir
-            </button>
-            <button
-              onClick={() => setSelectedTransactions(new Set())}
-              className={styles.bulkActionButton}
-            >
-              Cancelar
-            </button>
-          </div>
-        </div>
-      )}
-
-      {bulkEditMode && selectedTransactions.size > 0 && (
-        <Card>
-          <div className={styles.bulkEditForm}>
-            <h3>Editar {selectedTransactions.size} lançamento(s)</h3>
-            <div className={styles.formRow}>
-              <div className={styles.formGroup}>
-                <label>Categoria</label>
-                <select
-                  value={bulkEditData.categoryId || ''}
-                  onChange={(e) => setBulkEditData({ ...bulkEditData, categoryId: e.target.value || undefined })}
-                >
-                  <option value="">Manter original</option>
-                  {categories?.map(cat => (
-                    <option key={cat.id} value={cat.id}>{cat.name}</option>
-                  ))}
-                </select>
-              </div>
-              <div className={styles.formGroup}>
-                <label>Pessoa</label>
-                <select
-                  value={bulkEditData.personId || ''}
-                  onChange={(e) => setBulkEditData({ ...bulkEditData, personId: e.target.value || undefined })}
-                >
-                  <option value="">Manter original</option>
-                  <option value="null">Comum</option>
-                  {people?.map(person => (
-                    <option key={person.id} value={person.id}>{person.name}</option>
-                  ))}
-                </select>
-              </div>
-            </div>
-            <div className={styles.formActions}>
-              <button onClick={handleBulkEdit} className={styles.saveButton}>
-                <Check size={16} /> Aplicar alterações
-              </button>
-              <button onClick={() => setBulkEditMode(false)} className={styles.cancelButton}>
-                Cancelar
-              </button>
-            </div>
-          </div>
-        </Card>
-      )}
-
-      <Card>
-        {!transactions || transactions.length === 0 ? (
-          <div className={styles.emptyState}>
-            <p>Nenhum lançamento encontrado</p>
-          </div>
-        ) : (
-          <div className={styles.transactionList}>
-            <div className={styles.transactionListHeader}>
-              <input
-                type="checkbox"
-                checked={selectedTransactions.size === transactions.length}
-                onChange={toggleSelectAll}
-                className={styles.checkbox}
-              />
-              <span className={styles.selectAllText}>Selecionar todos</span>
-            </div>
-            {transactions.map((transaction: any) => (
-              <div key={transaction.id} className={styles.transactionItem}>
-                <input
-                  type="checkbox"
-                  checked={selectedTransactions.has(transaction.id)}
-                  onChange={() => toggleSelectTransaction(transaction.id)}
-                  className={styles.checkbox}
-                />
-                <div className={styles.transactionInfo}>
-                  <div className={styles.transactionMain}>
-                    {transaction.category && (
-                      <div 
-                        className={styles.categoryIcon}
-                        style={{ backgroundColor: transaction.category.color }}
-                      >
-                        {transaction.category.icon}
-                      </div>
-                    )}
-                    <span className={styles.description}>
+      {/* Transactions Table */}
+      <Card className={styles.tableCard}>
+        <div className={styles.tableContainer}>
+          <table className={styles.table}>
+            <thead>
+              <tr>
+                <th>
+                  <input type="checkbox" />
+                </th>
+                <th>DATA</th>
+                <th>DESCRIÇÃO</th>
+                <th>CATEGORIA</th>
+                <th>CONTA</th>
+                <th>CARTÃO</th>
+                <th>USUÁRIO</th>
+                <th>VALOR</th>
+                <th>STATUS</th>
+                <th>PAGO</th>
+              </tr>
+            </thead>
+            <tbody>
+              {filteredTransactions.length === 0 ? (
+                <tr>
+                  <td colSpan={10} className={styles.emptyState}>
+                    <div className={styles.emptyContent}>
+                      <FileDown size={48} />
+                      <p>Nenhuma transação encontrada</p>
+                      <p className={styles.emptyHint}>
+                        Ajuste os filtros ou crie uma nova transação
+                      </p>
+                    </div>
+                  </td>
+                </tr>
+              ) : (
+                filteredTransactions.map((transaction) => (
+                  <tr key={transaction.id} className={styles.tableRow}>
+                    <td>
+                      <input type="checkbox" />
+                    </td>
+                    <td className={styles.dateCell}>
+                      {formatDate(transaction.date)}
+                    </td>
+                    <td className={styles.descriptionCell}>
                       {transaction.description}
-                    </span>
-                    <Badge variant={transaction.type === 'INCOME' ? 'success' : 'default'}>
-                      {transaction.type === 'INCOME' ? 'Receita' : 'Despesa'}
-                    </Badge>
-                  </div>
-                  <div className={styles.transactionMeta}>
-                    <span className={styles.category}>
-                      {transaction.category?.name || 'Sem categoria'}
-                    </span>
-                    <span className={styles.date}>
-                      {format(new Date(transaction.date), 'dd/MM/yyyy')}
-                    </span>
-                    {transaction.person && (
-                      <span className={styles.person}>
-                        👤 {transaction.person.name}
-                      </span>
-                    )}
-                  </div>
-                </div>
-                <div
-                  className={`${styles.amount} ${
-                    transaction.type === 'INCOME' ? styles.income : styles.expense
-                  }`}
-                >
-                  {transaction.type === 'INCOME' ? '+' : '-'} R${' '}
-                  {transaction.amount.toFixed(2)}
-                </div>
-                <div className={styles.actions}>
-                  <button
-                    onClick={() => handleEdit(transaction)}
-                    className={styles.actionButton}
-                    title="Editar"
-                  >
-                    <Edit2 size={16} />
-                  </button>
-                  <button
-                    onClick={() => handleDelete(transaction.id)}
-                    className={`${styles.actionButton} ${styles.deleteButton}`}
-                    title="Excluir"
-                  >
-                    <Trash2 size={16} />
-                  </button>
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
-      </Card>
-
-      {editingTransaction && (
-        <div className={styles.modal} onClick={() => setEditingTransaction(null)}>
-          <div className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
-            <div className={styles.modalHeader}>
-              <h2>Editar Lançamento</h2>
-              <button
-                onClick={() => setEditingTransaction(null)}
-                className={styles.closeButton}
-              >
-                <X size={20} />
-              </button>
-            </div>
-            <form onSubmit={handleSaveEdit} className={styles.editForm}>
-              <div className={styles.formGroup}>
-                <label>Descrição</label>
-                <input
-                  type="text"
-                  value={editingTransaction.description || ''}
-                  onChange={(e) =>
-                    setEditingTransaction({ ...editingTransaction, description: e.target.value })
-                  }
-                  required
-                />
-              </div>
-
-              <div className={styles.formRow}>
-                <div className={styles.formGroup}>
-                  <label>Data</label>
-                  <input
-                    type="date"
-                    value={
-                      editingTransaction.date 
-                        ? format(new Date(editingTransaction.date), 'yyyy-MM-dd')
-                        : ''
-                    }
-                    onChange={(e) =>
-                      setEditingTransaction({ 
-                        ...editingTransaction, 
-                        date: new Date(e.target.value).toISOString() as any
-                      })
-                    }
-                    required
-                  />
-                </div>
-
-                <div className={styles.formGroup}>
-                  <label>Valor</label>
-                  <input
-                    type="number"
-                    step="0.01"
-                    value={editingTransaction.amount}
-                    onChange={(e) =>
-                      setEditingTransaction({
-                        ...editingTransaction,
-                        amount: parseFloat(e.target.value),
-                      })
-                    }
-                    required
-                  />
-                </div>
-              </div>
-
-              <div className={styles.formRow}>
-                <div className={styles.formGroup}>
-                  <label>Tipo</label>
-                  <select
-                    value={editingTransaction.type}
-                    onChange={(e) =>
-                      setEditingTransaction({
-                        ...editingTransaction,
-                        type: e.target.value as 'INCOME' | 'EXPENSE',
-                      })
-                    }
-                  >
-                    <option value="EXPENSE">Despesa</option>
-                    <option value="INCOME">Receita</option>
-                  </select>
-                </div>
-
-                <div className={styles.formGroup}>
-                  <label>Categoria</label>
-                  <select
-                    value={editingTransaction.categoryId}
-                    onChange={(e) =>
-                      setEditingTransaction({ ...editingTransaction, categoryId: e.target.value })
-                    }
-                    required
-                  >
-                    <option value="">Selecione</option>
-                    {categories
-                      ?.filter((cat) => cat.type === editingTransaction.type)
-                      .map((cat) => (
-                        <option key={cat.id} value={cat.id}>
-                          {cat.name}
-                        </option>
-                      ))}
-                  </select>
-                </div>
-              </div>
-
-              <div className={styles.formGroup}>
-                <label>Pessoa</label>
-                <select
-                  value={editingTransaction.personId || ''}
-                  onChange={(e) =>
-                    setEditingTransaction({
-                      ...editingTransaction,
-                      personId: e.target.value || undefined,
-                    })
-                  }
-                >
-                  <option value="">Comum</option>
-                  {people?.map((person) => (
-                    <option key={person.id} value={person.id}>
-                      {person.name}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              <div className={styles.formActions}>
-                <button type="submit" className={styles.saveButton} disabled={updateMutation.isPending}>
-                  {updateMutation.isPending ? 'Salvando...' : 'Salvar'}
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setEditingTransaction(null)}
-                  className={styles.cancelButton}
-                >
-                  Cancelar
-                </button>
-              </div>
-            </form>
-          </div>
+                    </td>
+                    <td>{getCategoryBadge(transaction.category)}</td>
+                    <td>
+                      {transaction.account ? (
+                        <span className={styles.accountName}>
+                          {transaction.account.name}
+                        </span>
+                      ) : (
+                        <span className={styles.noData}>-</span>
+                      )}
+                    </td>
+                    <td>
+                      <span className={styles.noData}>-</span>
+                    </td>
+                    <td>
+                      {transaction.person ? (
+                        <div className={styles.personCell}>
+                          <div className={styles.personAvatar}>
+                            {transaction.person.name.charAt(0)}
+                          </div>
+                          <span>{transaction.person.name}</span>
+                        </div>
+                      ) : (
+                        <span className={styles.noData}>-</span>
+                      )}
+                    </td>
+                    <td
+                      className={`${styles.amountCell} ${
+                        transaction.type === 'INCOME' ? styles.income : styles.expense
+                      }`}
+                    >
+                      {transaction.type === 'INCOME' ? '+' : '-'}
+                      {formatCurrency(transaction.amount)}
+                    </td>
+                    <td>{getTypeBadge(transaction.type)}</td>
+                    <td>{getStatusBadge(transaction.paid)}</td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
         </div>
-      )}
+      </Card>
     </div>
   );
 }
