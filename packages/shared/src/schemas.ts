@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { AccountType, TransactionStatus, TransactionType } from "./enums";
+import { AccountType, TransactionStatus, TransactionType } from "./enums.js";
 
 // Auth schemas
 export const registerSchema = z.object({

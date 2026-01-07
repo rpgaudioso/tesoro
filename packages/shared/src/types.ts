@@ -8,7 +8,7 @@ import {
   TransactionKind,
   TransactionStatus,
   TransactionType,
-} from "./enums";
+} from "./enums.js";
 
 export interface User {
   id: string;
