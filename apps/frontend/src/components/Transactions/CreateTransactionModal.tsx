@@ -5,7 +5,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import api from '@/lib/api';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import type { Account, Category, Person } from '@tesoro/shared';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
 import styles from './CreateTransactionModal.module.css';
 
@@ -14,21 +14,33 @@ interface CreateTransactionModalProps {
   onClose: () => void;
 }
 
+const initialFormData = {
+  description: '',
+  date: new Date().toISOString().split('T')[0],
+  amount: '',
+  type: 'EXPENSE' as 'INCOME' | 'EXPENSE',
+  categoryId: '',
+  accountId: '',
+  personId: '',
+  paid: false,
+  kind: 'MANUAL' as const,
+};
+
 export default function CreateTransactionModal({ isOpen, onClose }: CreateTransactionModalProps) {
   const { currentWorkspace } = useAuth();
   const queryClient = useQueryClient();
 
-  const [formData, setFormData] = useState({
-    description: '',
-    date: new Date().toISOString().split('T')[0],
-    amount: '',
-    type: 'EXPENSE' as 'INCOME' | 'EXPENSE',
-    categoryId: '',
-    accountId: '',
-    personId: '',
-    paid: false,
-    kind: 'MANUAL' as const,
-  });
+  const [formData, setFormData] = useState(initialFormData);
+
+  // Reset form when modal opens
+  useEffect(() => {
+    if (isOpen) {
+      setFormData({
+        ...initialFormData,
+        date: new Date().toISOString().split('T')[0], // Always use current date
+      });
+    }
+  }, [isOpen]);
 
   const { data: categories = [] } = useQuery<Category[]>({
     queryKey: ['categories', currentWorkspace?.id],
