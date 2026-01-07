@@ -1,4 +1,5 @@
 import PageHeader from '@/components/Layout/PageHeader';
+import CreateTransactionModal from '@/components/Transactions/CreateTransactionModal';
 import Badge from '@/components/UI/Badge';
 import Button from '@/components/UI/Button';
 import Card from '@/components/UI/Card';
@@ -22,7 +23,6 @@ import {
   X,
 } from 'lucide-react';
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
 import styles from './TransactionsPage.module.css';
 
 export default function TransactionsPage() {
@@ -36,6 +36,7 @@ export default function TransactionsPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [filterAccountId, setFilterAccountId] = useState('');
   const [filterCategoryId, setFilterCategoryId] = useState('');
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
 
   // Build query params
   const buildQueryUrl = () => {
@@ -311,12 +312,10 @@ export default function TransactionsPage() {
             <Filter size={18} />
             Filtro Avançado
           </Button>
-          <Link to="/app/transactions/new">
-            <Button variant="primary" size="md">
-              <Plus size={18} />
-              Nova Transação
-            </Button>
-          </Link>
+          <Button variant="primary" size="md" onClick={() => setIsCreateModalOpen(true)}>
+            <Plus size={18} />
+            Nova Transação
+          </Button>
           <Button variant="secondary" size="md">
             <Upload size={18} />
             Importar
@@ -415,6 +414,8 @@ export default function TransactionsPage() {
           </table>
         </div>
       </Card>
+
+      {isCreateModalOpen && <CreateTransactionModal onClose={() => setIsCreateModalOpen(false)} />}
     </div>
   );
 }
