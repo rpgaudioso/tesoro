@@ -415,7 +415,7 @@ export default function TransactionsPage() {
         </div>
       </Card>
 
-      {isCreateModalOpen && <CreateTransactionModal onClose={() => setIsCreateModalOpen(false)} />}
+      <CreateTransactionModal isOpen={isCreateModalOpen} onClose={() => setIsCreateModalOpen(false)} />
     </div>
   );
 }

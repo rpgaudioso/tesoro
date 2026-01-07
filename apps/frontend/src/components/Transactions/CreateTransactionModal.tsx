@@ -1,20 +1,20 @@
 import Button from '@/components/UI/Button';
 import Input from '@/components/UI/Input';
-import Portal from '@/components/UI/Portal';
+import Modal from '@/components/UI/Modal';
 import { useAuth } from '@/contexts/AuthContext';
 import api from '@/lib/api';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import type { Account, Category, Person } from '@tesoro/shared';
-import { X } from 'lucide-react';
 import { useState } from 'react';
 import { toast } from 'sonner';
 import styles from './CreateTransactionModal.module.css';
 
 interface CreateTransactionModalProps {
+  isOpen: boolean;
   onClose: () => void;
 }
 
-export default function CreateTransactionModal({ onClose }: CreateTransactionModalProps) {
+export default function CreateTransactionModal({ isOpen, onClose }: CreateTransactionModalProps) {
   const { currentWorkspace } = useAuth();
   const queryClient = useQueryClient();
 
@@ -106,156 +106,145 @@ export default function CreateTransactionModal({ onClose }: CreateTransactionMod
   const filteredCategories = categories.filter((cat) => cat.type === formData.type);
 
   return (
-    <Portal>
-      <div className={styles.overlay} onClick={onClose}>
-      <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
-        <div className={styles.header}>
-          <h2>Nova Transação</h2>
-          <button className={styles.closeButton} onClick={onClose}>
-            <X size={24} />
+    <Modal isOpen={isOpen} onClose={onClose} title="Nova Transação" size="md">
+      <form onSubmit={handleSubmit} className={styles.form}>
+        {/* Type Selection */}
+        <div className={styles.typeSelector}>
+          <button
+            type="button"
+            className={`${styles.typeButton} ${formData.type === 'EXPENSE' ? styles.active : ''}`}
+            onClick={() => {
+              handleChange('type', 'EXPENSE');
+              handleChange('categoryId', '');
+            }}
+          >
+            Despesa
+          </button>
+          <button
+            type="button"
+            className={`${styles.typeButton} ${formData.type === 'INCOME' ? styles.active : ''}`}
+            onClick={() => {
+              handleChange('type', 'INCOME');
+              handleChange('categoryId', '');
+            }}
+          >
+            Receita
           </button>
         </div>
 
-        <form onSubmit={handleSubmit} className={styles.form}>
-          {/* Type Selection */}
-          <div className={styles.typeSelector}>
-            <button
-              type="button"
-              className={`${styles.typeButton} ${formData.type === 'EXPENSE' ? styles.active : ''}`}
-              onClick={() => {
-                handleChange('type', 'EXPENSE');
-                handleChange('categoryId', '');
-              }}
-            >
-              Despesa
-            </button>
-            <button
-              type="button"
-              className={`${styles.typeButton} ${formData.type === 'INCOME' ? styles.active : ''}`}
-              onClick={() => {
-                handleChange('type', 'INCOME');
-                handleChange('categoryId', '');
-              }}
-            >
-              Receita
-            </button>
-          </div>
+        {/* Description */}
+        <Input
+          label="Descrição *"
+          type="text"
+          value={formData.description}
+          onChange={(e) => handleChange('description', e.target.value)}
+          placeholder="Ex: Supermercado, Salário, etc."
+          required
+        />
 
-          {/* Description */}
+        {/* Date and Amount */}
+        <div className={styles.row}>
           <Input
-            label="Descrição *"
-            type="text"
-            value={formData.description}
-            onChange={(e) => handleChange('description', e.target.value)}
-            placeholder="Ex: Supermercado, Salário, etc."
+            label="Data *"
+            type="date"
+            value={formData.date}
+            onChange={(e) => handleChange('date', e.target.value)}
             required
           />
+          <Input
+            label="Valor *"
+            type="number"
+            step="0.01"
+            min="0"
+            value={formData.amount}
+            onChange={(e) => handleChange('amount', e.target.value)}
+            placeholder="0,00"
+            required
+          />
+        </div>
 
-          {/* Date and Amount */}
-          <div className={styles.row}>
-            <Input
-              label="Data *"
-              type="date"
-              value={formData.date}
-              onChange={(e) => handleChange('date', e.target.value)}
-              required
-            />
-            <Input
-              label="Valor *"
-              type="number"
-              step="0.01"
-              min="0"
-              value={formData.amount}
-              onChange={(e) => handleChange('amount', e.target.value)}
-              placeholder="0,00"
-              required
-            />
-          </div>
-
-          {/* Category and Account */}
-          <div className={styles.row}>
-            <div className={styles.formGroup}>
-              <label>Categoria *</label>
-              <select
-                value={formData.categoryId}
-                onChange={(e) => handleChange('categoryId', e.target.value)}
-                className={styles.select}
-                required
-              >
-                <option value="">Selecione uma categoria</option>
-                {filteredCategories.map((cat) => (
-                  <option key={cat.id} value={cat.id}>
-                    {cat.icon} {cat.name}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            <div className={styles.formGroup}>
-              <label>Conta *</label>
-              <select
-                value={formData.accountId}
-                onChange={(e) => handleChange('accountId', e.target.value)}
-                className={styles.select}
-                required
-              >
-                <option value="">Selecione uma conta</option>
-                {accounts.map((account) => (
-                  <option key={account.id} value={account.id}>
-                    {account.name}
-                  </option>
-                ))}
-              </select>
-            </div>
-          </div>
-
-          {/* Person */}
+        {/* Category and Account */}
+        <div className={styles.row}>
           <div className={styles.formGroup}>
-            <label>Pessoa</label>
+            <label>Categoria *</label>
             <select
-              value={formData.personId}
-              onChange={(e) => handleChange('personId', e.target.value)}
+              value={formData.categoryId}
+              onChange={(e) => handleChange('categoryId', e.target.value)}
               className={styles.select}
+              required
             >
-              <option value="">Comum</option>
-              {people.map((person) => (
-                <option key={person.id} value={person.id}>
-                  {person.name}
+              <option value="">Selecione uma categoria</option>
+              {filteredCategories.map((cat) => (
+                <option key={cat.id} value={cat.id}>
+                  {cat.icon} {cat.name}
                 </option>
               ))}
             </select>
           </div>
 
-          {/* Paid Checkbox */}
-          <div className={styles.checkboxGroup}>
-            <label className={styles.checkboxLabel}>
-              <input
-                type="checkbox"
-                checked={formData.paid}
-                onChange={(e) => handleChange('paid', e.target.checked)}
-              />
-              <span>Marcar como pago</span>
-            </label>
-          </div>
-
-          {/* Actions */}
-          <div className={styles.actions}>
-            <Button
-              type="button"
-              variant="secondary"
-              size="md"
-              onClick={onClose}
-              disabled={createMutation.isPending}
+          <div className={styles.formGroup}>
+            <label>Conta *</label>
+            <select
+              value={formData.accountId}
+              onChange={(e) => handleChange('accountId', e.target.value)}
+              className={styles.select}
+              required
             >
-              Cancelar
-            </Button>
-            <Button type="submit" variant="primary" size="md" disabled={createMutation.isPending}>
-              {createMutation.isPending ? 'Criando...' : 'Criar Transação'}
-            </Button>
+              <option value="">Selecione uma conta</option>
+              {accounts.map((account) => (
+                <option key={account.id} value={account.id}>
+                  {account.name}
+                </option>
+              ))}
+            </select>
           </div>
-        </form>
-      </div>
-    </div>
-    </Portal>
+        </div>
+
+        {/* Person */}
+        <div className={styles.formGroup}>
+          <label>Pessoa</label>
+          <select
+            value={formData.personId}
+            onChange={(e) => handleChange('personId', e.target.value)}
+            className={styles.select}
+          >
+            <option value="">Comum</option>
+            {people.map((person) => (
+              <option key={person.id} value={person.id}>
+                {person.name}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        {/* Paid Checkbox */}
+        <div className={styles.checkboxGroup}>
+          <label className={styles.checkboxLabel}>
+            <input
+              type="checkbox"
+              checked={formData.paid}
+              onChange={(e) => handleChange('paid', e.target.checked)}
+            />
+            <span>Marcar como pago</span>
+          </label>
+        </div>
+
+        {/* Actions */}
+        <div className={styles.actions}>
+          <Button
+            type="button"
+            variant="secondary"
+            size="md"
+            onClick={onClose}
+            disabled={createMutation.isPending}
+          >
+            Cancelar
+          </Button>
+          <Button type="submit" variant="primary" size="md" disabled={createMutation.isPending}>
+            {createMutation.isPending ? 'Criando...' : 'Criar Transação'}
+          </Button>
+        </div>
+      </form>
+    </Modal>
   );
 }
