@@ -27,6 +27,9 @@ export default function EditTransactionModal({ isOpen, onClose, transaction }: E
     categoryId: transaction.categoryId || '',
     accountId: transaction.accountId || '',
     personId: transaction.personId || '',
+    paymentMethod: 'cash' as 'cash' | 'credit_card',
+    creditCardId: '',
+    installments: 1,
   });
 
   // Update form when transaction changes
@@ -40,6 +43,9 @@ export default function EditTransactionModal({ isOpen, onClose, transaction }: E
         categoryId: transaction.categoryId || '',
         accountId: transaction.accountId || '',
         personId: transaction.personId || '',
+        paymentMethod: 'cash' as 'cash' | 'credit_card',
+        creditCardId: '',
+        installments: 1,
       });
     }
   }, [transaction]);
@@ -64,6 +70,14 @@ export default function EditTransactionModal({ isOpen, onClose, transaction }: E
     queryKey: ['people', currentWorkspace?.id],
     queryFn: async () => {
       const { data } = await api.get('/people');
+      return data;
+    },
+  });
+
+  const { data: creditCards = [] } = useQuery<any[]>({
+    queryKey: ['creditCards', currentWorkspace?.id],
+    queryFn: async () => {
+      const { data } = await api.get('/credit-cards');
       return data;
     },
   });

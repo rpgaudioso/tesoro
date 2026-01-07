@@ -429,8 +429,8 @@ export default function TransactionsPage() {
                 <th>CARTÃO</th>
                 <th>USUÁRIO</th>
                 <th>VALOR</th>
+                <th>TIPO</th>
                 <th>STATUS</th>
-                <th>PAGO</th>
                 <th>AÇÕES</th>
               </tr>
             </thead>

@@ -24,6 +24,9 @@ const initialFormData = {
   personId: '',
   paid: false,
   kind: 'MANUAL' as const,
+  paymentMethod: 'cash' as 'cash' | 'credit_card',
+  creditCardId: '',
+  installments: 1,
 };
 
 export default function CreateTransactionModal({ isOpen, onClose }: CreateTransactionModalProps) {
@@ -66,6 +69,14 @@ export default function CreateTransactionModal({ isOpen, onClose }: CreateTransa
     },
   });
 
+  const { data: creditCards = [] } = useQuery<any[]>({
+    queryKey: ['creditCards', currentWorkspace?.id],
+    queryFn: async () => {
+      const { data } = await api.get('/credit-cards');
+      return data;
+    },
+  });
+
   const createMutation = useMutation({
     mutationFn: async (data: any) => {
       const { data: response } = await api.post('/transactions', {
@@ -103,12 +114,23 @@ export default function CreateTransactionModal({ isOpen, onClose }: CreateTransa
       return;
     }
 
-    if (!formData.accountId) {
+    if (formData.paymentMethod === 'cash' && !formData.accountId) {
       toast.error('Selecione uma conta');
       return;
     }
 
-    createMutation.mutate(formData);
+    if (formData.paymentMethod === 'credit_card' && !formData.creditCardId) {
+      toast.error('Selecione um cartão de crédito');
+      return;
+    }
+
+    // For credit card payments, accountId is not required
+    const dataToSubmit = {
+      ...formData,
+      accountId: formData.paymentMethod === 'cash' ? formData.accountId : undefined,
+    };
+
+    createMutation.mutate(dataToSubmit);
   };
 
   const handleChange = (field: string, value: any) => {
@@ -175,25 +197,26 @@ export default function CreateTransactionModal({ isOpen, onClose }: CreateTransa
           />
         </div>
 
-        {/* Category and Account */}
-        <div className={styles.row}>
-          <div className={styles.formGroup}>
-            <label>Categoria *</label>
-            <select
-              value={formData.categoryId}
-              onChange={(e) => handleChange('categoryId', e.target.value)}
-              className={styles.select}
-              required
-            >
-              <option value="">Selecione uma categoria</option>
-              {filteredCategories.map((cat) => (
-                <option key={cat.id} value={cat.id}>
-                  {cat.icon} {cat.name}
-                </option>
-              ))}
-            </select>
-          </div>
+        {/* Category */}
+        <div className={styles.formGroup}>
+          <label>Categoria *</label>
+          <select
+            value={formData.categoryId}
+            onChange={(e) => handleChange('categoryId', e.target.value)}
+            className={styles.select}
+            required
+          >
+            <option value="">Selecione uma categoria</option>
+            {filteredCategories.map((cat) => (
+              <option key={cat.id} value={cat.id}>
+                {cat.icon} {cat.name}
+              </option>
+            ))}
+          </select>
+        </div>
 
+        {/* Account - Only for cash payments */}
+        {formData.paymentMethod === 'cash' && (
           <div className={styles.formGroup}>
             <label>Conta *</label>
             <select
@@ -210,7 +233,68 @@ export default function CreateTransactionModal({ isOpen, onClose }: CreateTransa
               ))}
             </select>
           </div>
+        )}
+
+        {/* Payment Method */}
+        <div className={styles.formGroup}>
+          <label>Forma de Pagamento *</label>
+          <select
+            value={formData.paymentMethod}
+            onChange={(e) => {
+              handleChange('paymentMethod', e.target.value);
+              if (e.target.value === 'cash') {
+                handleChange('creditCardId', '');
+                handleChange('installments', 1);
+                handleChange('paid', false);
+              }
+            }}
+            className={styles.select}
+            required
+          >
+            <option value="cash">À Vista (Conta Corrente)</option>
+            <option value="credit_card">Cartão de Crédito</option>
+          </select>
         </div>
+
+        {/* Credit Card (only if payment method is credit card) */}
+        {formData.paymentMethod === 'credit_card' && (
+          <>
+            <div className={styles.row}>
+              <div className={styles.formGroup}>
+                <label>Cartão de Crédito *</label>
+                <select
+                  value={formData.creditCardId}
+                  onChange={(e) => handleChange('creditCardId', e.target.value)}
+                  className={styles.select}
+                  required
+                >
+                  <option value="">Selecione um cartão</option>
+                  {creditCards.map((card) => (
+                    <option key={card.id} value={card.id}>
+                      {card.name} ({card.brand})
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div className={styles.formGroup}>
+                <label>Parcelas *</label>
+                <select
+                  value={formData.installments}
+                  onChange={(e) => handleChange('installments', parseInt(e.target.value))}
+                  className={styles.select}
+                  required
+                >
+                  {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map((num) => (
+                    <option key={num} value={num}>
+                      {num}x {num > 1 && `de R$ ${(parseFloat(formData.amount || '0') / num).toFixed(2)}`}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
+          </>
+        )}
 
         {/* Person */}
         <div className={styles.formGroup}>
@@ -229,17 +313,25 @@ export default function CreateTransactionModal({ isOpen, onClose }: CreateTransa
           </select>
         </div>
 
-        {/* Paid Checkbox */}
-        <div className={styles.checkboxGroup}>
-          <label className={styles.checkboxLabel}>
-            <input
-              type="checkbox"
-              checked={formData.paid}
-              onChange={(e) => handleChange('paid', e.target.checked)}
-            />
-            <span>Marcar como pago</span>
-          </label>
-        </div>
+        {/* Paid Checkbox - Only for cash payments */}
+        {formData.paymentMethod === 'cash' && (
+          <div className={styles.checkboxGroup}>
+            <label className={styles.checkboxLabel}>
+              <input
+                type="checkbox"
+                checked={formData.paid}
+                onChange={(e) => handleChange('paid', e.target.checked)}
+              />
+              <span>Marcar como pago</span>
+            </label>
+          </div>
+        )}
+
+        {formData.paymentMethod === 'credit_card' && (
+          <div className={styles.infoBox}>
+            <span>💳 Transações no cartão de crédito são pagas quando a fatura é quitada</span>
+          </div>
+        )}
 
         {/* Actions */}
         <div className={styles.actions}>
