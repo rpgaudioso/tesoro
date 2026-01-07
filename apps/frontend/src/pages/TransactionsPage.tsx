@@ -1,12 +1,13 @@
 import PageHeader from '@/components/Layout/PageHeader';
 import CreateTransactionModal from '@/components/Transactions/CreateTransactionModal';
+import EditTransactionModal from '@/components/Transactions/EditTransactionModal';
 import Badge from '@/components/UI/Badge';
 import Button from '@/components/UI/Button';
 import Card from '@/components/UI/Card';
 import { useAuth } from '@/contexts/AuthContext';
 import { useWorkspaceChange } from '@/hooks/useWorkspaceChange';
 import api from '@/lib/api';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import type { Account, Category, Person, Transaction } from '@tesoro/shared';
 import {
     ArrowDownCircle,
@@ -15,18 +16,23 @@ import {
     Check,
     DollarSign,
     Download,
+    Edit2,
     FileDown,
     Filter,
+    MoreHorizontal,
     Plus,
     Search,
+    Trash2,
     Upload,
     X,
 } from 'lucide-react';
 import { useState } from 'react';
+import { toast } from 'sonner';
 import styles from './TransactionsPage.module.css';
 
 export default function TransactionsPage() {
   const { currentWorkspace } = useAuth();
+  const queryClient = useQueryClient();
   useWorkspaceChange();
 
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
@@ -37,6 +43,8 @@ export default function TransactionsPage() {
   const [filterAccountId, setFilterAccountId] = useState('');
   const [filterCategoryId, setFilterCategoryId] = useState('');
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [selectedTransactions, setSelectedTransactions] = useState<Set<string>>(new Set());
+  const [editingTransaction, setEditingTransaction] = useState<Transaction | null>(null);
 
   // Build query params
   const buildQueryUrl = () => {
@@ -160,6 +168,54 @@ export default function TransactionsPage() {
         Pendente
       </Badge>
     );
+  };
+
+  // Selection handlers
+  const toggleSelectAll = () => {
+    if (selectedTransactions.size === filteredTransactions.length) {
+      setSelectedTransactions(new Set());
+    } else {
+      setSelectedTransactions(new Set(filteredTransactions.map(t => t.id)));
+    }
+  };
+
+  const toggleSelectTransaction = (id: string) => {
+    const newSelected = new Set(selectedTransactions);
+    if (newSelected.has(id)) {
+      newSelected.delete(id);
+    } else {
+      newSelected.add(id);
+    }
+    setSelectedTransactions(newSelected);
+  };
+
+  const handleDelete = async () => {
+    if (selectedTransactions.size === 0) return;
+    
+    const confirmed = window.confirm(
+      `Tem certeza que deseja excluir ${selectedTransactions.size} transação(ões)?`
+    );
+    
+    if (!confirmed) return;
+
+    try {
+      await Promise.all(
+        Array.from(selectedTransactions).map(id => 
+          api.delete(`/transactions/${id}`)
+        )
+      );
+      
+      queryClient.invalidateQueries({ queryKey: ['transactions'] });
+      setSelectedTransactions(new Set());
+      toast.success(`${selectedTransactions.size} transação(ões) excluída(s) com sucesso!`);
+    } catch (error) {
+      console.error('Error deleting transactions:', error);
+      toast.error('Erro ao excluir transações');
+    }
+  };
+
+  const handleEdit = (transaction: Transaction) => {
+    setEditingTransaction(transaction);
   };
 
   const months = [
@@ -308,22 +364,48 @@ export default function TransactionsPage() {
         </div>
 
         <div className={styles.actions}>
-          <Button variant="secondary" size="md">
-            <Filter size={18} />
-            Filtro Avançado
-          </Button>
-          <Button variant="primary" size="md" onClick={() => setIsCreateModalOpen(true)}>
-            <Plus size={18} />
-            Nova Transação
-          </Button>
-          <Button variant="secondary" size="md">
-            <Upload size={18} />
-            Importar
-          </Button>
-          <Button variant="secondary" size="md">
-            <Download size={18} />
-            Exportar
-          </Button>
+          {selectedTransactions.size > 0 ? (
+            <>
+              <span className={styles.selectionCount}>
+                {selectedTransactions.size} selecionada(s)
+              </span>
+              <Button variant="secondary" size="md" onClick={() => {
+                if (selectedTransactions.size === 1) {
+                  const transaction = filteredTransactions.find(t => selectedTransactions.has(t.id));
+                  if (transaction) handleEdit(transaction);
+                }
+              }} disabled={selectedTransactions.size !== 1}>
+                <Edit2 size={18} />
+                Editar
+              </Button>
+              <Button variant="danger" size="md" onClick={handleDelete}>
+                <Trash2 size={18} />
+                Excluir
+              </Button>
+              <Button variant="secondary" size="md" onClick={() => setSelectedTransactions(new Set())}>
+                Cancelar
+              </Button>
+            </>
+          ) : (
+            <>
+              <Button variant="secondary" size="md">
+                <Filter size={18} />
+                Filtro Avançado
+              </Button>
+              <Button variant="primary" size="md" onClick={() => setIsCreateModalOpen(true)}>
+                <Plus size={18} />
+                Nova Transação
+              </Button>
+              <Button variant="secondary" size="md">
+                <Upload size={18} />
+                Importar
+              </Button>
+              <Button variant="secondary" size="md">
+                <Download size={18} />
+                Exportar
+              </Button>
+            </>
+          )}
         </div>
       </div>
 
@@ -334,7 +416,11 @@ export default function TransactionsPage() {
             <thead>
               <tr>
                 <th>
-                  <input type="checkbox" />
+                  <input 
+                    type="checkbox" 
+                    checked={selectedTransactions.size === filteredTransactions.length && filteredTransactions.length > 0}
+                    onChange={toggleSelectAll}
+                  />
                 </th>
                 <th>DATA</th>
                 <th>DESCRIÇÃO</th>
@@ -345,12 +431,13 @@ export default function TransactionsPage() {
                 <th>VALOR</th>
                 <th>STATUS</th>
                 <th>PAGO</th>
+                <th>AÇÕES</th>
               </tr>
             </thead>
             <tbody>
               {filteredTransactions.length === 0 ? (
                 <tr>
-                  <td colSpan={10} className={styles.emptyState}>
+                  <td colSpan={11} className={styles.emptyState}>
                     <div className={styles.emptyContent}>
                       <FileDown size={48} />
                       <p>Nenhuma transação encontrada</p>
@@ -364,7 +451,11 @@ export default function TransactionsPage() {
                 filteredTransactions.map((transaction) => (
                   <tr key={transaction.id} className={styles.tableRow}>
                     <td>
-                      <input type="checkbox" />
+                      <input 
+                        type="checkbox"
+                        checked={selectedTransactions.has(transaction.id)}
+                        onChange={() => toggleSelectTransaction(transaction.id)}
+                      />
                     </td>
                     <td className={styles.dateCell}>
                       {formatDate(transaction.date)}
@@ -407,6 +498,27 @@ export default function TransactionsPage() {
                     </td>
                     <td>{getTypeBadge(transaction.type)}</td>
                     <td>{getStatusBadge(transaction.paid)}</td>
+                    <td>
+                      <div className={styles.actionsCell}>
+                        <button 
+                          className={styles.actionButton}
+                          onClick={() => handleEdit(transaction)}
+                          title="Editar"
+                        >
+                          <Edit2 size={16} />
+                        </button>
+                        <button 
+                          className={styles.actionButton}
+                          onClick={() => {
+                            setSelectedTransactions(new Set([transaction.id]));
+                            handleDelete();
+                          }}
+                          title="Excluir"
+                        >
+                          <Trash2 size={16} />
+                        </button>
+                      </div>
+                    </td>
                   </tr>
                 ))
               )}
@@ -416,6 +528,13 @@ export default function TransactionsPage() {
       </Card>
 
       <CreateTransactionModal isOpen={isCreateModalOpen} onClose={() => setIsCreateModalOpen(false)} />
+      {editingTransaction && (
+        <EditTransactionModal 
+          isOpen={!!editingTransaction} 
+          onClose={() => setEditingTransaction(null)} 
+          transaction={editingTransaction}
+        />
+      )}
     </div>
   );
 }
