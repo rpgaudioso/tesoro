@@ -11,6 +11,7 @@ import DashboardPage from './pages/DashboardPage';
 import { Imports } from './pages/Imports';
 import InvoiceDetailPage from './pages/InvoiceDetailPage';
 import LoginPage from './pages/LoginPage';
+import RecurringTransactionsPage from './pages/RecurringTransactionsPage';
 import RegisterPage from './pages/RegisterPage';
 import SettingsPage from './pages/SettingsPage';
 import TransactionsPage from './pages/TransactionsPage';
@@ -49,6 +50,7 @@ function App() {
           <Route index element={<Navigate to="/app/dashboard" />} />
           <Route path="dashboard" element={<DashboardPage />} />
           <Route path="transactions" element={<TransactionsPage />} />
+          <Route path="recurring-transactions" element={<RecurringTransactionsPage />} />
           <Route path="imports" element={<Imports />} />
           <Route path="budgets" element={<BudgetsPage />} />
           <Route path="categories" element={<CategoriesPage />} />

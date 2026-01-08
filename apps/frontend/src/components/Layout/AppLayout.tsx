@@ -1,4 +1,4 @@
-import { Bell, CreditCard, LayoutDashboard, Menu, RotateCcw, Search, Tag, TrendingUp, Upload, Wallet } from 'lucide-react';
+import { Bell, CreditCard, LayoutDashboard, Menu, Repeat, RotateCcw, Search, Tag, TrendingUp, Upload, Wallet } from 'lucide-react';
 import { useState } from 'react';
 import { NavLink, Outlet, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
@@ -78,6 +78,16 @@ export default function AppLayout() {
             >
               <TrendingUp size={20} />
               {!sidebarCollapsed && <span>Transações</span>}
+            </NavLink>
+            <NavLink
+              to="/app/recurring-transactions"
+              className={({ isActive }) =>
+                `${styles.sidebarLink} ${isActive ? styles.sidebarActive : ''}`
+              }
+              title="Transações Recorrentes"
+            >
+              <Repeat size={20} />
+              {!sidebarCollapsed && <span>Recorrentes</span>}
             </NavLink>
             <NavLink
               to="/app/imports"

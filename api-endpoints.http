@@ -1,0 +1,566 @@
+### ===========================================
+### TESORO API - ENDPOINTS DOCUMENTATION
+### ===========================================
+### Base URL: http://localhost:3000/api
+### 
+### Variables (set these after login):
+@baseUrl = http://localhost:3000/api
+@token = seu-token-aqui
+@workspaceId = seu-workspace-id-aqui
+
+### ===========================================
+### 🔐 AUTH - Authentication
+### ===========================================
+
+### Register new user
+POST {{baseUrl}}/auth/register
+Content-Type: application/json
+
+{
+  "email": "user@example.com",
+  "password": "password123",
+  "workspaceName": "Minha Família"
+}
+
+### Login
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "demo@tesoro.com",
+  "password": "password123"
+}
+
+### Reset user data (with optional auto seed)
+POST {{baseUrl}}/auth/reset-user-data
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "autoSeed": true
+}
+
+### ===========================================
+### 🏢 WORKSPACES - Workspace Management
+### ===========================================
+
+### List all workspaces
+GET {{baseUrl}}/workspaces
+Authorization: Bearer {{token}}
+
+### Create workspace
+POST {{baseUrl}}/workspaces
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "name": "Novo Workspace"
+}
+
+### Get workspace by ID
+GET {{baseUrl}}/workspaces/{{workspaceId}}
+Authorization: Bearer {{token}}
+
+### Update workspace
+PATCH {{baseUrl}}/workspaces/{{workspaceId}}
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "name": "Workspace Atualizado"
+}
+
+### Delete workspace
+DELETE {{baseUrl}}/workspaces/{{workspaceId}}
+Authorization: Bearer {{token}}
+
+### ===========================================
+### 👥 PEOPLE - People Management
+### ===========================================
+
+### List all people
+GET {{baseUrl}}/people
+Authorization: Bearer {{token}}
+x-workspace-id: {{workspaceId}}
+
+### Create person
+POST {{baseUrl}}/people
+Authorization: Bearer {{token}}
+x-workspace-id: {{workspaceId}}
+Content-Type: application/json
+
+{
+  "name": "João Silva",
+  "email": "joao@example.com",
+  "photoUrl": "https://example.com/photo.jpg"
+}
+
+### Get person by ID
+GET {{baseUrl}}/people/person-id
+Authorization: Bearer {{token}}
+x-workspace-id: {{workspaceId}}
+
+### Update person
+PATCH {{baseUrl}}/people/person-id
+Authorization: Bearer {{token}}
+x-workspace-id: {{workspaceId}}
+Content-Type: application/json
+
+{
+  "name": "João Silva Santos"
+}
+
+### Delete person
+DELETE {{baseUrl}}/people/person-id
+Authorization: Bearer {{token}}
+x-workspace-id: {{workspaceId}}
+
+### ===========================================
+### 📂 CATEGORIES - Category Management
+### ===========================================
+
+### List all categories
+GET {{baseUrl}}/categories
+Authorization: Bearer {{token}}
+x-workspace-id: {{workspaceId}}
+
+### Create category
+POST {{baseUrl}}/categories
+Authorization: Bearer {{token}}
+x-workspace-id: {{workspaceId}}
+Content-Type: application/json
+
+{
+  "name": "Supermercado",
+  "icon": "🛒",
+  "color": "#10b981",
+  "type": "EXPENSE",
+  "monthlyLimit": 1500.00
+}
+
+### Get category by ID
+GET {{baseUrl}}/categories/category-id
+Authorization: Bearer {{token}}
+x-workspace-id: {{workspaceId}}
+
+### Update category
+PATCH {{baseUrl}}/categories/category-id
+Authorization: Bearer {{token}}
+x-workspace-id: {{workspaceId}}
+Content-Type: application/json
+
+{
+  "monthlyLimit": 2000.00
+}
+
+### Delete category
+DELETE {{baseUrl}}/categories/category-id
+Authorization: Bearer {{token}}
+x-workspace-id: {{workspaceId}}
+
+### ===========================================
+### 🏦 ACCOUNTS - Account Management
+### ===========================================
+
+### List all accounts
+GET {{baseUrl}}/accounts
+Authorization: Bearer {{token}}
+x-workspace-id: {{workspaceId}}
+
+### Create account
+POST {{baseUrl}}/accounts
+Authorization: Bearer {{token}}
+x-workspace-id: {{workspaceId}}
+Content-Type: application/json
+
+{
+  "name": "Conta Corrente",
+  "type": "CHECKING",
+  "initialBalance": 1000.00,
+  "personId": "person-id-optional"
+}
+
+### Get account by ID
+GET {{baseUrl}}/accounts/account-id
+Authorization: Bearer {{token}}
+x-workspace-id: {{workspaceId}}
+
+### Update account
+PATCH {{baseUrl}}/accounts/account-id
+Authorization: Bearer {{token}}
+x-workspace-id: {{workspaceId}}
+Content-Type: application/json
+
+{
+  "name": "Conta Poupança"
+}
+
+### Delete account
+DELETE {{baseUrl}}/accounts/account-id
+Authorization: Bearer {{token}}
+x-workspace-id: {{workspaceId}}
+
+### ===========================================
+### 💰 BUDGETS - Budget Management
+### ===========================================
+
+### Get budget for specific month
+GET {{baseUrl}}/budgets/2026-01
+Authorization: Bearer {{token}}
+x-workspace-id: {{workspaceId}}
+
+### Update/Create budget for month
+PUT {{baseUrl}}/budgets/2026-01
+Authorization: Bearer {{token}}
+x-workspace-id: {{workspaceId}}
+Content-Type: application/json
+
+{
+  "categoryBudgets": [
+    {
+      "categoryId": "category-id",
+      "budgetAmount": 1500.00
+    }
+  ]
+}
+
+### ===========================================
+### 💸 TRANSACTIONS - Transaction Management
+### ===========================================
+
+### List transactions (with filters)
+GET {{baseUrl}}/transactions?year=2026&month=01&type=EXPENSE
+Authorization: Bearer {{token}}
+x-workspace-id: {{workspaceId}}
+
+### Create transaction
+POST {{baseUrl}}/transactions
+Authorization: Bearer {{token}}
+x-workspace-id: {{workspaceId}}
+Content-Type: application/json
+
+{
+  "description": "Compras no mercado",
+  "amount": 250.50,
+  "date": "2026-01-08",
+  "type": "EXPENSE",
+  "status": "PAID",
+  "categoryId": "category-id",
+  "accountId": "account-id",
+  "personId": "person-id-optional",
+  "competenceMonth": "2026-01"
+}
+
+### Get transaction by ID
+GET {{baseUrl}}/transactions/transaction-id
+Authorization: Bearer {{token}}
+x-workspace-id: {{workspaceId}}
+
+### Update transaction
+PATCH {{baseUrl}}/transactions/transaction-id
+Authorization: Bearer {{token}}
+x-workspace-id: {{workspaceId}}
+Content-Type: application/json
+
+{
+  "status": "PAID",
+  "paymentDate": "2026-01-08"
+}
+
+### Delete transaction
+DELETE {{baseUrl}}/transactions/transaction-id
+Authorization: Bearer {{token}}
+x-workspace-id: {{workspaceId}}
+
+### ===========================================
+### 💳 CREDIT CARDS - Credit Card Management
+### ===========================================
+
+### List all credit cards
+GET {{baseUrl}}/workspaces/{{workspaceId}}/credit-cards
+Authorization: Bearer {{token}}
+
+### Create credit card
+POST {{baseUrl}}/workspaces/{{workspaceId}}/credit-cards
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "name": "Cartão Mastercard",
+  "lastFourDigits": "1234",
+  "brand": "Mastercard",
+  "limit": 5000.00,
+  "closingDay": 15,
+  "dueDay": 25,
+  "personId": "person-id"
+}
+
+### Get credit card by ID
+GET {{baseUrl}}/workspaces/{{workspaceId}}/credit-cards/card-id
+Authorization: Bearer {{token}}
+
+### Update credit card
+PATCH {{baseUrl}}/workspaces/{{workspaceId}}/credit-cards/card-id
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "limit": 8000.00
+}
+
+### Delete credit card
+DELETE {{baseUrl}}/workspaces/{{workspaceId}}/credit-cards/card-id
+Authorization: Bearer {{token}}
+
+### Ensure invoice exists for card
+POST {{baseUrl}}/workspaces/{{workspaceId}}/credit-cards/card-id/invoices/ensure
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "month": "2026-01"
+}
+
+### Upload invoice file
+POST {{baseUrl}}/workspaces/{{workspaceId}}/credit-cards/card-id/invoices/upload
+Authorization: Bearer {{token}}
+Content-Type: multipart/form-data
+
+### Get card invoices
+GET {{baseUrl}}/workspaces/{{workspaceId}}/credit-cards/card-id/invoices?from=2026-01&to=2026-12
+Authorization: Bearer {{token}}
+
+### ===========================================
+### 🧾 INVOICES - Invoice Management
+### ===========================================
+
+### Get invoice by ID
+GET {{baseUrl}}/workspaces/{{workspaceId}}/invoices/invoice-id
+Authorization: Bearer {{token}}
+
+### Close invoice
+POST {{baseUrl}}/workspaces/{{workspaceId}}/invoices/invoice-id/close
+Authorization: Bearer {{token}}
+
+### Pay invoice
+POST {{baseUrl}}/workspaces/{{workspaceId}}/invoices/invoice-id/pay
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "paymentDate": "2026-01-25",
+  "accountId": "account-id",
+  "amount": 2500.00
+}
+
+### Get invoice payment
+GET {{baseUrl}}/workspaces/{{workspaceId}}/invoices/invoice-id/payment
+Authorization: Bearer {{token}}
+
+### Create charge in invoice
+POST {{baseUrl}}/workspaces/{{workspaceId}}/invoices/invoice-id/charges
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "description": "Compra Amazon",
+  "amount": 199.90,
+  "date": "2026-01-10",
+  "categoryId": "category-id",
+  "personId": "person-id-optional",
+  "installments": 3,
+  "currentInstallment": 1
+}
+
+### Get invoice charges
+GET {{baseUrl}}/workspaces/{{workspaceId}}/invoices/invoice-id/charges?categoryId=category-id&q=amazon
+Authorization: Bearer {{token}}
+
+### ===========================================
+### 🔖 CHARGES - Charge Management
+### ===========================================
+
+### Update charge
+PATCH {{baseUrl}}/workspaces/{{workspaceId}}/charges/charge-id
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "description": "Compra Amazon - Atualizado",
+  "categoryId": "new-category-id"
+}
+
+### Delete charge
+DELETE {{baseUrl}}/workspaces/{{workspaceId}}/charges/charge-id
+Authorization: Bearer {{token}}
+
+### ===========================================
+### 📊 DASHBOARD - Dashboard Analytics
+### ===========================================
+
+### Get dashboard summary
+GET {{baseUrl}}/dashboard?month=2026-01
+Authorization: Bearer {{token}}
+x-workspace-id: {{workspaceId}}
+
+### Get yearly balance
+GET {{baseUrl}}/dashboard/yearly-balance?year=2026
+Authorization: Bearer {{token}}
+x-workspace-id: {{workspaceId}}
+
+### Get last 12 months data
+GET {{baseUrl}}/dashboard/last-12-months
+Authorization: Bearer {{token}}
+x-workspace-id: {{workspaceId}}
+
+### ===========================================
+### 📥 IMPORTS - Import Management
+### ===========================================
+
+### Get available parsers
+GET {{baseUrl}}/imports/parsers
+Authorization: Bearer {{token}}
+x-workspace-id: {{workspaceId}}
+
+### Upload file for import
+POST {{baseUrl}}/imports/upload
+Authorization: Bearer {{token}}
+x-workspace-id: {{workspaceId}}
+Content-Type: multipart/form-data
+
+### Create import batch
+POST {{baseUrl}}/imports
+Authorization: Bearer {{token}}
+x-workspace-id: {{workspaceId}}
+Content-Type: application/json
+
+{
+  "fileName": "extrato.csv",
+  "parser": "santander-checking",
+  "defaultAccountId": "account-id",
+  "defaultCategoryId": "category-id"
+}
+
+### Get import batch by ID
+GET {{baseUrl}}/imports/batch-id
+Authorization: Bearer {{token}}
+x-workspace-id: {{workspaceId}}
+
+### Get import preview
+GET {{baseUrl}}/imports/batch-id/preview
+Authorization: Bearer {{token}}
+x-workspace-id: {{workspaceId}}
+
+### Update import row
+PATCH {{baseUrl}}/imports/batch-id/rows/row-id
+Authorization: Bearer {{token}}
+x-workspace-id: {{workspaceId}}
+Content-Type: application/json
+
+{
+  "categoryId": "new-category-id",
+  "ignore": false
+}
+
+### Confirm import batch
+POST {{baseUrl}}/imports/batch-id/confirm
+Authorization: Bearer {{token}}
+x-workspace-id: {{workspaceId}}
+
+### Delete import batch
+DELETE {{baseUrl}}/imports/batch-id
+Authorization: Bearer {{token}}
+x-workspace-id: {{workspaceId}}
+
+### ===========================================
+### 🔁 RECURRING TRANSACTIONS - Recurring Transactions
+### ===========================================
+
+### List all recurring transactions
+GET {{baseUrl}}/recurring-transactions
+Authorization: Bearer {{token}}
+x-workspace-id: {{workspaceId}}
+
+### Create recurring transaction
+POST {{baseUrl}}/recurring-transactions
+Authorization: Bearer {{token}}
+x-workspace-id: {{workspaceId}}
+Content-Type: application/json
+
+{
+  "name": "Aluguel",
+  "description": "Aluguel mensal do apartamento",
+  "amount": 2000.00,
+  "type": "EXPENSE",
+  "frequency": "MONTHLY",
+  "dayOfMonth": 10,
+  "startDate": "2026-01-01",
+  "endDate": "2026-12-31",
+  "categoryId": "category-id",
+  "accountId": "account-id",
+  "personId": "person-id-optional",
+  "isActive": true
+}
+
+### Get recurring transaction by ID
+GET {{baseUrl}}/recurring-transactions/recurring-id
+Authorization: Bearer {{token}}
+x-workspace-id: {{workspaceId}}
+
+### Update recurring transaction
+PUT {{baseUrl}}/recurring-transactions/recurring-id
+Authorization: Bearer {{token}}
+x-workspace-id: {{workspaceId}}
+Content-Type: application/json
+
+{
+  "amount": 2200.00,
+  "isActive": true
+}
+
+### Delete recurring transaction
+DELETE {{baseUrl}}/recurring-transactions/recurring-id
+Authorization: Bearer {{token}}
+x-workspace-id: {{workspaceId}}
+
+### ===========================================
+### 📝 NOTES
+### ===========================================
+# 
+# Authentication:
+# - Most endpoints require Bearer token authentication
+# - Get token from login endpoint
+# - Set token in @token variable above
+#
+# Workspace Header:
+# - Most endpoints require x-workspace-id header
+# - Get workspaceId after login or from workspaces list
+# - Set in @workspaceId variable above
+#
+# Date Formats:
+# - Dates: YYYY-MM-DD (e.g., 2026-01-08)
+# - Months: YYYY-MM (e.g., 2026-01)
+# - DateTime: ISO-8601 format
+#
+# Transaction Types:
+# - INCOME: Receita
+# - EXPENSE: Despesa
+#
+# Transaction Status:
+# - PENDING: Pendente
+# - PAID: Pago
+# - CANCELLED: Cancelado
+#
+# Recurring Frequencies:
+# - MINUTELY: A cada minuto (apenas teste)
+# - DAILY: Diária
+# - WEEKLY: Semanal
+# - MONTHLY: Mensal
+# - YEARLY: Anual
+#
+# Account Types:
+# - CHECKING: Conta Corrente
+# - SAVINGS: Poupança
+# - INVESTMENT: Investimento
+# - CASH: Dinheiro
+#

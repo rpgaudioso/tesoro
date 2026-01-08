@@ -5,6 +5,7 @@ import {
   CreditCardStatus,
   ImportStatus,
   MemberRole,
+  RecurringFrequency,
   TransactionKind,
   TransactionStatus,
   TransactionType,
@@ -214,4 +215,25 @@ export interface CategoryTotal {
   categoryIcon?: string;
   categoryColor?: string;
   total: number;
+}
+
+export interface RecurringTransaction {
+  id: string;
+  workspaceId: string;
+  name: string;
+  description?: string;
+  amount: number;
+  type: TransactionType;
+  frequency: RecurringFrequency;
+  dayOfMonth?: number;
+  dayOfWeek?: number;
+  startDate: Date;
+  endDate?: Date;
+  categoryId: string;
+  accountId?: string;
+  personId?: string;
+  isActive: boolean;
+  lastRunAt?: Date;
+  createdAt: Date;
+  updatedAt: Date;
 }

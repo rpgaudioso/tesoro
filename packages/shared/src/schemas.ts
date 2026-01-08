@@ -1,5 +1,10 @@
 import { z } from "zod";
-import { AccountType, TransactionStatus, TransactionType } from "./enums.js";
+import {
+  AccountType,
+  RecurringFrequency,
+  TransactionStatus,
+  TransactionType,
+} from "./enums.js";
 
 // Auth schemas
 export const registerSchema = z.object({
@@ -89,6 +94,26 @@ export const updateBudgetsSchema = z.object({
   budgets: z.array(upsertBudgetSchema),
 });
 
+// Recurring Transaction schemas
+export const createRecurringTransactionSchema = z.object({
+  name: z.string().min(1).max(200),
+  description: z.string().max(500).optional(),
+  amount: z.number().positive(),
+  type: z.nativeEnum(TransactionType),
+  frequency: z.nativeEnum(RecurringFrequency),
+  dayOfMonth: z.number().int().min(1).max(31).optional(),
+  dayOfWeek: z.number().int().min(0).max(6).optional(),
+  startDate: z.string().or(z.date()),
+  endDate: z.string().or(z.date()).optional(),
+  categoryId: z.string().uuid(),
+  accountId: z.string().uuid().optional(),
+  personId: z.string().uuid().optional(),
+  isActive: z.boolean().default(true),
+});
+
+export const updateRecurringTransactionSchema =
+  createRecurringTransactionSchema.partial();
+
 export type RegisterDto = z.infer<typeof registerSchema>;
 export type LoginDto = z.infer<typeof loginSchema>;
 export type CreateWorkspaceDto = z.infer<typeof createWorkspaceSchema>;
@@ -102,3 +127,9 @@ export type CreateTransactionDto = z.infer<typeof createTransactionSchema>;
 export type UpdateTransactionDto = z.infer<typeof updateTransactionSchema>;
 export type UpsertBudgetDto = z.infer<typeof upsertBudgetSchema>;
 export type UpdateBudgetsDto = z.infer<typeof updateBudgetsSchema>;
+export type CreateRecurringTransactionDto = z.infer<
+  typeof createRecurringTransactionSchema
+>;
+export type UpdateRecurringTransactionDto = z.infer<
+  typeof updateRecurringTransactionSchema
+>;

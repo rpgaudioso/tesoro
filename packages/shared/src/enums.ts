@@ -54,3 +54,11 @@ export enum CreditCardInvoiceStatus {
   CLOSED = "CLOSED",
   PAID = "PAID",
 }
+
+export enum RecurringFrequency {
+  MINUTELY = "MINUTELY",
+  DAILY = "DAILY",
+  WEEKLY = "WEEKLY",
+  MONTHLY = "MONTHLY",
+  YEARLY = "YEARLY",
+}
