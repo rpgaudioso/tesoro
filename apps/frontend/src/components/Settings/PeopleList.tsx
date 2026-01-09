@@ -1,7 +1,8 @@
+import ConfirmDialog from '@/components/UI/ConfirmDialog';
 import { createPerson, deletePerson, getPeople, updatePerson } from '@/lib/settingsApi';
 import { Edit2, Plus, Trash2, Upload, X } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
-import { toast } from 'sonner';
+import { toast } from '../UI';
 import styles from './PeopleList.module.css';
 
 // Helper para gerar URL completa da imagem
@@ -26,6 +27,8 @@ export default function PeopleList() {
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
+  const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
+  const [personToDelete, setPersonToDelete] = useState<string | null>(null);
   const [formData, setFormData] = useState({ 
     name: '', 
     color: '#3B82F6', 
@@ -98,15 +101,23 @@ export default function PeopleList() {
     setShowForm(true);
   };
 
-  const handleDelete = async (id: string) => {
-    if (!confirm('Tem certeza que deseja deletar?')) return;
+  const handleDelete = (id: string) => {
+    setPersonToDelete(id);
+    setDeleteConfirmOpen(true);
+  };
+
+  const confirmDelete = async () => {
+    if (!personToDelete) return;
 
     try {
-      await deletePerson(id);
+      await deletePerson(personToDelete);
       toast.success('Pessoa deletada');
       await loadPeople();
     } catch (error) {
       toast.error('Erro ao deletar pessoa');
+    } finally {
+      setDeleteConfirmOpen(false);
+      setPersonToDelete(null);
     }
   };
 
@@ -302,6 +313,17 @@ export default function PeopleList() {
           </tbody>
         </table>
       )}
+
+      <ConfirmDialog
+        isOpen={deleteConfirmOpen}
+        title="Confirmar Exclusão"
+        message="Tem certeza que deseja deletar esta pessoa?"
+        confirmLabel="Excluir"
+        cancelLabel="Cancelar"
+        onConfirm={confirmDelete}
+        onCancel={() => setDeleteConfirmOpen(false)}
+        variant="danger"
+      />
     </div>
   );
 }

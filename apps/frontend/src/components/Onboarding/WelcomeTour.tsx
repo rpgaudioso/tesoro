@@ -4,7 +4,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { ArrowRight, Building2, CheckCircle, CreditCard, User } from 'lucide-react';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { toast } from 'sonner';
+import { toast } from '../UI';
 import styles from './WelcomeTour.module.css';
 
 type Step = 'welcome' | 'workspace' | 'person' | 'account' | 'complete';

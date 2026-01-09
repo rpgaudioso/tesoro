@@ -1,0 +1,136 @@
+.notification {
+  display: flex;
+  gap: var(--spacing-12);
+  padding: var(--spacing-16);
+  border-radius: var(--radius-8);
+  border-left: 4px solid;
+  background: var(--color-bg);
+  box-shadow: var(--shadow-md);
+  max-width: 480px;
+}
+
+.notification.inline {
+  box-shadow: none;
+  border: 1px solid;
+  border-left-width: 4px;
+}
+
+.iconContainer {
+  flex-shrink: 0;
+  display: flex;
+  align-items: flex-start;
+  padding-top: 2px;
+}
+
+.icon {
+  flex-shrink: 0;
+}
+
+.content {
+  flex: 1;
+  min-width: 0;
+}
+
+.header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--spacing-12);
+}
+
+.title {
+  font-size: var(--font-sm);
+  font-weight: var(--font-semibold);
+  margin: 0;
+  color: var(--color-text);
+}
+
+.subtitle {
+  font-size: var(--font-sm);
+  color: var(--color-text-secondary);
+  margin: var(--spacing-4) 0 0 0;
+}
+
+.body {
+  margin-top: var(--spacing-12);
+  font-size: var(--font-sm);
+  color: var(--color-text-secondary);
+}
+
+.actions {
+  margin-top: var(--spacing-12);
+  display: flex;
+  gap: var(--spacing-8);
+}
+
+.closeButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spacing-4);
+  background: transparent;
+  border: none;
+  border-radius: var(--radius-6);
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  transition: all 0.2s;
+  flex-shrink: 0;
+}
+
+.closeButton:hover {
+  background: var(--color-bg-secondary);
+  color: var(--color-text);
+}
+
+/* Variants */
+.notification.info {
+  border-left-color: var(--color-primary);
+}
+
+.notification.info.inline {
+  border-color: var(--color-primary-light);
+  background: var(--color-primary-light);
+}
+
+.notification.info .icon {
+  color: var(--color-primary);
+}
+
+.notification.success {
+  border-left-color: var(--color-success);
+}
+
+.notification.success.inline {
+  border-color: var(--color-success-light);
+  background: var(--color-success-light);
+}
+
+.notification.success .icon {
+  color: var(--color-success);
+}
+
+.notification.warning {
+  border-left-color: var(--color-warning);
+}
+
+.notification.warning.inline {
+  border-color: var(--color-warning-light);
+  background: var(--color-warning-light);
+}
+
+.notification.warning .icon {
+  color: var(--color-warning);
+}
+
+.notification.error {
+  border-left-color: var(--color-danger);
+}
+
+.notification.error.inline {
+  border-color: var(--color-danger-light);
+  background: var(--color-danger-light);
+}
+
+.notification.error .icon {
+  color: var(--color-danger);
+}

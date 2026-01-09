@@ -1,7 +1,8 @@
+import { Button, Card, Checkbox, ConfirmDialog, EmptyState, IconButton, Input, Modal } from '@/components/UI';
 import { createWorkspace, deleteWorkspace, getPeople, getWorkspaces, updateWorkspace } from '@/lib/settingsApi';
-import { Edit2, Plus, Trash2 } from 'lucide-react';
+import { Edit2, Inbox, Plus, Trash2 } from 'lucide-react';
 import { useEffect, useState } from 'react';
-import { toast } from 'sonner';
+import { toast } from '../UI';
 import styles from './WorkspaceList.module.css';
 
 // Helper para gerar URL completa da imagem
@@ -132,159 +133,126 @@ export default function WorkspaceList() {
     <div className={styles.container}>
       <div className={styles.header}>
         <h2>Workspaces</h2>
-        <button className={styles.btnPrimary} onClick={() => setShowForm(!showForm)}>
+        <Button onClick={() => setShowForm(!showForm)}>
           <Plus size={18} />
           Nova Workspace
-        </button>
+        </Button>
       </div>
 
       {showForm && (
-        <form onSubmit={handleSubmit} className={styles.form}>
-          <div className={styles.formGroup}>
-            <label className={styles.label}>Nome da Workspace</label>
-            <input
+        <Card padding="md" className={styles.formCard}>
+          <form onSubmit={handleSubmit} className={styles.form}>
+            <Input
+              label="Nome da Workspace"
               type="text"
               placeholder="Digite o nome da workspace"
               value={formData.name}
               onChange={(e) => setFormData({ name: e.target.value })}
-              className={styles.input}
+              fullWidth
               autoFocus
             />
-          </div>
-          <div className={styles.formActions}>
-            <button
-              type="button"
-              className={styles.btnSecondary}
-              onClick={() => setShowForm(false)}
-            >
-              Cancelar
-            </button>
-            <button type="submit" className={styles.btnPrimary}>
-              Criar
-            </button>
-          </div>
-        </form>
+            <div className={styles.formActions}>
+              <Button
+                type="button"
+                variant="secondary"
+                onClick={() => setShowForm(false)}
+              >
+                Cancelar
+              </Button>
+              <Button type="submit">
+                Criar
+              </Button>
+            </div>
+          </form>
+        </Card>
       )}
 
       {showEditForm && editingId && (
-        <div className={styles.modalOverlay}>
-          <div className={styles.modal}>
-            <div className={styles.modalHeader}>
-              <h3>Editar Workspace</h3>
-              <button
+        <Modal
+          isOpen={showEditForm}
+          onClose={() => {
+            setShowEditForm(false);
+            setEditingId(null);
+          }}
+          title="Editar Workspace"
+        >
+          <form onSubmit={handleEditSubmit} className={styles.modalForm}>
+            <Input
+              label="Nome da Workspace"
+              type="text"
+              placeholder="Digite o nome da workspace"
+              value={editFormData.name}
+              onChange={(e) => setEditFormData({ ...editFormData, name: e.target.value })}
+              fullWidth
+              autoFocus
+            />
+            <div className={styles.formGroup}>
+              <label className={styles.label}>Associar Pessoas</label>
+              {people.length === 0 ? (
+                <p className={styles.placeholder}>Nenhuma pessoa cadastrada. Cadastre pessoas primeiro.</p>
+              ) : (
+                <div className={styles.checkboxGroup}>
+                  {people.map((person) => (
+                    <Checkbox
+                      key={person.id}
+                      checked={editFormData.personIds.includes(person.id)}
+                      onChange={() => togglePersonSelection(person.id)}
+                      label={
+                        <div className={styles.checkboxContent}>
+                          <span
+                            className={styles.personColor}
+                            style={{ backgroundColor: person.color || 'var(--color-primary)' }}
+                          />
+                          {person.name}
+                        </div>
+                      }
+                    />
+                  ))}
+                </div>
+              )}
+            </div>
+            <div className={styles.formActions}>
+              <Button
                 type="button"
-                className={styles.closeButton}
+                variant="secondary"
                 onClick={() => {
                   setShowEditForm(false);
                   setEditingId(null);
                 }}
               >
-                ✕
-              </button>
+                Cancelar
+              </Button>
+              <Button type="submit">
+                Atualizar
+              </Button>
             </div>
-            <form onSubmit={handleEditSubmit} className={styles.modalForm}>
-              <div className={styles.formGroup}>
-                <label className={styles.label}>Nome da Workspace</label>
-                <input
-                  type="text"
-                  placeholder="Digite o nome da workspace"
-                  value={editFormData.name}
-                  onChange={(e) => setEditFormData({ ...editFormData, name: e.target.value })}
-                  className={styles.input}
-                  autoFocus
-                />
-              </div>
-              <div className={styles.formGroup}>
-                <label className={styles.label}>Associar Pessoas</label>
-                <div className={styles.checkboxGroup}>
-                  {people.length === 0 ? (
-                    <p className={styles.placeholder}>Nenhuma pessoa cadastrada. Cadastre pessoas primeiro.</p>
-                  ) : (
-                    people.map((person) => (
-                      <label key={person.id} className={styles.checkboxLabel}>
-                        <input
-                          type="checkbox"
-                          checked={editFormData.personIds.includes(person.id)}
-                          onChange={() => togglePersonSelection(person.id)}
-                          className={styles.checkbox}
-                        />
-                        <span
-                          className={styles.personColor}
-                          style={{ backgroundColor: person.color || '#3B82F6' }}
-                        />
-                        {person.name}
-                      </label>
-                    ))
-                  )}
-                </div>
-              </div>
-              <div className={styles.formActions}>
-                <button
-                  type="button"
-                  className={styles.btnSecondary}
-                  onClick={() => {
-                    setShowEditForm(false);
-                    setEditingId(null);
-                  }}
-                >
-                  Cancelar
-                </button>
-                <button type="submit" className={styles.btnPrimary}>
-                  Atualizar
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
+          </form>
+        </Modal>
       )}
 
-      {deletingId && (
-        <div className={styles.modalOverlay}>
-          <div className={styles.modal}>
-            <div className={styles.modalHeader}>
-              <h3>Confirmar Exclusão</h3>
-              <button
-                type="button"
-                className={styles.closeButton}
-                onClick={() => setDeletingId(null)}
-              >
-                ✕
-              </button>
-            </div>
-            <div className={styles.modalContent}>
-              <p>Tem certeza que deseja excluir esta workspace?</p>
-              <p className={styles.warningText}>
-                ⚠️ Esta ação não pode ser desfeita. Todos os dados associados serão removidos.
-              </p>
-            </div>
-            <div className={styles.formActions}>
-              <button
-                type="button"
-                className={styles.btnSecondary}
-                onClick={() => setDeletingId(null)}
-              >
-                Cancelar
-              </button>
-              <button
-                type="button"
-                className={styles.btnDanger}
-                onClick={() => handleDelete(deletingId)}
-              >
-                Excluir
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      <ConfirmDialog
+        isOpen={!!deletingId}
+        onClose={() => setDeletingId(null)}
+        onConfirm={() => deletingId && handleDelete(deletingId)}
+        title="Confirmar Exclusão"
+        message="Tem certeza que deseja excluir esta workspace?"
+        description="⚠️ Esta ação não pode ser desfeita. Todos os dados associados serão removidos."
+        confirmText="Excluir"
+        confirmVariant="danger"
+      />
 
       {loading ? (
         <div className={styles.loading}>Carregando...</div>
       ) : workspaces.length === 0 ? (
-        <div className={styles.empty}>Nenhuma workspace encontrada</div>
+        <EmptyState
+          icon={<Inbox />}
+          title="Nenhuma workspace encontrada"
+          description="Crie sua primeira workspace para começar"
+        />
       ) : (
         <div className={styles.list}>
           {workspaces.map((ws) => (
-            <div key={ws.id} className={styles.item}>
+            <Card key={ws.id} padding="md" className={styles.item}>
               <div className={styles.itemContent}>
                 <h3>{ws.name}</h3>
                 <span className={styles.role}>{ws.role}</span>
@@ -303,7 +271,7 @@ export default function WorkspaceList() {
                           ) : (
                             <div 
                               className={styles.personPhotoPlaceholder}
-                              style={{ backgroundColor: person.color || '#3B82F6' }}
+                              style={{ backgroundColor: person.color || 'var(--color-primary)' }}
                             >
                               {person.name.charAt(0).toUpperCase()}
                             </div>
@@ -315,22 +283,22 @@ export default function WorkspaceList() {
                 )}
               </div>
               <div className={styles.itemActions}>
-                <button
-                  className={styles.btnIcon}
+                <IconButton
                   onClick={() => handleEdit(ws)}
                   title="Editar"
+                  variant="default"
                 >
                   <Edit2 size={18} />
-                </button>
-                <button
-                  className={styles.btnIconDanger}
+                </IconButton>
+                <IconButton
                   onClick={() => setDeletingId(ws.id)}
                   title="Excluir"
+                  variant="danger"
                 >
                   <Trash2 size={18} />
-                </button>
+                </IconButton>
               </div>
-            </div>
+            </Card>
           ))}
         </div>
       )}

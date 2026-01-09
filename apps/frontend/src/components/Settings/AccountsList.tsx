@@ -1,7 +1,8 @@
+import ConfirmDialog from '@/components/UI/ConfirmDialog';
 import { createAccount, deleteAccount, getAccounts, getPeople, updateAccount } from '@/lib/settingsApi';
 import { Edit2, Plus, Trash2 } from 'lucide-react';
 import { useEffect, useState } from 'react';
-import { toast } from 'sonner';
+import { toast } from '../UI';
 import styles from './AccountsList.module.css';
 
 // Helper para gerar URL completa da imagem
@@ -41,6 +42,8 @@ export default function AccountsList() {
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
+  const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
+  const [accountToDelete, setAccountToDelete] = useState<string | null>(null);
   const [formData, setFormData] = useState<{
     name: string;
     type: 'CHECKING' | 'CASH' | 'SAVINGS' | 'INVESTMENT';
@@ -115,15 +118,23 @@ export default function AccountsList() {
     setShowForm(true);
   };
 
-  const handleDelete = async (id: string) => {
-    if (!confirm('Tem certeza que deseja deletar?')) return;
+  const handleDelete = (id: string) => {
+    setAccountToDelete(id);
+    setDeleteConfirmOpen(true);
+  };
+
+  const confirmDelete = async () => {
+    if (!accountToDelete) return;
 
     try {
-      await deleteAccount(id);
+      await deleteAccount(accountToDelete);
       toast.success('Conta deletada');
       await loadData();
     } catch (error) {
       toast.error('Erro ao deletar conta');
+    } finally {
+      setDeleteConfirmOpen(false);
+      setAccountToDelete(null);
     }
   };
 
@@ -304,6 +315,17 @@ export default function AccountsList() {
           </tbody>
         </table>
       )}
+
+      <ConfirmDialog
+        isOpen={deleteConfirmOpen}
+        title="Confirmar Exclusão"
+        message="Tem certeza que deseja deletar esta conta?"
+        confirmLabel="Excluir"
+        cancelLabel="Cancelar"
+        onConfirm={confirmDelete}
+        onCancel={() => setDeleteConfirmOpen(false)}
+        variant="danger"
+      />
     </div>
   );
 }

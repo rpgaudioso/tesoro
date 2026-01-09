@@ -2,11 +2,13 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { RecurringFrequency, RecurringTransaction, TransactionType } from '@tesoro/shared';
 import { ArrowDownCircle, ArrowUpCircle, Calendar, Edit2, Plus, Repeat, Trash2 } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
-import { toast } from 'sonner';
 import PageHeader from '../components/Layout/PageHeader';
+import { toast } from '../components/UI';
 import Badge from '../components/UI/Badge';
 import Button from '../components/UI/Button';
 import Card from '../components/UI/Card';
+import ConfirmDialog from '../components/UI/ConfirmDialog';
+import IconButton from '../components/UI/IconButton';
 import Modal from '../components/UI/Modal';
 import api from '../lib/api';
 import styles from './RecurringTransactionsPage.module.css';
@@ -310,6 +312,8 @@ function RecurringTransactionModal({ isOpen, onClose, transaction }: RecurringTr
 export default function RecurringTransactionsPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedTransaction, setSelectedTransaction] = useState<RecurringTransaction | null>(null);
+  const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
+  const [transactionToDelete, setTransactionToDelete] = useState<string | null>(null);
   const queryClient = useQueryClient();
 
   const { data: recurringTransactions = [], isLoading } = useQuery({
@@ -336,10 +340,17 @@ export default function RecurringTransactionsPage() {
     setIsModalOpen(true);
   };
 
-  const handleDelete = async (id: string) => {
-    if (confirm('Tem certeza que deseja excluir esta transação recorrente?')) {
-      deleteMutation.mutate(id);
+  const handleDelete = (id: string) => {
+    setTransactionToDelete(id);
+    setDeleteConfirmOpen(true);
+  };
+
+  const confirmDelete = () => {
+    if (transactionToDelete) {
+      deleteMutation.mutate(transactionToDelete);
     }
+    setDeleteConfirmOpen(false);
+    setTransactionToDelete(null);
   };
 
   const handleCloseModal = () => {
@@ -517,20 +528,22 @@ export default function RecurringTransactionsPage() {
                     </td>
                     <td>
                       <div className={styles.actionsCell}>
-                        <button
-                          className={styles.actionButton}
+                        <IconButton
+                          variant="default"
+                          size="sm"
                           onClick={() => handleEdit(transaction)}
                           title="Editar"
                         >
                           <Edit2 size={16} />
-                        </button>
-                        <button
-                          className={styles.actionButton}
+                        </IconButton>
+                        <IconButton
+                          variant="danger"
+                          size="sm"
                           onClick={() => handleDelete(transaction.id)}
                           title="Excluir"
                         >
                           <Trash2 size={16} />
-                        </button>
+                        </IconButton>
                       </div>
                     </td>
                   </tr>
@@ -545,6 +558,17 @@ export default function RecurringTransactionsPage() {
         isOpen={isModalOpen}
         onClose={handleCloseModal}
         transaction={selectedTransaction}
+      />
+
+      <ConfirmDialog
+        isOpen={deleteConfirmOpen}
+        title="Confirmar Exclusão"
+        message="Tem certeza que deseja excluir esta transação recorrente?"
+        confirmLabel="Excluir"
+        cancelLabel="Cancelar"
+        onConfirm={confirmDelete}
+        onCancel={() => setDeleteConfirmOpen(false)}
+        variant="danger"
       />
     </div>
   );

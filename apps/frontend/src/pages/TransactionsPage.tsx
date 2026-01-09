@@ -4,6 +4,8 @@ import EditTransactionModal from '@/components/Transactions/EditTransactionModal
 import Badge from '@/components/UI/Badge';
 import Button from '@/components/UI/Button';
 import Card from '@/components/UI/Card';
+import ConfirmDialog from '@/components/UI/ConfirmDialog';
+import IconButton from '@/components/UI/IconButton';
 import { useAuth } from '@/contexts/AuthContext';
 import { useWorkspaceChange } from '@/hooks/useWorkspaceChange';
 import api from '@/lib/api';
@@ -27,7 +29,7 @@ import {
     X
 } from 'lucide-react';
 import { useState } from 'react';
-import { toast } from 'sonner';
+import { toast } from '../components/UI';
 import styles from './TransactionsPage.module.css';
 
 export default function TransactionsPage() {
@@ -45,6 +47,8 @@ export default function TransactionsPage() {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [selectedTransactions, setSelectedTransactions] = useState<Set<string>>(new Set());
   const [editingTransaction, setEditingTransaction] = useState<Transaction | null>(null);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [transactionsToDelete, setTransactionsToDelete] = useState<Set<string>>(new Set());
 
   // Build query params
   const buildQueryUrl = () => {
@@ -206,25 +210,31 @@ export default function TransactionsPage() {
     setSelectedTransactions(newSelected);
   };
 
-  const handleDelete = async () => {
+  const confirmDelete = () => {
     if (selectedTransactions.size === 0) return;
-    
-    const confirmed = window.confirm(
-      `Tem certeza que deseja excluir ${selectedTransactions.size} transação(ões)?`
-    );
-    
-    if (!confirmed) return;
+    setTransactionsToDelete(new Set(selectedTransactions));
+    setShowDeleteConfirm(true);
+  };
+
+  const confirmDeleteSingle = (transactionId: string) => {
+    setTransactionsToDelete(new Set([transactionId]));
+    setShowDeleteConfirm(true);
+  };
+
+  const handleDelete = async () => {
+    setShowDeleteConfirm(false);
 
     try {
       await Promise.all(
-        Array.from(selectedTransactions).map(id => 
+        Array.from(transactionsToDelete).map(id => 
           api.delete(`/transactions/${id}`)
         )
       );
       
       queryClient.invalidateQueries({ queryKey: ['transactions'] });
       setSelectedTransactions(new Set());
-      toast.success(`${selectedTransactions.size} transação(ões) excluída(s) com sucesso!`);
+      setTransactionsToDelete(new Set());
+      toast.success(`${transactionsToDelete.size} transação(ões) excluída(s) com sucesso!`);
     } catch (error) {
       console.error('Error deleting transactions:', error);
       toast.error('Erro ao excluir transações');
@@ -395,7 +405,7 @@ export default function TransactionsPage() {
                 <Edit2 size={18} />
                 Editar
               </Button>
-              <Button variant="danger" size="md" onClick={handleDelete}>
+              <Button variant="danger" size="md" onClick={confirmDelete}>
                 <Trash2 size={18} />
                 Excluir
               </Button>
@@ -523,23 +533,22 @@ export default function TransactionsPage() {
                     <td>{getStatusBadge(transaction.status, transaction.type)}</td>
                     <td>
                       <div className={styles.actionsCell}>
-                        <button 
-                          className={styles.actionButton}
+                        <IconButton
+                          variant="default"
+                          size="sm"
                           onClick={() => handleEdit(transaction)}
                           title="Editar"
                         >
                           <Edit2 size={16} />
-                        </button>
-                        <button 
-                          className={styles.actionButton}
-                          onClick={() => {
-                            setSelectedTransactions(new Set([transaction.id]));
-                            handleDelete();
-                          }}
+                        </IconButton>
+                        <IconButton
+                          variant="danger"
+                          size="sm"
+                          onClick={() => confirmDeleteSingle(transaction.id)}
                           title="Excluir"
                         >
                           <Trash2 size={16} />
-                        </button>
+                        </IconButton>
                       </div>
                     </td>
                   </tr>
@@ -558,6 +567,20 @@ export default function TransactionsPage() {
           transaction={editingTransaction}
         />
       )}
+      
+      <ConfirmDialog
+        isOpen={showDeleteConfirm}
+        title="Confirmar Exclusão"
+        message={`Tem certeza que deseja excluir ${transactionsToDelete.size} transação(ões)?`}
+        confirmLabel="Excluir"
+        cancelLabel="Cancelar"
+        onConfirm={handleDelete}
+        onCancel={() => {
+          setShowDeleteConfirm(false);
+          setTransactionsToDelete(new Set());
+        }}
+        variant="danger"
+      />
     </div>
   );
 }

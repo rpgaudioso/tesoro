@@ -3,7 +3,7 @@ import Input from '@/components/UI/Input';
 import { useCreateCreditCard } from '@/hooks/useCreditCards';
 import { X } from 'lucide-react';
 import { useState } from 'react';
-import { toast } from 'sonner';
+import { toast } from '../UI';
 import styles from './CreateCreditCardModal.module.css';
 
 interface CreateCreditCardModalProps {

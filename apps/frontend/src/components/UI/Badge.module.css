@@ -15,20 +15,20 @@
 
 .primary {
   background-color: var(--color-primary-light);
-  color: #1e40af;
+  color: var(--color-primary-dark);
 }
 
 .success {
   background-color: var(--color-success-light);
-  color: #065f46;
+  color: var(--color-success);
 }
 
 .warning {
   background-color: var(--color-warning-light);
-  color: #92400e;
+  color: var(--color-warning);
 }
 
 .danger {
   background-color: var(--color-danger-light);
-  color: #991b1b;
+  color: var(--color-danger);
 }

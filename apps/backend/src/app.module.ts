@@ -8,6 +8,7 @@ import { CategoriesModule } from "./categories/categories.module";
 import { CreditCardsModule } from "./credit-cards/credit-cards.module";
 import { DashboardModule } from "./dashboard/dashboard.module";
 import { ImportsModule } from "./imports/imports.module";
+import { NotificationsModule } from "./notifications/notifications.module";
 import { PeopleModule } from "./people/people.module";
 import { PrismaModule } from "./prisma/prisma.module";
 import { RecurringTransactionsModule } from "./recurring-transactions/recurring-transactions.module";
@@ -32,6 +33,7 @@ import { WorkspacesModule } from "./workspaces/workspaces.module";
     DashboardModule,
     ImportsModule,
     RecurringTransactionsModule,
+    NotificationsModule,
   ],
 })
 export class AppModule {}

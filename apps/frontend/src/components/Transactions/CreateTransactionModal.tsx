@@ -7,7 +7,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import type { Account, Category, Person } from '@tesoro/shared';
 import { TransactionStatus } from '@tesoro/shared';
 import { useEffect, useState } from 'react';
-import { toast } from 'sonner';
+import { toast } from '../UI';
 import styles from './CreateTransactionModal.module.css';
 
 interface CreateTransactionModalProps {

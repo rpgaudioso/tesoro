@@ -49,6 +49,14 @@ enum RecurringFrequency {
   YEARLY
 }
 
+enum NotificationType {
+  RECURRING_TRANSACTION_CREATED
+  RECURRING_TRANSACTION_EXECUTED
+  INVOICE_DUE_SOON
+  BUDGET_EXCEEDED
+  IMPORT_COMPLETED
+}
+
 model User {
   id           String   @id @default(uuid())
   email        String   @unique
@@ -77,6 +85,7 @@ model Workspace {
   creditCardCharges CreditCardCharge[]
   creditCardInvoicePayments CreditCardInvoicePayment[]
   recurringTransactions RecurringTransaction[]
+  notifications Notification[]
 
   @@map("workspaces")
 }
@@ -354,4 +363,21 @@ model RecurringTransaction {
   @@index([workspaceId, isActive])
   @@index([workspaceId, frequency])
   @@map("recurring_transactions")
+}
+model Notification {
+  id          String           @id @default(uuid())
+  workspaceId String           @map("workspace_id")
+  type        NotificationType
+  title       String
+  message     String
+  isRead      Boolean          @default(false) @map("is_read")
+  data        Json?            // Extra data (e.g., transactionId, amount, etc.)
+  createdAt   DateTime         @default(now()) @map("created_at")
+  readAt      DateTime?        @map("read_at")
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+  @@index([workspaceId, isRead])
+  @@index([workspaceId, createdAt])
+  @@map("notifications")
 }

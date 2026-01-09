@@ -1,13 +1,17 @@
 import { Injectable, Logger, NotFoundException } from "@nestjs/common";
 import { Cron, CronExpression } from "@nestjs/schedule";
 import { RecurringFrequency, TransactionStatus } from "@prisma/client";
+import { NotificationsService } from "../notifications/notifications.service";
 import { PrismaService } from "../prisma/prisma.service";
 
 @Injectable()
 export class RecurringTransactionsService {
   private readonly logger = new Logger(RecurringTransactionsService.name);
 
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private notificationsService: NotificationsService
+  ) {}
 
   async create(workspaceId: string, data: any) {
     // Convert date strings to DateTime
@@ -26,9 +30,25 @@ export class RecurringTransactionsService {
       createData.endDate = new Date(createData.endDate + "T23:59:59.999Z");
     }
 
-    return this.prisma.recurringTransaction.create({
+    const recurringTransaction = await this.prisma.recurringTransaction.create({
       data: createData,
     });
+
+    // Create notification
+    await this.notificationsService.create({
+      workspaceId,
+      type: "RECURRING_TRANSACTION_CREATED",
+      title: "Transação recorrente criada",
+      message: `A transação recorrente "${recurringTransaction.name}" foi criada com sucesso.`,
+      data: {
+        recurringTransactionId: recurringTransaction.id,
+        name: recurringTransaction.name,
+        amount: recurringTransaction.amount,
+        frequency: recurringTransaction.frequency,
+      },
+    });
+
+    return recurringTransaction;
   }
 
   async findAll(workspaceId: string) {

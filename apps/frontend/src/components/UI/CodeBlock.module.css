@@ -1,0 +1,76 @@
+.codeBlock {
+  background: var(--color-bg-secondary);
+  border-radius: var(--radius-8);
+  overflow: hidden;
+  border: 1px solid var(--color-border-light);
+}
+
+.codeHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--spacing-12) var(--spacing-16);
+  background: var(--color-bg-tertiary);
+  border-bottom: 1px solid var(--color-border-light);
+}
+
+.codeLanguage {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-6);
+  font-size: var(--font-xs);
+  color: var(--color-text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-weight: var(--font-medium);
+}
+
+.copyButton {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-6);
+  padding: var(--spacing-4) var(--spacing-10);
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-6);
+  color: var(--color-text-secondary);
+  font-size: var(--font-xs);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.copyButton:hover {
+  background: var(--color-bg-secondary);
+  color: var(--color-text);
+  border-color: var(--color-border);
+}
+
+.codeContent {
+  margin: 0;
+  padding: var(--spacing-20);
+  overflow-x: auto;
+  background: var(--color-bg-tertiary);
+}
+
+.codeContent code {
+  font-family: 'Monaco', 'Menlo', 'Consolas', 'Courier New', monospace;
+  font-size: var(--font-xs);
+  line-height: 1.6;
+  color: var(--color-text-primary);
+}
+
+.codeLine {
+  display: flex;
+  gap: var(--spacing-16);
+}
+
+.lineNumber {
+  color: var(--color-text-secondary);
+  user-select: none;
+  text-align: right;
+  min-width: 2em;
+}
+
+.lineContent {
+  flex: 1;
+}

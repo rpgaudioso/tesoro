@@ -524,7 +524,51 @@ Authorization: Bearer {{token}}
 x-workspace-id: {{workspaceId}}
 
 ### ===========================================
-### 📝 NOTES
+### � NOTIFICATIONS - Notification Management
+### ===========================================
+### Create notification (for testing)
+POST {{baseUrl}}/workspaces/{{workspaceId}}/notifications
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "type": "RECURRING_TRANSACTION_CREATED",
+  "title": "Notificação de Teste",
+  "message": "Esta é uma notificação criada para teste",
+  "data": {
+    "testData": true
+  }
+}
+### Get all notifications
+GET {{baseUrl}}/workspaces/{{workspaceId}}/notifications
+Authorization: Bearer {{token}}
+
+### Get all notifications with limit
+GET {{baseUrl}}/workspaces/{{workspaceId}}/notifications?limit=20
+Authorization: Bearer {{token}}
+
+### Get unread notifications
+GET {{baseUrl}}/workspaces/{{workspaceId}}/notifications/unread
+Authorization: Bearer {{token}}
+
+### Get unread count
+GET {{baseUrl}}/workspaces/{{workspaceId}}/notifications/unread/count
+Authorization: Bearer {{token}}
+
+### Mark notification as read
+PATCH {{baseUrl}}/workspaces/{{workspaceId}}/notifications/notification-id/read
+Authorization: Bearer {{token}}
+
+### Mark all notifications as read
+PATCH {{baseUrl}}/workspaces/{{workspaceId}}/notifications/read-all
+Authorization: Bearer {{token}}
+
+### Delete notification
+DELETE {{baseUrl}}/workspaces/{{workspaceId}}/notifications/notification-id
+Authorization: Bearer {{token}}
+
+### ===========================================
+### �📝 NOTES
 ### ===========================================
 # 
 # Authentication:

@@ -1,0 +1,52 @@
+.tag {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-6);
+  padding: var(--spacing-4) var(--spacing-10);
+  border-radius: var(--radius-16);
+  font-size: var(--font-xs);
+  font-weight: var(--font-medium);
+  white-space: nowrap;
+}
+
+.tag.default {
+  background: var(--color-bg-secondary);
+  color: var(--color-text-primary);
+}
+
+.tag.primary {
+  background: var(--color-primary-light);
+  color: var(--color-primary-dark);
+}
+
+.tag.success {
+  background: var(--color-success-light);
+  color: var(--color-success);
+}
+
+.tag.warning {
+  background: var(--color-warning-light);
+  color: var(--color-warning);
+}
+
+.tag.danger {
+  background: var(--color-danger-light);
+  color: var(--color-danger);
+}
+
+.removeButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  color: inherit;
+  opacity: 0.6;
+  transition: opacity 0.2s;
+}
+
+.removeButton:hover {
+  opacity: 1;
+}

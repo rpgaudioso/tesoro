@@ -10,7 +10,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import type { Category } from '@tesoro/shared';
 import { Edit2, Plus, Trash2, X } from 'lucide-react';
 import { useState } from 'react';
-import { toast } from 'sonner';
+import { toast } from '../components/UI';
 import styles from './CategoriesPage.module.css';
 
 const AVAILABLE_ICONS = [

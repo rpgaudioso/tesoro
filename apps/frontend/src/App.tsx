@@ -1,13 +1,55 @@
 import { Navigate, Route, Routes } from 'react-router-dom';
-import { Toaster } from 'sonner';
 import AppLayout from './components/Layout/AppLayout';
 import WelcomeTour from './components/Onboarding/WelcomeTour';
+import { ToastProvider } from './components/UI';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import BudgetsPage from './pages/BudgetsPage';
 import CategoriesPage from './pages/CategoriesPage';
 import CreditCardDetailPage from './pages/CreditCardDetailPage';
 import CreditCardsPage from './pages/CreditCardsPage';
 import DashboardPage from './pages/DashboardPage';
+import DesignSystemOverviewPage from './pages/DesignSystem/DesignSystemOverviewPage';
+import DesignTokensPage from './pages/DesignSystem/DesignTokensPage';
+import AccordionDetailPage from './pages/DesignSystem/components/AccordionDetailPage';
+import AlertDetailPage from './pages/DesignSystem/components/AlertDetailPage';
+import BadgeDetailPage from './pages/DesignSystem/components/BadgeDetailPage';
+import BreadcrumbDetailPage from './pages/DesignSystem/components/BreadcrumbDetailPage';
+import ButtonDetailPage from './pages/DesignSystem/components/ButtonDetailPage';
+import CardDetailPage from './pages/DesignSystem/components/CardDetailPage';
+import CheckboxDetailPage from './pages/DesignSystem/components/CheckboxDetailPage';
+import CodeBlockDetailPage from './pages/DesignSystem/components/CodeBlockDetailPage';
+import ConfirmDialogDetailPage from './pages/DesignSystem/components/ConfirmDialogDetailPage';
+import ContentSwitcherDetailPage from './pages/DesignSystem/components/ContentSwitcherDetailPage';
+import DataTableDetailPage from './pages/DesignSystem/components/DataTableDetailPage';
+import DatePickerDetailPage from './pages/DesignSystem/components/DatePickerDetailPage';
+import DropdownDetailPage from './pages/DesignSystem/components/DropdownDetailPage';
+import EmptyStateDetailPage from './pages/DesignSystem/components/EmptyStateDetailPage';
+import FormGroupDetailPage from './pages/DesignSystem/components/FormGroupDetailPage';
+import IconButtonDetailPage from './pages/DesignSystem/components/IconButtonDetailPage';
+import InlineLoadingDetailPage from './pages/DesignSystem/components/InlineLoadingDetailPage';
+import InputDetailPage from './pages/DesignSystem/components/InputDetailPage';
+import LinkDetailPage from './pages/DesignSystem/components/LinkDetailPage';
+import LoadingDetailPage from './pages/DesignSystem/components/LoadingDetailPage';
+import ModalDetailPage from './pages/DesignSystem/components/ModalDetailPage';
+import NotificationDetailPage from './pages/DesignSystem/components/NotificationDetailPage';
+import NumberInputDetailPage from './pages/DesignSystem/components/NumberInputDetailPage';
+import PageHeaderDetailPage from './pages/DesignSystem/components/PageHeaderDetailPage';
+import PaginationDetailPage from './pages/DesignSystem/components/PaginationDetailPage';
+import PopoverDetailPage from './pages/DesignSystem/components/PopoverDetailPage';
+import PortalDetailPage from './pages/DesignSystem/components/PortalDetailPage';
+import ProgressBarDetailPage from './pages/DesignSystem/components/ProgressBarDetailPage';
+import ProgressIndicatorDetailPage from './pages/DesignSystem/components/ProgressIndicatorDetailPage';
+import RadioButtonDetailPage from './pages/DesignSystem/components/RadioButtonDetailPage';
+import SearchDetailPage from './pages/DesignSystem/components/SearchDetailPage';
+import SelectDetailPage from './pages/DesignSystem/components/SelectDetailPage';
+import SliderDetailPage from './pages/DesignSystem/components/SliderDetailPage';
+import TabsDetailPage from './pages/DesignSystem/components/TabsDetailPage';
+import TagDetailPage from './pages/DesignSystem/components/TagDetailPage';
+import TextareaDetailPage from './pages/DesignSystem/components/TextareaDetailPage';
+import ToastDetailPage from './pages/DesignSystem/components/ToastDetailPage';
+import ToggleDetailPage from './pages/DesignSystem/components/ToggleDetailPage';
+import TooltipDetailPage from './pages/DesignSystem/components/TooltipDetailPage';
+import DesignSystemPage from './pages/DesignSystemPage';
 import { Imports } from './pages/Imports';
 import InvoiceDetailPage from './pages/InvoiceDetailPage';
 import LoginPage from './pages/LoginPage';
@@ -24,7 +66,7 @@ function PrivateRoute({ children }: { children: React.ReactNode }) {
 function App() {
   return (
     <AuthProvider>
-      <Toaster position="top-right" richColors closeButton />
+      <ToastProvider />
       <Routes>
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
@@ -58,6 +100,54 @@ function App() {
           <Route path="credit-cards/:cardId" element={<CreditCardDetailPage />} />
           <Route path="invoices/:invoiceId" element={<InvoiceDetailPage />} />
           <Route path="settings" element={<SettingsPage />} />
+          
+          {/* Design System Routes */}
+          <Route path="design-system">
+            <Route index element={<DesignSystemOverviewPage />} />
+            <Route path="old" element={<DesignSystemPage />} />
+            <Route path="tokens" element={<DesignTokensPage />} />
+            
+            {/* Component Pages */}
+            <Route path="accordion" element={<AccordionDetailPage />} />
+            <Route path="alert" element={<AlertDetailPage />} />
+            <Route path="badge" element={<BadgeDetailPage />} />
+            <Route path="breadcrumb" element={<BreadcrumbDetailPage />} />
+            <Route path="button" element={<ButtonDetailPage />} />
+            <Route path="card" element={<CardDetailPage />} />
+            <Route path="checkbox" element={<CheckboxDetailPage />} />
+            <Route path="codeblock" element={<CodeBlockDetailPage />} />
+            <Route path="confirmdialog" element={<ConfirmDialogDetailPage />} />
+            <Route path="contentswitcher" element={<ContentSwitcherDetailPage />} />
+            <Route path="datatable" element={<DataTableDetailPage />} />
+            <Route path="datepicker" element={<DatePickerDetailPage />} />
+            <Route path="dropdown" element={<DropdownDetailPage />} />
+            <Route path="emptystate" element={<EmptyStateDetailPage />} />
+            <Route path="formgroup" element={<FormGroupDetailPage />} />
+            <Route path="iconbutton" element={<IconButtonDetailPage />} />
+            <Route path="inlineloading" element={<InlineLoadingDetailPage />} />
+            <Route path="input" element={<InputDetailPage />} />
+            <Route path="link" element={<LinkDetailPage />} />
+            <Route path="loading" element={<LoadingDetailPage />} />
+            <Route path="modal" element={<ModalDetailPage />} />
+            <Route path="notification" element={<NotificationDetailPage />} />
+            <Route path="numberinput" element={<NumberInputDetailPage />} />
+            <Route path="pageheader" element={<PageHeaderDetailPage />} />
+            <Route path="pagination" element={<PaginationDetailPage />} />
+            <Route path="popover" element={<PopoverDetailPage />} />
+            <Route path="portal" element={<PortalDetailPage />} />
+            <Route path="progressbar" element={<ProgressBarDetailPage />} />
+            <Route path="progressindicator" element={<ProgressIndicatorDetailPage />} />
+            <Route path="radiobutton" element={<RadioButtonDetailPage />} />
+            <Route path="search" element={<SearchDetailPage />} />
+            <Route path="select" element={<SelectDetailPage />} />
+            <Route path="slider" element={<SliderDetailPage />} />
+            <Route path="tabs" element={<TabsDetailPage />} />
+            <Route path="tag" element={<TagDetailPage />} />
+            <Route path="textarea" element={<TextareaDetailPage />} />
+            <Route path="toast" element={<ToastDetailPage />} />
+            <Route path="toggle" element={<ToggleDetailPage />} />
+            <Route path="tooltip" element={<TooltipDetailPage />} />
+          </Route>
         </Route>
 
         <Route path="/" element={<Navigate to="/app" />} />

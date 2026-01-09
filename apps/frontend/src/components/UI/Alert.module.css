@@ -1,11 +1,18 @@
 .alert {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  gap: var(--spacing-12);
   padding: var(--spacing-12) var(--spacing-16);
   border-radius: var(--radius-8);
   font-size: var(--font-sm);
   border: 1px solid;
+}
+
+.icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
 }
 
 .content {
@@ -29,9 +36,13 @@
 }
 
 .info {
-  background-color: var(--color-primary-light);
-  border-color: var(--color-primary);
+  background-color: #dbeafe;
+  border-color: #3b82f6;
   color: #1e40af;
+}
+
+.info .icon {
+  color: #3b82f6;
 }
 
 .success {
@@ -40,14 +51,26 @@
   color: #065f46;
 }
 
+.success .icon {
+  color: var(--color-success);
+}
+
 .warning {
   background-color: var(--color-warning-light);
   border-color: var(--color-warning);
   color: #92400e;
 }
 
+.warning .icon {
+  color: var(--color-warning);
+}
+
 .danger {
   background-color: var(--color-danger-light);
   border-color: var(--color-danger);
   color: #991b1b;
+}
+
+.danger .icon {
+  color: var(--color-danger);
 }

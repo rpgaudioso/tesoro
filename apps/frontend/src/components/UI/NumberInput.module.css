@@ -1,0 +1,77 @@
+.numberInputContainer {
+  display: inline-flex;
+  align-items: center;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-8);
+  overflow: hidden;
+  background: var(--color-bg);
+  transition: all 0.2s;
+}
+
+.numberInputContainer:focus-within {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px var(--color-primary-light);
+}
+
+.numberInput {
+  flex: 1;
+  min-width: 60px;
+  height: 36px;
+  padding: var(--spacing-8) var(--spacing-12);
+  border: none;
+  background: transparent;
+  font-size: var(--font-sm);
+  font-family: inherit;
+  color: var(--color-text);
+  text-align: center;
+}
+
+.numberInput:focus {
+  outline: none;
+}
+
+.numberInput:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Remove default number input arrows */
+.numberInput::-webkit-inner-spin-button,
+.numberInput::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.numberInput[type='number'] {
+  appearance: textfield;
+  -moz-appearance: textfield;
+}
+
+.controlButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 36px;
+  padding: 0;
+  background: var(--color-bg-secondary);
+  border: none;
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.controlButton:hover:not(:disabled) {
+  background: var(--color-bg-tertiary);
+  color: var(--color-text);
+}
+
+.controlButton:active:not(:disabled) {
+  background: var(--color-primary-light);
+  color: var(--color-primary);
+}
+
+.controlButton:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}

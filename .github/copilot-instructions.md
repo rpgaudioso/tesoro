@@ -2,7 +2,7 @@
 
 ## 0) Safety / Hard rules (must follow)
 
-- NEVER run or suggest running: `git commit`, `git push`, `gh pr create`, `gh pr merge`, `git tag`, `npm publish`, `pnpm publish` unless I explicitly type one of the tokens below.
+- NEVER run or suggest running: `npm publish`, `pnpm publish` unless I explicitly type one of the tokens below.
 - NEVER modify or delete data in production-like environments.
 - NEVER create or apply destructive DB changes without confirmation.
 
@@ -10,9 +10,6 @@
 
 Only perform these actions if I type the exact token:
 
-- `AUTORIZO_COMMIT` → you may run `git commit` (and only after showing a summary + files list).
-- `AUTORIZO_PUSH` → you may run `git push`.
-- `AUTORIZO_PR` → you may open a PR.
 - `AUTORIZO_MIGRATION` → you may create/apply Prisma migrations that modify schema.
 
 If token is not present: stop before the action and ask for confirmation.

@@ -1,0 +1,47 @@
+import { Card, ProgressBar } from '../../../components/UI';
+import SimpleComponentPage from './SimpleComponentPage';
+
+export default function ProgressBarDetailPage() {
+  return (
+    <SimpleComponentPage
+      title="ProgressBar"
+      subtitle="Barra de progresso para feedback visual de carregamento"
+      overview="ProgressBar mostra o progresso de uma operação de forma visual e percentual."
+      usage={
+        <Card>
+          <h2>Exemplos</h2>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '24px', marginTop: '16px' }}>
+            <div>
+              <p style={{ marginBottom: '8px', fontSize: '14px' }}>25%</p>
+              <ProgressBar progress={25} />
+            </div>
+            <div>
+              <p style={{ marginBottom: '8px', fontSize: '14px' }}>50%</p>
+              <ProgressBar progress={50} />
+            </div>
+            <div>
+              <p style={{ marginBottom: '8px', fontSize: '14px' }}>75%</p>
+              <ProgressBar progress={75} />
+            </div>
+            <div>
+              <p style={{ marginBottom: '8px', fontSize: '14px' }}>100%</p>
+              <ProgressBar progress={100} />
+            </div>
+          </div>
+        </Card>
+      }
+      installation={`import { ProgressBar } from '@/components/UI';`}
+      basicExample={`<ProgressBar progress={65} />`}
+      propsCode={`interface ProgressBarProps {
+  progress: number; // 0-100
+}`}
+      styleTokens={`height: 8px;
+background: var(--color-bg-secondary);
+border-radius: var(--radius-full);
+
+/* Bar */
+background: var(--color-primary);
+transition: width 0.3s ease;`}
+    />
+  );
+}

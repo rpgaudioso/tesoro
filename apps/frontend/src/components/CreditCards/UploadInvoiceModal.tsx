@@ -5,7 +5,7 @@ import api from '@/lib/api';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { Upload, X } from 'lucide-react';
 import { useState } from 'react';
-import { toast } from 'sonner';
+import { toast } from '../UI';
 import styles from './UploadInvoiceModal.module.css';
 
 interface UploadInvoiceModalProps {

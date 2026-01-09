@@ -1,0 +1,90 @@
+.container {
+  padding: var(--spacing-32);
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.intro {
+  margin-top: var(--spacing-24);
+}
+
+.introText {
+  font-size: var(--font-base);
+  color: var(--color-text-secondary);
+  line-height: 1.6;
+  margin: 0;
+}
+
+.componentsSection {
+  margin-top: var(--spacing-48);
+}
+
+.tokensSection {
+  margin-top: var(--spacing-48);
+  margin-bottom: var(--spacing-48);
+}
+
+.sectionTitle {
+  font-size: var(--font-2xl);
+  font-weight: var(--font-semibold);
+  color: var(--color-text);
+  margin-bottom: var(--spacing-24);
+}
+
+.componentsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: var(--spacing-20);
+}
+
+.componentCard {
+  text-decoration: none;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  display: block;
+}
+
+.componentCard:hover {
+  transform: translateY(-4px);
+}
+
+.componentCard:hover > * {
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.12);
+}
+
+.componentName {
+  font-size: var(--font-lg);
+  font-weight: var(--font-semibold);
+  color: var(--color-text);
+  margin: 0 0 var(--spacing-8) 0;
+}
+
+.componentDescription {
+  font-size: var(--font-sm);
+  color: var(--color-text-secondary);
+  line-height: 1.5;
+  margin: 0;
+}
+
+.link {
+  display: inline-block;
+  margin-top: var(--spacing-16);
+  color: var(--color-primary);
+  text-decoration: none;
+  font-weight: var(--font-medium);
+  font-size: var(--font-base);
+}
+
+.link:hover {
+  color: var(--color-primary-hover);
+  text-decoration: underline;
+}
+
+@media (max-width: 768px) {
+  .container {
+    padding: var(--spacing-16);
+  }
+
+  .componentsGrid {
+    grid-template-columns: 1fr;
+  }
+}

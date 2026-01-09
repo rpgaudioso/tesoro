@@ -1,0 +1,159 @@
+.container {
+  padding: var(--spacing-32);
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.intro {
+  margin-top: var(--spacing-24);
+}
+
+.introTitle {
+  font-size: var(--font-2xl);
+  font-weight: var(--font-semibold);
+  color: var(--color-text);
+  margin-bottom: var(--spacing-16);
+}
+
+.introText {
+  font-size: var(--font-base);
+  color: var(--color-text-secondary);
+  line-height: 1.6;
+}
+
+.searchContainer {
+  margin-top: var(--spacing-24);
+  margin-bottom: var(--spacing-16);
+}
+
+.searchResults {
+  margin-top: var(--spacing-8);
+  font-size: var(--font-sm);
+  color: var(--color-text-secondary);
+  text-align: center;
+  padding: var(--spacing-8);
+  background: var(--color-bg-secondary);
+  border-radius: var(--radius-6);
+}
+
+.sections {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-32);
+  margin-top: var(--spacing-32);
+}
+
+.componentHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: var(--spacing-20);
+}
+
+.componentTitle {
+  font-size: var(--font-2xl);
+  font-weight: var(--font-semibold);
+  color: var(--color-text);
+  margin-bottom: var(--spacing-6);
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-8);
+}
+
+.componentDescription {
+  font-size: var(--font-base);
+  color: var(--color-text-secondary);
+  line-height: 1.5;
+}
+
+.componentLayout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--spacing-24);
+  margin-top: var(--spacing-20);
+}
+
+.componentPreview {
+  padding: var(--spacing-24);
+  background: var(--color-bg-secondary);
+  border-radius: var(--radius-8);
+  border: 1px solid var(--color-border-light);
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-16);
+}
+
+.componentCode {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-16);
+}
+
+.buttonGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: var(--spacing-12);
+}
+
+.formGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: var(--spacing-20);
+}
+
+.alertGrid {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-12);
+}
+
+.cardGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: var(--spacing-16);
+}
+
+.tokensGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: var(--spacing-24);
+  margin-top: var(--spacing-24);
+}
+
+.tokenSection {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-12);
+}
+
+.tokenTitle {
+  font-size: var(--font-lg);
+  font-weight: var(--font-semibold);
+  color: var(--color-text);
+}
+
+@media (max-width: 768px) {
+  .container {
+    padding: var(--spacing-16);
+  }
+
+  .componentLayout {
+    grid-template-columns: 1fr;
+  }
+
+  .buttonGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .formGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .tokensGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .cardGrid {
+    grid-template-columns: 1fr;
+  }
+}
