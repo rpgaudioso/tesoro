@@ -1,4 +1,4 @@
-import { Badge, Card, DataTable } from '../../../components/UI';
+import { Badge, DataTable } from '../../../components/UI';
 import SimpleComponentPage from './SimpleComponentPage';
 
 export default function DataTableDetailPage() {
@@ -47,17 +47,15 @@ export default function DataTableDetailPage() {
       subtitle="Tabela com ordenação e renderização customizada"
       overview="DataTable é crítico para nosso sistema financeiro, permitindo visualizar transações com ordenação e paginação."
       usage={
-        <Card>
-          <h2>Exemplo com Transações</h2>
-          <div style={{ marginTop: '16px' }}>
-            <DataTable
-              data={data}
-              columns={columns}
-              keyExtractor={(row) => row.id}
-              onRowClick={(row) => alert(`Clicou em: ${row.description}`)}
-            />
-          </div>
-        </Card>
+        <div>
+          <h3 className="section-title">Exemplo com Transações</h3>
+          <DataTable
+            data={data}
+            columns={columns}
+            keyExtractor={(row) => row.id}
+            onRowClick={(row) => console.log('Linha clicada:', row.description)}
+          />
+        </div>
       }
       installation={`import { DataTable } from '@/components/UI';`}
       basicExample={`const columns = [

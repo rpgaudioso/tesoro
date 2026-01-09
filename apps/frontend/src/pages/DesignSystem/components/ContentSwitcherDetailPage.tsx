@@ -1,6 +1,6 @@
 import { BarChart, LayoutGrid, List } from 'lucide-react';
 import { useState } from 'react';
-import { Card, ContentSwitcher } from '../../../components/UI';
+import { ContentSwitcher } from '../../../components/UI';
 import SimpleComponentPage from './SimpleComponentPage';
 
 export default function ContentSwitcherDetailPage() {
@@ -13,66 +13,58 @@ export default function ContentSwitcherDetailPage() {
       subtitle="Alternador entre visualizações"
       overview="ContentSwitcher permite alternar entre diferentes visualizações ou modos de exibição do mesmo conteúdo."
       usage={
-        <Card>
-          <h2>Exemplos</h2>
-          <div style={{ marginTop: '16px', display: 'flex', flexDirection: 'column', gap: '32px' }}>
-            <div>
-              <label style={{ display: 'block', marginBottom: '12px', fontWeight: 500 }}>
-                Modo de Visualização
-              </label>
+        <>
+          <div>
+            <h3 className="section-title">Modo de Visualização</h3>
+            <ContentSwitcher
+              options={[
+                { value: 'list', label: 'Lista', icon: <List size={16} /> },
+                { value: 'grid', label: 'Grade', icon: <LayoutGrid size={16} /> },
+                { value: 'chart', label: 'Gráfico', icon: <BarChart size={16} /> },
+              ]}
+              value={view}
+              onChange={setView}
+            />
+            <p style={{ marginTop: '12px', fontSize: '14px', color: 'var(--color-text-secondary)' }}>
+              Visualização atual: {view}
+            </p>
+          </div>
+          <div>
+            <h3 className="section-title">Tamanhos</h3>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
               <ContentSwitcher
+                size="sm"
                 options={[
-                  { value: 'list', label: 'Lista', icon: <List size={16} /> },
-                  { value: 'grid', label: 'Grade', icon: <LayoutGrid size={16} /> },
-                  { value: 'chart', label: 'Gráfico', icon: <BarChart size={16} /> },
+                  { value: 'bar', label: 'Barras' },
+                  { value: 'line', label: 'Linhas' },
+                  { value: 'pie', label: 'Pizza' },
                 ]}
-                value={view}
-                onChange={setView}
+                value={chartType}
+                onChange={setChartType}
               />
-              <p style={{ marginTop: '12px', fontSize: '14px', color: '#737373' }}>
-                Visualização atual: {view}
-              </p>
-            </div>
-
-            <div>
-              <label style={{ display: 'block', marginBottom: '12px', fontWeight: 500 }}>
-                Tamanhos
-              </label>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                <ContentSwitcher
-                  size="sm"
-                  options={[
-                    { value: 'bar', label: 'Barras' },
-                    { value: 'line', label: 'Linhas' },
-                    { value: 'pie', label: 'Pizza' },
-                  ]}
-                  value={chartType}
-                  onChange={setChartType}
-                />
-                <ContentSwitcher
-                  size="md"
-                  options={[
-                    { value: 'bar', label: 'Barras' },
-                    { value: 'line', label: 'Linhas' },
-                    { value: 'pie', label: 'Pizza' },
-                  ]}
-                  value={chartType}
-                  onChange={setChartType}
-                />
-                <ContentSwitcher
-                  size="lg"
-                  options={[
-                    { value: 'bar', label: 'Barras' },
-                    { value: 'line', label: 'Linhas' },
-                    { value: 'pie', label: 'Pizza' },
-                  ]}
-                  value={chartType}
-                  onChange={setChartType}
-                />
-              </div>
+              <ContentSwitcher
+                size="md"
+                options={[
+                  { value: 'bar', label: 'Barras' },
+                  { value: 'line', label: 'Linhas' },
+                  { value: 'pie', label: 'Pizza' },
+                ]}
+                value={chartType}
+                onChange={setChartType}
+              />
+              <ContentSwitcher
+                size="lg"
+                options={[
+                  { value: 'bar', label: 'Barras' },
+                  { value: 'line', label: 'Linhas' },
+                  { value: 'pie', label: 'Pizza' },
+                ]}
+                value={chartType}
+                onChange={setChartType}
+              />
             </div>
           </div>
-        </Card>
+        </>
       }
       installation={`import { ContentSwitcher } from '@/components/UI';`}
       basicExample={`const [view, setView] = useState('list');

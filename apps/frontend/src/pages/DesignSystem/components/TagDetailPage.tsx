@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Card, Tag } from '../../../components/UI';
+import { Tag } from '../../../components/UI';
 import SimpleComponentPage from './SimpleComponentPage';
 
 export default function TagDetailPage() {
@@ -15,18 +15,20 @@ export default function TagDetailPage() {
       subtitle="Labels removíveis para categorias e filtros"
       overview="Tags são usadas para mostrar filtros ativos, categorias múltiplas e labels que podem ser removidas."
       usage={
-        <Card>
-          <h2>Variantes</h2>
-          <div style={{ display: 'flex', gap: '8px', marginTop: '16px', flexWrap: 'wrap' }}>
-            <Tag variant="default">Default</Tag>
-            <Tag variant="primary">Primary</Tag>
-            <Tag variant="success">Success</Tag>
-            <Tag variant="warning">Warning</Tag>
-            <Tag variant="danger">Danger</Tag>
+        <>
+          <div>
+            <h3 className="section-title">Variantes</h3>
+            <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+              <Tag variant="default">Default</Tag>
+              <Tag variant="primary">Primary</Tag>
+              <Tag variant="success">Success</Tag>
+              <Tag variant="warning">Warning</Tag>
+              <Tag variant="danger">Danger</Tag>
+            </div>
           </div>
-          <div style={{ marginTop: '24px' }}>
-            <h3>Removíveis</h3>
-            <div style={{ display: 'flex', gap: '8px', marginTop: '8px', flexWrap: 'wrap' }}>
+          <div>
+            <h3 className="section-title">Removíveis</h3>
+            <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
               {tags.map((tag, index) => (
                 <Tag key={index} onRemove={() => handleRemove(index)}>
                   {tag}
@@ -34,7 +36,7 @@ export default function TagDetailPage() {
               ))}
             </div>
           </div>
-        </Card>
+        </>
       }
       installation={`import { Tag } from '@/components/UI';`}
       basicExample={`<Tag 

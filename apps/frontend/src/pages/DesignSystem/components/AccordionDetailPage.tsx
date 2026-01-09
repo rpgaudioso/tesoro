@@ -1,4 +1,4 @@
-import { Accordion, Card } from '../../../components/UI';
+import { Accordion } from '../../../components/UI';
 import SimpleComponentPage from './SimpleComponentPage';
 
 export default function AccordionDetailPage() {
@@ -20,22 +20,39 @@ export default function AccordionDetailPage() {
     }
   ];
 
+  const whenToUse = [
+    'Para organizar FAQ (perguntas frequentes)',
+    'Para exibir detalhes de transações ou configurações avançadas',
+    'Quando há muito conteúdo que pode ser organizado em seções',
+    'Para economizar espaço na tela mantendo conteúdo acessível',
+  ];
+
+  const whenNotToUse = [
+    'Para conteúdo crítico que deve estar sempre visível',
+    'Quando há poucas informações (use Card ou Section simples)',
+    'Para navegação principal (use Menu ou Tabs)',
+  ];
+
   return (
     <SimpleComponentPage
       title="Accordion"
       subtitle="Componente para expandir/colapsar seções de conteúdo"
       overview="Accordion organiza conteúdo em seções expansíveis, perfeito para FAQ, detalhes de transações e configurações avançadas."
       usage={
-        <Card>
-          <h2>Exemplo Interativo</h2>
-          <div style={{ marginTop: '16px' }}>
+        <>
+          <div>
+            <h3 className="section-title">Exemplo Interativo</h3>
             <Accordion items={items} />
           </div>
-          <div style={{ marginTop: '24px' }}>
-            <h3>Múltiplos abertos</h3>
+
+          <div>
+            <h3 className="section-title">Múltiplos Abertos</h3>
+            <p style={{ marginBottom: '16px', fontSize: '14px', color: 'var(--color-text-secondary)' }}>
+              Permite que múltiplos itens permaneçam expandidos simultaneamente.
+            </p>
             <Accordion items={items} allowMultiple />
           </div>
-        </Card>
+        </>
       }
       installation={`import { Accordion } from '@/components/UI';`}
       basicExample={`const items = [
@@ -67,6 +84,8 @@ font-weight: 600;
 
 /* Transition */
 animation: slideDown 0.2s ease-out;`}
+      whenToUse={whenToUse}
+      whenNotToUse={whenNotToUse}
     />
   );
 }

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Card, Pagination } from '../../../components/UI';
+import { Pagination } from '../../../components/UI';
 import SimpleComponentPage from './SimpleComponentPage';
 
 export default function PaginationDetailPage() {
@@ -11,19 +11,19 @@ export default function PaginationDetailPage() {
       subtitle="Navegação entre páginas de dados"
       overview="Pagination permite navegar por grandes conjuntos de dados divididos em páginas, essencial para listas de transações."
       usage={
-        <Card>
-          <h2>Exemplo Interativo</h2>
-          <div style={{ marginTop: '16px' }}>
-            <p style={{ marginBottom: '16px', fontSize: '14px' }}>
+        <>
+          <div>
+            <h3 className="section-title">Exemplo Interativo</h3>
+            <p style={{ marginBottom: '16px', fontSize: '14px', color: 'var(--color-text-secondary)' }}>
               Página atual: <strong>{page}</strong>
             </p>
             <Pagination currentPage={page} totalPages={10} onPageChange={setPage} />
           </div>
-          <div style={{ marginTop: '24px' }}>
-            <h3>Com muitas páginas</h3>
+          <div>
+            <h3 className="section-title">Com muitas páginas</h3>
             <Pagination currentPage={15} totalPages={50} onPageChange={() => {}} />
           </div>
-        </Card>
+        </>
       }
       installation={`import { Pagination } from '@/components/UI';`}
       basicExample={`const [page, setPage] = useState(1);

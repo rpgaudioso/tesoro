@@ -1,0 +1,115 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-12);
+  width: 100%;
+}
+
+.label {
+  font-size: var(--font-sm);
+  font-weight: var(--font-medium);
+  color: var(--color-text);
+}
+
+.colorDisplay {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-12);
+}
+
+.colorSwatch {
+  width: 48px;
+  height: 48px;
+  border-radius: var(--radius-8);
+  border: 2px solid var(--color-border);
+  flex-shrink: 0;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.colorSwatch:hover {
+  transform: scale(1.05);
+  box-shadow: var(--shadow-md);
+}
+
+.colorInput {
+  flex: 1;
+  padding: var(--spacing-10) var(--spacing-12);
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-6);
+  font-size: var(--font-sm);
+  font-family: 'Courier New', monospace;
+  color: var(--color-text);
+  text-transform: uppercase;
+  transition: all 0.2s;
+}
+
+.colorInput:hover {
+  border-color: var(--color-primary);
+}
+
+.colorInput:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px var(--color-primary-bg);
+}
+
+.nativePicker {
+  width: 48px;
+  height: 48px;
+  border: none;
+  border-radius: var(--radius-8);
+  cursor: pointer;
+  background: transparent;
+}
+
+.nativePicker::-webkit-color-swatch-wrapper {
+  padding: 0;
+}
+
+.nativePicker::-webkit-color-swatch {
+  border: 2px solid var(--color-border);
+  border-radius: var(--radius-8);
+}
+
+.presets {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-8);
+}
+
+.presetsLabel {
+  font-size: var(--font-xs);
+  font-weight: var(--font-medium);
+  color: var(--color-text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.presetGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(32px, 1fr));
+  gap: var(--spacing-8);
+}
+
+.presetSwatch {
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: 2px solid var(--color-border);
+  border-radius: var(--radius-6);
+  cursor: pointer;
+  transition: all 0.2s;
+  background: currentColor;
+}
+
+.presetSwatch:hover {
+  transform: scale(1.1);
+  box-shadow: var(--shadow-md);
+}
+
+.presetSwatch.selected {
+  border-color: var(--color-text);
+  box-shadow: 0 0 0 2px var(--color-bg), 0 0 0 4px var(--color-text);
+}

@@ -1,4 +1,4 @@
-import { Card, CodeBlock } from '../../../components/UI';
+import { CodeBlock } from '../../../components/UI';
 import SimpleComponentPage from './SimpleComponentPage';
 
 export default function CodeBlockDetailPage() {
@@ -8,11 +8,10 @@ export default function CodeBlockDetailPage() {
       subtitle="Bloco de código com sintaxe destacada"
       overview="CodeBlock exibe código formatado com monospace e background diferenciado para fácil leitura."
       usage={
-        <Card>
-          <h2>Exemplo</h2>
-          <div style={{ marginTop: '16px' }}>
-            <CodeBlock language="tsx">
-              {`import { Button } from '@/components/UI';
+        <div>
+          <h3 className="section-title">Exemplo</h3>
+          <CodeBlock language="tsx">
+            {`import { Button } from '@/components/UI';
 
 export default function App() {
   return (
@@ -21,9 +20,8 @@ export default function App() {
     </Button>
   );
 }`}
-            </CodeBlock>
-          </div>
-        </Card>
+          </CodeBlock>
+        </div>
       }
       installation={`import { CodeBlock } from '@/components/UI';`}
       basicExample={`<CodeBlock language="tsx">

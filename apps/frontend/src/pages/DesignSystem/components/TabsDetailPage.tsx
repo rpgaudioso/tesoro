@@ -1,5 +1,5 @@
 import { Bell, Settings, User } from 'lucide-react';
-import { Card, Tabs } from '../../../components/UI';
+import { Tabs } from '../../../components/UI';
 import SimpleComponentPage from './SimpleComponentPage';
 
 export default function TabsDetailPage() {
@@ -30,12 +30,10 @@ export default function TabsDetailPage() {
       subtitle="Navegação por abas para organizar conteúdo"
       overview="Tabs permitem alternar entre diferentes visualizações no mesmo espaço, ideal para dashboards e páginas detalhadas."
       usage={
-        <Card>
-          <h2>Exemplo Interativo</h2>
-          <div style={{ marginTop: '16px' }}>
-            <Tabs tabs={tabs} defaultTab="profile" />
-          </div>
-        </Card>
+        <div>
+          <h3 className="section-title">Exemplo Interativo</h3>
+          <Tabs tabs={tabs} defaultTab="profile" />
+        </div>
       }
       installation={`import { Tabs } from '@/components/UI';`}
       basicExample={`const tabs = [

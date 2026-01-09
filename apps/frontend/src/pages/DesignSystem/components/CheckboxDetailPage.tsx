@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Card, Checkbox } from '../../../components/UI';
+import { Checkbox } from '../../../components/UI';
 import SimpleComponentPage from './SimpleComponentPage';
 
 export default function CheckboxDetailPage() {
@@ -11,18 +11,15 @@ export default function CheckboxDetailPage() {
       subtitle="Checkbox estilizado com label integrado"
       overview="Checkboxes permitem que usuários selecionem uma ou múltiplas opções de uma lista."
       usage={
-        <Card>
-          <h2>Exemplos</h2>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginTop: '16px' }}>
-            <Checkbox 
-              label="Checkbox marcado" 
-              checked={checked} 
-              onChange={(e) => setChecked(e.target.checked)} 
-            />
-            <Checkbox label="Checkbox desmarcado" checked={false} onChange={() => {}} />
-            <Checkbox label="Com erro" checked={false} error="Obrigatório" onChange={() => {}} />
-          </div>
-        </Card>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+          <Checkbox 
+            label="Checkbox marcado" 
+            checked={checked} 
+            onChange={(e) => setChecked(e.target.checked)} 
+          />
+          <Checkbox label="Checkbox desmarcado" checked={false} onChange={() => {}} />
+          <Checkbox label="Com erro" checked={false} error="Obrigatório" onChange={() => {}} />
+        </div>
       }
       installation={`import { Checkbox } from '@/components/UI';`}
       basicExample={`const [accepted, setAccepted] = useState(false);

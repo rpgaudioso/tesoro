@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Card, Textarea } from '../../../components/UI';
+import { Textarea } from '../../../components/UI';
 import SimpleComponentPage from './SimpleComponentPage';
 
 export default function TextareaDetailPage() {
@@ -11,19 +11,17 @@ export default function TextareaDetailPage() {
       subtitle="Campo de texto multi-linha"
       overview="Textarea é usado para coletar textos longos e multi-linha dos usuários."
       usage={
-        <Card>
-          <h2>Exemplo</h2>
-          <div style={{ marginTop: '16px' }}>
-            <Textarea
-              label="Descrição"
-              placeholder="Digite uma descrição detalhada..."
-              value={value}
-              onChange={(e) => setValue(e.target.value)}
-              rows={4}
-              fullWidth
-            />
-          </div>
-        </Card>
+        <div>
+          <h3 className="section-title">Exemplo</h3>
+          <Textarea
+            label="Descrição"
+            placeholder="Digite uma descrição detalhada..."
+            value={value}
+            onChange={(e) => setValue(e.target.value)}
+            rows={4}
+            fullWidth
+          />
+        </div>
       }
       installation={`import { Textarea } from '@/components/UI';`}
       basicExample={`const [text, setText] = useState('');

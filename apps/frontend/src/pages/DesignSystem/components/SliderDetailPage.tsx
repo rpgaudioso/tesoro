@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Card, Slider } from '../../../components/UI';
+import { Slider } from '../../../components/UI';
 import SimpleComponentPage from './SimpleComponentPage';
 
 export default function SliderDetailPage() {
@@ -12,36 +12,29 @@ export default function SliderDetailPage() {
       subtitle="Seletor de range/valor"
       overview="Slider permite selecionar um valor numérico dentro de um range, ideal para filtros de valores mínimos e máximos."
       usage={
-        <Card>
-          <h2>Exemplos</h2>
-          <div style={{ marginTop: '16px', display: 'flex', flexDirection: 'column', gap: '32px' }}>
-            <div>
-              <label style={{ display: 'block', marginBottom: '12px', fontWeight: 500 }}>
-                Volume: {value}%
-              </label>
-              <Slider
-                min={0}
-                max={100}
-                value={value}
-                onChange={(e) => setValue(Number(e.target.value))}
-                showValue={false}
-              />
-            </div>
-            <div>
-              <label style={{ display: 'block', marginBottom: '12px', fontWeight: 500 }}>
-                Filtrar por valor
-              </label>
-              <Slider
-                min={0}
-                max={5000}
-                step={100}
-                value={rangeValue}
-                onChange={(e) => setRangeValue(Number(e.target.value))}
-                formatValue={(val) => `R$ ${val.toFixed(2)}`}
-              />
-            </div>
+        <>
+          <div>
+            <h3 className="section-title">Volume: {value}%</h3>
+            <Slider
+              min={0}
+              max={100}
+              value={value}
+              onChange={(e) => setValue(Number(e.target.value))}
+              showValue={false}
+            />
           </div>
-        </Card>
+          <div>
+            <h3 className="section-title">Filtrar por valor</h3>
+            <Slider
+              min={0}
+              max={5000}
+              step={100}
+              value={rangeValue}
+              onChange={(e) => setRangeValue(Number(e.target.value))}
+              formatValue={(val) => `R$ ${val.toFixed(2)}`}
+            />
+          </div>
+        </>
       }
       installation={`import { Slider } from '@/components/UI';`}
       basicExample={`const [value, setValue] = useState(50);

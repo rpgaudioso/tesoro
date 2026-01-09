@@ -1,0 +1,174 @@
+.backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 1000;
+  animation: fadeIn 0.2s ease-out;
+}
+
+.drawer {
+  position: fixed;
+  background: var(--color-bg);
+  z-index: 1001;
+  box-shadow: var(--shadow-xl);
+  display: flex;
+  flex-direction: column;
+  animation: slideIn 0.3s ease-out;
+}
+
+.drawer.right {
+  top: 0;
+  right: 0;
+  bottom: 0;
+}
+
+.drawer.left {
+  top: 0;
+  left: 0;
+  bottom: 0;
+}
+
+.drawer.top {
+  top: 0;
+  left: 0;
+  right: 0;
+}
+
+.drawer.bottom {
+  bottom: 0;
+  left: 0;
+  right: 0;
+}
+
+.drawer.small.right,
+.drawer.small.left {
+  width: 320px;
+}
+
+.drawer.medium.right,
+.drawer.medium.left {
+  width: 480px;
+}
+
+.drawer.large.right,
+.drawer.large.left {
+  width: 640px;
+}
+
+.drawer.small.top,
+.drawer.small.bottom {
+  height: 240px;
+}
+
+.drawer.medium.top,
+.drawer.medium.bottom {
+  height: 360px;
+}
+
+.drawer.large.top,
+.drawer.large.bottom {
+  height: 480px;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--spacing-20);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.title {
+  margin: 0;
+  font-size: var(--font-lg);
+  font-weight: var(--font-semibold);
+  color: var(--color-text);
+}
+
+.closeButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  background: transparent;
+  border: none;
+  border-radius: var(--radius-6);
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.closeButton:hover {
+  background: var(--color-bg-hover);
+  color: var(--color-text);
+}
+
+.content {
+  flex: 1;
+  padding: var(--spacing-20);
+  overflow-y: auto;
+}
+
+.footer {
+  padding: var(--spacing-16) var(--spacing-20);
+  border-top: 1px solid var(--color-border);
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+.drawer.left {
+  animation-name: slideInLeft;
+}
+
+@keyframes slideInLeft {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+.drawer.top {
+  animation-name: slideInTop;
+}
+
+@keyframes slideInTop {
+  from {
+    transform: translateY(-100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+.drawer.bottom {
+  animation-name: slideInBottom;
+}
+
+@keyframes slideInBottom {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}

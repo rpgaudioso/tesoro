@@ -1,0 +1,136 @@
+.stepper {
+  display: flex;
+  width: 100%;
+}
+
+.stepper.horizontal {
+  flex-direction: row;
+}
+
+.stepper.vertical {
+  flex-direction: column;
+}
+
+.stepWrapper {
+  display: flex;
+  flex: 1;
+}
+
+.horizontal .stepWrapper {
+  flex-direction: column;
+  align-items: center;
+}
+
+.vertical .stepWrapper {
+  flex-direction: row;
+}
+
+.step {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-12);
+  padding: var(--spacing-12);
+  border-radius: var(--radius-8);
+  transition: all 0.2s;
+}
+
+.step.clickable {
+  cursor: pointer;
+}
+
+.step.clickable:hover {
+  background: var(--color-bg-hover);
+}
+
+.stepIndicator {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-full);
+  border: 2px solid var(--color-border);
+  background: var(--color-bg);
+  color: var(--color-text-secondary);
+  font-size: var(--font-sm);
+  font-weight: var(--font-semibold);
+  flex-shrink: 0;
+  transition: all 0.2s;
+}
+
+.step.active .stepIndicator {
+  border-color: var(--color-primary);
+  background: var(--color-primary);
+  color: white;
+}
+
+.step.completed .stepIndicator {
+  border-color: var(--color-success);
+  background: var(--color-success);
+  color: white;
+}
+
+.step.error .stepIndicator {
+  border-color: var(--color-danger);
+  background: var(--color-danger);
+  color: white;
+}
+
+.stepNumber {
+  line-height: 1;
+}
+
+.stepContent {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-4);
+}
+
+.vertical .stepContent {
+  flex: 1;
+}
+
+.stepLabel {
+  font-size: var(--font-sm);
+  font-weight: var(--font-medium);
+  color: var(--color-text-secondary);
+}
+
+.step.active .stepLabel {
+  color: var(--color-text);
+  font-weight: var(--font-semibold);
+}
+
+.step.completed .stepLabel {
+  color: var(--color-text);
+}
+
+.stepDescription {
+  font-size: var(--font-xs);
+  color: var(--color-text-secondary);
+  line-height: 1.4;
+}
+
+.connector {
+  background: var(--color-border);
+  transition: all 0.2s;
+}
+
+.horizontal .connector {
+  width: 100%;
+  height: 2px;
+  margin: 0 var(--spacing-8);
+  align-self: flex-start;
+  margin-top: 28px;
+}
+
+.vertical .connector {
+  width: 2px;
+  height: 100%;
+  margin: var(--spacing-8) 0;
+  margin-left: 27px;
+}
+
+.connector.connectorCompleted {
+  background: var(--color-success);
+}

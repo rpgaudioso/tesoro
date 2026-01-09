@@ -1,4 +1,4 @@
-import { Breadcrumb, Card } from '../../../components/UI';
+import { Breadcrumb } from '../../../components/UI';
 import SimpleComponentPage from './SimpleComponentPage';
 
 export default function BreadcrumbDetailPage() {
@@ -14,16 +14,16 @@ export default function BreadcrumbDetailPage() {
       subtitle="Navegação hierárquica"
       overview="Breadcrumb mostra a localização atual na hierarquia de páginas, facilitando a navegação e orientação."
       usage={
-        <Card>
-          <h2>Exemplos</h2>
-          <div style={{ marginTop: '16px' }}>
+        <>
+          <div>
+            <h3 className="section-title">Exemplo Completo</h3>
             <Breadcrumb items={items} />
           </div>
-          <div style={{ marginTop: '24px' }}>
-            <h3>Nível único</h3>
+          <div>
+            <h3 className="section-title">Nível único</h3>
             <Breadcrumb items={[{ label: 'Home', href: '/app' }, { label: 'Dashboard' }]} />
           </div>
-        </Card>
+        </>
       }
       installation={`import { Breadcrumb } from '@/components/UI';`}
       basicExample={`const items = [

@@ -107,7 +107,7 @@
 }
 
 .confirmButton.warning {
-  background-color: #f59e0b;
+  background-color: var(--color-warning);
 }
 
 .confirmButton.warning:hover {
@@ -115,11 +115,11 @@
 }
 
 .confirmButton.info {
-  background-color: var(--color-primary);
+  background-color: var(--color-info);
 }
 
 .confirmButton.info:hover {
-  background-color: #2c5aa0;
+  background-color: #2563eb;
 }
 
 .confirmButton:active {

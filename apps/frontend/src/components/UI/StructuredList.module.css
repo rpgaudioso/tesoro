@@ -1,0 +1,46 @@
+.structuredList {
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-8);
+  overflow: hidden;
+  background: var(--color-bg);
+}
+
+.structuredList.flush {
+  border: none;
+  border-radius: 0;
+}
+
+.row {
+  display: flex;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.row:last-child {
+  border-bottom: none;
+}
+
+.row.head {
+  background: var(--color-bg-secondary);
+  font-weight: var(--font-semibold);
+}
+
+.cell {
+  flex: 1;
+  padding: var(--spacing-16);
+  font-size: var(--font-sm);
+  color: var(--color-text);
+  border-right: 1px solid var(--color-border);
+}
+
+.cell:last-child {
+  border-right: none;
+}
+
+.headCell {
+  font-weight: var(--font-semibold);
+  color: var(--color-text);
+}
+
+.condensed .cell {
+  padding: var(--spacing-8) var(--spacing-12);
+}

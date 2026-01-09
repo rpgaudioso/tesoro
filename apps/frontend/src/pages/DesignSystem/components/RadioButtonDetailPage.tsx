@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Card, RadioGroup } from '../../../components/UI';
+import { RadioGroup } from '../../../components/UI';
 import SimpleComponentPage from './SimpleComponentPage';
 
 export default function RadioButtonDetailPage() {
@@ -12,43 +12,39 @@ export default function RadioButtonDetailPage() {
       subtitle="Seleção única entre opções"
       overview="RadioButton permite selecionar uma opção entre múltiplas escolhas mutuamente exclusivas."
       usage={
-        <Card>
-          <h2>Exemplos</h2>
-          <div style={{ marginTop: '16px', display: 'flex', flexDirection: 'column', gap: '32px' }}>
-            <div>
-              <label style={{ display: 'block', marginBottom: '12px', fontWeight: 500 }}>
-                Método de Pagamento
-              </label>
-              <RadioGroup
-                name="payment"
-                value={paymentMethod}
-                onChange={setPaymentMethod}
-                options={[
-                  { value: 'credit', label: 'Cartão de Crédito' },
-                  { value: 'debit', label: 'Cartão de Débito' },
-                  { value: 'cash', label: 'Dinheiro' },
-                  { value: 'pix', label: 'PIX' },
-                ]}
-              />
-            </div>
-            <div>
-              <label style={{ display: 'block', marginBottom: '12px', fontWeight: 500 }}>
-                Tipo de Transação
-              </label>
-              <RadioGroup
-                name="type"
-                value={transactionType}
-                onChange={setTransactionType}
-                orientation="horizontal"
-                options={[
-                  { value: 'expense', label: 'Despesa' },
-                  { value: 'income', label: 'Receita' },
-                  { value: 'transfer', label: 'Transferência' },
-                ]}
-              />
-            </div>
+        <>
+          <div>
+            <h3 className="section-title">Método de Pagamento</h3>
+            <RadioGroup
+              name="payment"
+              value={paymentMethod}
+              onChange={setPaymentMethod}
+              options={[
+                { value: 'credit', label: 'Cartão de Crédito' },
+                { value: 'debit', label: 'Cartão de Débito' },
+                { value: 'cash', label: 'Dinheiro' },
+                { value: 'pix', label: 'PIX' },
+              ]}
+            />
           </div>
-        </Card>
+          <div>
+            <h3 className="section-title">Tipo de Transação</h3>
+            <p style={{ marginBottom: '12px', color: 'var(--color-text-secondary)' }}>
+              Orientação horizontal para opções relacionadas
+            </p>
+            <RadioGroup
+              name="type"
+              value={transactionType}
+              onChange={setTransactionType}
+              orientation="horizontal"
+              options={[
+                { value: 'expense', label: 'Despesa' },
+                { value: 'income', label: 'Receita' },
+                { value: 'transfer', label: 'Transferência' },
+              ]}
+            />
+          </div>
+        </>
       }
       installation={`import { RadioButton, RadioGroup } from '@/components/UI';`}
       basicExample={`const [value, setValue] = useState('option1');

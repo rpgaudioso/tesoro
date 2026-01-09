@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Button, Card, InlineLoading } from '../../../components/UI';
+import { Button, InlineLoading } from '../../../components/UI';
 import SimpleComponentPage from './SimpleComponentPage';
 
 export default function InlineLoadingDetailPage() {
@@ -22,9 +22,9 @@ export default function InlineLoadingDetailPage() {
       subtitle="Loading inline em ações"
       overview="InlineLoading exibe feedback de carregamento inline, ideal para botões de ação e operações assíncronas."
       usage={
-        <Card>
-          <h2>Exemplo Interativo</h2>
-          <div style={{ marginTop: '16px' }}>
+        <>
+          <div>
+            <h3 className="section-title">Exemplo Interativo</h3>
             <Button onClick={handleAction} disabled={loading}>
               {loading ? 'Processando...' : 'Executar Ação'}
             </Button>
@@ -37,14 +37,15 @@ export default function InlineLoadingDetailPage() {
               />
             </div>
           </div>
-
-          <h3 style={{ marginTop: '32px', fontSize: '16px' }}>Estados</h3>
-          <div style={{ marginTop: '16px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
-            <InlineLoading loading={true} description="Carregando dados..." />
-            <InlineLoading success={true} successDescription="Operação concluída!" />
-            <InlineLoading>Aguardando ação...</InlineLoading>
+          <div>
+            <h3 className="section-title">Estados</h3>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+              <InlineLoading loading={true} description="Carregando dados..." />
+              <InlineLoading success={true} successDescription="Operação concluída!" />
+              <InlineLoading>Aguardando ação...</InlineLoading>
+            </div>
           </div>
-        </Card>
+        </>
       }
       installation={`import { InlineLoading } from '@/components/UI';`}
       basicExample={`const [loading, setLoading] = useState(false);

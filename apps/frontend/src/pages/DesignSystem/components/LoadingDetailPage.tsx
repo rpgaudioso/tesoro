@@ -1,4 +1,4 @@
-import { Card, Loading } from '../../../components/UI';
+import { Loading } from '../../../components/UI';
 import SimpleComponentPage from './SimpleComponentPage';
 
 export default function LoadingDetailPage() {
@@ -8,27 +8,29 @@ export default function LoadingDetailPage() {
       subtitle="Indicador de carregamento para feedback visual"
       overview="Loading mostra que uma operação está em andamento, melhorando a percepção de responsividade do sistema."
       usage={
-        <Card>
-          <h2>Tamanhos</h2>
-          <div style={{ display: 'flex', gap: '32px', marginTop: '16px', alignItems: 'center' }}>
-            <div>
-              <p style={{ fontSize: '12px', marginBottom: '8px' }}>Small</p>
-              <Loading size="sm" />
-            </div>
-            <div>
-              <p style={{ fontSize: '12px', marginBottom: '8px' }}>Medium</p>
-              <Loading size="md" />
-            </div>
-            <div>
-              <p style={{ fontSize: '12px', marginBottom: '8px' }}>Large</p>
-              <Loading size="lg" />
+        <>
+          <div>
+            <h3 className="section-title">Tamanhos</h3>
+            <div style={{ display: 'flex', gap: '32px', alignItems: 'center' }}>
+              <div>
+                <p style={{ fontSize: '12px', marginBottom: '8px', color: 'var(--color-text-secondary)' }}>Small</p>
+                <Loading size="sm" />
+              </div>
+              <div>
+                <p style={{ fontSize: '12px', marginBottom: '8px', color: 'var(--color-text-secondary)' }}>Medium</p>
+                <Loading size="md" />
+              </div>
+              <div>
+                <p style={{ fontSize: '12px', marginBottom: '8px', color: 'var(--color-text-secondary)' }}>Large</p>
+                <Loading size="lg" />
+              </div>
             </div>
           </div>
-          <div style={{ marginTop: '24px' }}>
-            <h3>Com texto</h3>
+          <div>
+            <h3 className="section-title">Com texto</h3>
             <Loading text="Carregando dados..." />
           </div>
-        </Card>
+        </>
       }
       installation={`import { Loading } from '@/components/UI';`}
       basicExample={`<Loading size="md" text="Carregando..." />`}

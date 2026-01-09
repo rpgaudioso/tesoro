@@ -1,4 +1,4 @@
-import { Button, Card, Popover } from '../../../components/UI';
+import { Button, Popover } from '../../../components/UI';
 import SimpleComponentPage from './SimpleComponentPage';
 
 export default function PopoverDetailPage() {
@@ -8,9 +8,9 @@ export default function PopoverDetailPage() {
       subtitle="Conteúdo flutuante contextual"
       overview="Popover exibe conteúdo adicional em uma camada flutuante sobre o conteúdo principal, ideal para detalhes rápidos e mini-formulários."
       usage={
-        <Card>
-          <h2>Exemplo Básico</h2>
-          <div style={{ marginTop: '16px', display: 'flex', gap: '16px', flexWrap: 'wrap' }}>
+        <div>
+          <h3 className="section-title">Exemplos de Posição</h3>
+          <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap' }}>
             <Popover
               trigger={<Button variant="secondary">Abrir Popover</Button>}
               content={
@@ -35,7 +35,7 @@ export default function PopoverDetailPage() {
               position="right"
             />
           </div>
-        </Card>
+        </div>
       }
       installation={`import { Popover } from '@/components/UI';`}
       basicExample={`<Popover

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Button, Card, Portal } from '../../../components/UI';
+import { Button, Portal } from '../../../components/UI';
 import SimpleComponentPage from './SimpleComponentPage';
 
 export default function PortalDetailPage() {
@@ -11,8 +11,8 @@ export default function PortalDetailPage() {
       subtitle="Renderiza conteúdo fora da hierarquia do DOM"
       overview="Portal permite renderizar componentes em qualquer lugar do DOM, útil para modais e tooltips."
       usage={
-        <Card>
-          <h2>Exemplo</h2>
+        <div>
+          <h3 className="section-title">Exemplo</h3>
           <Button onClick={() => setShowPortal(!showPortal)}>
             {showPortal ? 'Fechar' : 'Abrir'} Portal
           </Button>
@@ -37,7 +37,7 @@ export default function PortalDetailPage() {
               </div>
             </Portal>
           )}
-        </Card>
+        </div>
       }
       installation={`import { Portal } from '@/components/UI';`}
       basicExample={`<Portal>

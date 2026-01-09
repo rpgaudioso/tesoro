@@ -1,0 +1,58 @@
+.treeView {
+  font-size: var(--font-sm);
+}
+
+.treeNode {
+  margin-left: var(--spacing-4);
+}
+
+.nodeButton {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-8);
+  width: 100%;
+  padding: var(--spacing-8) var(--spacing-12);
+  background: transparent;
+  border: none;
+  border-radius: var(--radius-6);
+  color: var(--color-text);
+  cursor: pointer;
+  text-align: left;
+  transition: background 0.2s;
+}
+
+.nodeButton:hover {
+  background: var(--color-bg-hover);
+}
+
+.nodeButton.leaf {
+  padding-left: calc(var(--spacing-12) + 16px + var(--spacing-8));
+}
+
+.chevron {
+  flex-shrink: 0;
+  transition: transform 0.2s;
+  color: var(--color-text-secondary);
+}
+
+.chevron.expanded {
+  transform: rotate(90deg);
+}
+
+.icon {
+  flex-shrink: 0;
+  color: var(--color-primary);
+}
+
+.label {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.children {
+  margin-left: var(--spacing-20);
+  margin-top: var(--spacing-4);
+}

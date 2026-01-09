@@ -1,0 +1,21 @@
+.container {
+  width: 100%;
+  display: inline-block;
+}
+
+.svg {
+  display: block;
+}
+
+.line {
+  transition: stroke 0.2s;
+}
+
+.point {
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+.container:hover .point {
+  opacity: 1;
+}

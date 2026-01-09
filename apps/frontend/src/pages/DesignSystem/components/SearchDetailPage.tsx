@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Card, Search } from '../../../components/UI';
+import { Search } from '../../../components/UI';
 import SimpleComponentPage from './SimpleComponentPage';
 
 export default function SearchDetailPage() {
@@ -11,9 +11,9 @@ export default function SearchDetailPage() {
       subtitle="Campo de busca avançado"
       overview="Search é um campo de entrada especializado para busca, com ícone de lupa e botão para limpar o texto."
       usage={
-        <Card>
-          <h2>Exemplo</h2>
-          <div style={{ marginTop: '16px', maxWidth: '400px' }}>
+        <div>
+          <h3 className="section-title">Exemplo</h3>
+          <div style={{ maxWidth: '400px' }}>
             <Search
               placeholder="Buscar transações..."
               value={searchValue}
@@ -22,11 +22,11 @@ export default function SearchDetailPage() {
             />
           </div>
           {searchValue && (
-            <p style={{ marginTop: '12px', fontSize: '14px', color: '#737373' }}>
+            <p style={{ marginTop: '12px', fontSize: '14px', color: 'var(--color-text-secondary)' }}>
               Buscando por: "{searchValue}"
             </p>
           )}
-        </Card>
+        </div>
       }
       installation={`import { Search } from '@/components/UI';`}
       basicExample={`const [value, setValue] = useState('');

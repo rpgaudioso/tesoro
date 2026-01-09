@@ -1,5 +1,5 @@
 import { ExternalLink } from 'lucide-react';
-import { Card, Link } from '../../../components/UI';
+import { Link } from '../../../components/UI';
 import SimpleComponentPage from './SimpleComponentPage';
 
 export default function LinkDetailPage() {
@@ -9,37 +9,34 @@ export default function LinkDetailPage() {
       subtitle="Link estilizado e acessível"
       overview="Link é um componente de navegação que suporta tanto links externos quanto navegação interna com React Router."
       usage={
-        <Card>
-          <h2>Exemplos</h2>
-          <div style={{ marginTop: '16px', display: 'flex', flexDirection: 'column', gap: '20px' }}>
-            <div>
-              <h3 style={{ fontSize: '14px', marginBottom: '8px' }}>Variantes</h3>
-              <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap' }}>
-                <Link variant="primary" href="#">Link Primário</Link>
-                <Link variant="secondary" href="#">Link Secundário</Link>
-                <Link variant="inline" href="#">Link Inline</Link>
-              </div>
-            </div>
-            <div>
-              <h3 style={{ fontSize: '14px', marginBottom: '8px' }}>Tamanhos</h3>
-              <div style={{ display: 'flex', gap: '16px', alignItems: 'center', flexWrap: 'wrap' }}>
-                <Link size="sm" href="#">Pequeno</Link>
-                <Link size="md" href="#">Médio</Link>
-                <Link size="lg" href="#">Grande</Link>
-              </div>
-            </div>
-            <div>
-              <h3 style={{ fontSize: '14px', marginBottom: '8px' }}>Com Ícone</h3>
-              <Link href="https://github.com" target="_blank">
-                Ver no GitHub <ExternalLink size={14} />
-              </Link>
-            </div>
-            <div>
-              <h3 style={{ fontSize: '14px', marginBottom: '8px' }}>Desabilitado</h3>
-              <Link disabled href="#">Link Desabilitado</Link>
+        <>
+          <div>
+            <h3 className="section-title">Variantes</h3>
+            <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap' }}>
+              <Link variant="primary" href="#">Link Primário</Link>
+              <Link variant="secondary" href="#">Link Secundário</Link>
+              <Link variant="inline" href="#">Link Inline</Link>
             </div>
           </div>
-        </Card>
+          <div>
+            <h3 className="section-title">Tamanhos</h3>
+            <div style={{ display: 'flex', gap: '16px', alignItems: 'center', flexWrap: 'wrap' }}>
+              <Link size="sm" href="#">Pequeno</Link>
+              <Link size="md" href="#">Médio</Link>
+              <Link size="lg" href="#">Grande</Link>
+            </div>
+          </div>
+          <div>
+            <h3 className="section-title">Com Ícone</h3>
+            <Link href="https://github.com" target="_blank">
+              Ver no GitHub <ExternalLink size={14} />
+            </Link>
+          </div>
+          <div>
+            <h3 className="section-title">Desabilitado</h3>
+            <Link disabled href="#">Link Desabilitado</Link>
+          </div>
+        </>
       }
       installation={`import { Link } from '@/components/UI';`}
       basicExample={`// Link externo

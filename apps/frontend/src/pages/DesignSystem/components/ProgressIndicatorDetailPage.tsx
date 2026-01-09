@@ -1,6 +1,6 @@
 import { CheckCircle, CreditCard, User } from 'lucide-react';
 import { useState } from 'react';
-import { Button, Card, ProgressIndicator } from '../../../components/UI';
+import { Button, ProgressIndicator } from '../../../components/UI';
 import SimpleComponentPage from './SimpleComponentPage';
 
 export default function ProgressIndicatorDetailPage() {
@@ -18,9 +18,9 @@ export default function ProgressIndicatorDetailPage() {
       subtitle="Indicador de progresso (Wizard/Stepper)"
       overview="ProgressIndicator mostra o progresso do usuário através de um processo multi-etapa, como onboarding ou formulários complexos."
       usage={
-        <Card>
-          <h2>Exemplo Interativo</h2>
-          <div style={{ marginTop: '16px' }}>
+        <>
+          <div>
+            <h3 className="section-title">Exemplo Interativo</h3>
             <ProgressIndicator
               steps={steps}
               currentStep={currentStep}
@@ -42,9 +42,8 @@ export default function ProgressIndicatorDetailPage() {
               </Button>
             </div>
           </div>
-
-          <h3 style={{ marginTop: '32px', fontSize: '16px' }}>Orientação Vertical</h3>
-          <div style={{ marginTop: '16px' }}>
+          <div>
+            <h3 className="section-title">Orientação Vertical</h3>
             <ProgressIndicator
               steps={[
                 { label: 'Criar Conta', description: 'Configure sua conta' },
@@ -56,7 +55,7 @@ export default function ProgressIndicatorDetailPage() {
               orientation="vertical"
             />
           </div>
-        </Card>
+        </>
       }
       installation={`import { ProgressIndicator } from '@/components/UI';`}
       basicExample={`const steps = [

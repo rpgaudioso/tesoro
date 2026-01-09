@@ -1,0 +1,106 @@
+.card {
+  padding: var(--spacing-20);
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-12);
+  transition: all 0.2s;
+}
+
+.card:hover {
+  box-shadow: var(--shadow-md);
+  transform: translateY(-2px);
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--spacing-16);
+}
+
+.title {
+  font-size: var(--font-sm);
+  font-weight: var(--font-medium);
+  color: var(--color-text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.iconContainer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-8);
+  background: var(--color-bg-secondary);
+}
+
+.card.primary .iconContainer {
+  background: var(--color-primary-bg);
+  color: var(--color-primary);
+}
+
+.card.success .iconContainer {
+  background: var(--color-success-bg);
+  color: var(--color-success);
+}
+
+.card.warning .iconContainer {
+  background: var(--color-warning-bg);
+  color: var(--color-warning);
+}
+
+.card.danger .iconContainer {
+  background: var(--color-danger-bg);
+  color: var(--color-danger);
+}
+
+.content {
+  display: flex;
+  align-items: baseline;
+  gap: var(--spacing-12);
+  margin-bottom: var(--spacing-8);
+}
+
+.value {
+  font-size: 32px;
+  font-weight: var(--font-bold);
+  color: var(--color-text);
+  line-height: 1;
+}
+
+.trend {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-4);
+  padding: var(--spacing-4) var(--spacing-8);
+  border-radius: var(--radius-full);
+  font-size: var(--font-xs);
+  font-weight: var(--font-semibold);
+}
+
+.trend.positive {
+  background: var(--color-success-bg);
+  color: var(--color-success);
+}
+
+.trend.negative {
+  background: var(--color-danger-bg);
+  color: var(--color-danger);
+}
+
+.description {
+  margin: 0;
+  font-size: var(--font-sm);
+  color: var(--color-text-secondary);
+  line-height: 1.5;
+}
+
+.footer {
+  margin-top: var(--spacing-16);
+  padding-top: var(--spacing-16);
+  border-top: 1px solid var(--color-border);
+  font-size: var(--font-sm);
+  color: var(--color-text-secondary);
+}

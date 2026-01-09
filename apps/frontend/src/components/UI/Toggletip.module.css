@@ -1,0 +1,89 @@
+.toggletip {
+  position: relative;
+  display: inline-block;
+}
+
+.trigger {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spacing-4);
+  background: transparent;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-full);
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.trigger:hover {
+  background: var(--color-bg-hover);
+  color: var(--color-text);
+  border-color: var(--color-primary);
+}
+
+.backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 999;
+}
+
+.content {
+  position: absolute;
+  z-index: 1000;
+  min-width: 200px;
+  max-width: 300px;
+  padding: var(--spacing-12);
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-8);
+  box-shadow: var(--shadow-lg);
+  font-size: var(--font-sm);
+  color: var(--color-text);
+  line-height: 1.5;
+}
+
+.content.top {
+  bottom: calc(100% + var(--spacing-8));
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.content.bottom {
+  top: calc(100% + var(--spacing-8));
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.content.left {
+  right: calc(100% + var(--spacing-8));
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.content.right {
+  left: calc(100% + var(--spacing-8));
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.close {
+  position: absolute;
+  top: var(--spacing-8);
+  right: var(--spacing-8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spacing-2);
+  background: transparent;
+  border: none;
+  border-radius: var(--radius-6);
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.close:hover {
+  background: var(--color-bg-hover);
+  color: var(--color-text);
+}

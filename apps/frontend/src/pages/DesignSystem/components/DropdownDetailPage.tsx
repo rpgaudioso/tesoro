@@ -1,13 +1,13 @@
 import { Download, Edit, Eye, Trash2 } from 'lucide-react';
-import { Card, Dropdown } from '../../../components/UI';
+import { Dropdown, toast } from '../../../components/UI';
 import SimpleComponentPage from './SimpleComponentPage';
 
 export default function DropdownDetailPage() {
   const items = [
-    { label: 'Editar', value: 'edit', icon: <Edit size={16} />, onClick: () => alert('Editar') },
-    { label: 'Visualizar', value: 'view', icon: <Eye size={16} />, onClick: () => alert('Visualizar') },
-    { label: 'Baixar', value: 'download', icon: <Download size={16} />, onClick: () => alert('Baixar') },
-    { label: 'Excluir', value: 'delete', icon: <Trash2 size={16} />, onClick: () => alert('Excluir') },
+    { label: 'Editar', value: 'edit', icon: <Edit size={16} />, onClick: () => toast.info('Editar selecionado') },
+    { label: 'Visualizar', value: 'view', icon: <Eye size={16} />, onClick: () => toast.info('Visualizar selecionado') },
+    { label: 'Baixar', value: 'download', icon: <Download size={16} />, onClick: () => toast.success('Download iniciado') },
+    { label: 'Excluir', value: 'delete', icon: <Trash2 size={16} />, onClick: () => toast.error('Item excluído') },
   ];
 
   return (
@@ -16,12 +16,10 @@ export default function DropdownDetailPage() {
       subtitle="Menu dropdown com ações"
       overview="Dropdown mostra um menu de ações ao clicar, ideal para ações em massa e menus contextuais."
       usage={
-        <Card>
-          <h2>Exemplo Interativo</h2>
-          <div style={{ marginTop: '16px' }}>
-            <Dropdown trigger="Ações" items={items} />
-          </div>
-        </Card>
+        <div>
+          <h3 className="section-title">Exemplo Interativo</h3>
+          <Dropdown trigger="Ações" items={items} />
+        </div>
       }
       installation={`import { Dropdown } from '@/components/UI';`}
       basicExample={`const items = [

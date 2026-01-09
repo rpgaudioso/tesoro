@@ -1,0 +1,105 @@
+.timeline {
+  position: relative;
+  padding: var(--spacing-20) 0;
+}
+
+.timeline::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 18px;
+  width: 2px;
+  background: var(--color-border);
+}
+
+.item {
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  gap: var(--spacing-16);
+  margin-bottom: var(--spacing-32);
+}
+
+.item:last-child {
+  margin-bottom: 0;
+}
+
+.marker {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-full);
+  border: 3px solid var(--color-bg);
+  background: var(--color-text-secondary);
+  color: white;
+  flex-shrink: 0;
+  z-index: 1;
+  box-shadow: 0 0 0 2px var(--color-border);
+}
+
+.marker.success {
+  background: var(--color-success);
+  box-shadow: 0 0 0 2px var(--color-success-light);
+}
+
+.marker.warning {
+  background: var(--color-warning);
+  box-shadow: 0 0 0 2px var(--color-warning-light);
+}
+
+.marker.danger {
+  background: var(--color-danger);
+  box-shadow: 0 0 0 2px var(--color-danger-light);
+}
+
+.marker.info {
+  background: var(--color-info);
+  box-shadow: 0 0 0 2px var(--color-info-light);
+}
+
+.marker.neutral {
+  background: var(--color-text-secondary);
+  box-shadow: 0 0 0 2px var(--color-border);
+}
+
+.content {
+  flex: 1;
+  padding: var(--spacing-16) var(--spacing-20);
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-8);
+  box-shadow: var(--shadow-xs);
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing-16);
+  margin-bottom: var(--spacing-12);
+}
+
+.title {
+  margin: 0;
+  font-size: var(--font-base);
+  font-weight: var(--font-semibold);
+  color: var(--color-text-primary);
+  line-height: 1.4;
+}
+
+.timestamp {
+  font-size: var(--font-xs);
+  color: var(--color-text-secondary);
+  white-space: nowrap;
+  font-weight: var(--font-medium);
+}
+
+.description {
+  margin: 0;
+  font-size: var(--font-sm);
+  color: var(--color-text-secondary);
+  line-height: 1.6;
+}

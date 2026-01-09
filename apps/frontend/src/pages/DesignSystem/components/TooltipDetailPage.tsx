@@ -1,5 +1,5 @@
 import { Info } from 'lucide-react';
-import { Button, Card, Tooltip } from '../../../components/UI';
+import { Button, Tooltip } from '../../../components/UI';
 import SimpleComponentPage from './SimpleComponentPage';
 
 export default function TooltipDetailPage() {
@@ -9,29 +9,31 @@ export default function TooltipDetailPage() {
       subtitle="Dicas contextuais ao passar o mouse"
       overview="Tooltip mostra informações adicionais ao passar o mouse, ideal para explicar ícones e funcionalidades."
       usage={
-        <Card>
-          <h2>Posições</h2>
-          <div style={{ display: 'flex', gap: '16px', marginTop: '24px', flexWrap: 'wrap' }}>
-            <Tooltip content="Dica no topo" position="top">
-              <Button>Top</Button>
-            </Tooltip>
-            <Tooltip content="Dica embaixo" position="bottom">
-              <Button>Bottom</Button>
-            </Tooltip>
-            <Tooltip content="Dica à esquerda" position="left">
-              <Button>Left</Button>
-            </Tooltip>
-            <Tooltip content="Dica à direita" position="right">
-              <Button>Right</Button>
-            </Tooltip>
+        <>
+          <div>
+            <h3 className="section-title">Posições</h3>
+            <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap' }}>
+              <Tooltip content="Dica no topo" position="top">
+                <Button>Top</Button>
+              </Tooltip>
+              <Tooltip content="Dica embaixo" position="bottom">
+                <Button>Bottom</Button>
+              </Tooltip>
+              <Tooltip content="Dica à esquerda" position="left">
+                <Button>Left</Button>
+              </Tooltip>
+              <Tooltip content="Dica à direita" position="right">
+                <Button>Right</Button>
+              </Tooltip>
+            </div>
           </div>
-          <div style={{ marginTop: '24px' }}>
-            <h3>Com ícone</h3>
+          <div>
+            <h3 className="section-title">Com ícone</h3>
             <Tooltip content="Clique para mais informações">
               <Info size={20} style={{ cursor: 'pointer' }} />
             </Tooltip>
           </div>
-        </Card>
+        </>
       }
       installation={`import { Tooltip } from '@/components/UI';`}
       basicExample={`<Tooltip content="Dica útil" position="top">

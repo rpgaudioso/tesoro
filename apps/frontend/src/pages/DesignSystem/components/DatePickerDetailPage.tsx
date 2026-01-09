@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Card, DatePicker } from '../../../components/UI';
+import { DatePicker } from '../../../components/UI';
 import SimpleComponentPage from './SimpleComponentPage';
 
 export default function DatePickerDetailPage() {
@@ -16,40 +16,29 @@ export default function DatePickerDetailPage() {
       subtitle="Seletor de data para filtros e transações"
       overview="DatePicker é essencial para sistema financeiro, permitindo seleção de datas em filtros, criação de transações e relatórios."
       usage={
-        <Card>
-          <h2>Exemplos</h2>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '24px', marginTop: '16px' }}>
-            <div>
-              <label style={{ display: 'block', marginBottom: '8px', fontSize: '14px', fontWeight: 500 }}>
-                Data simples
-              </label>
-              <DatePicker value={date} onChange={setDate} placeholder="Selecione a data" />
-              {date && <p style={{ marginTop: '8px', fontSize: '13px', color: 'var(--color-text-secondary)' }}>
-                Selecionado: {date.toLocaleDateString('pt-BR')}
-              </p>}
-            </div>
-            
-            <div>
-              <label style={{ display: 'block', marginBottom: '8px', fontSize: '14px', fontWeight: 500 }}>
-                Com restrição de período (próximos 30 dias)
-              </label>
-              <DatePicker 
-                value={startDate} 
-                onChange={setStartDate} 
-                minDate={today}
-                maxDate={maxDate}
-                placeholder="Selecione dentro do período"
-              />
-            </div>
-
-            <div>
-              <label style={{ display: 'block', marginBottom: '8px', fontSize: '14px', fontWeight: 500 }}>
-                Desabilitado
-              </label>
-              <DatePicker value={undefined} onChange={() => {}} disabled placeholder="Campo desabilitado" />
-            </div>
+        <>
+          <div>
+            <h3 className="section-title">Data simples</h3>
+            <DatePicker value={date} onChange={setDate} placeholder="Selecione a data" />
+            {date && <p style={{ marginTop: '8px', fontSize: '13px', color: 'var(--color-text-secondary)' }}>
+              Selecionado: {date.toLocaleDateString('pt-BR')}
+            </p>}
           </div>
-        </Card>
+          <div>
+            <h3 className="section-title">Com restrição de período (próximos 30 dias)</h3>
+            <DatePicker 
+              value={startDate} 
+              onChange={setStartDate} 
+              minDate={today}
+              maxDate={maxDate}
+              placeholder="Selecione dentro do período"
+            />
+          </div>
+          <div>
+            <h3 className="section-title">Desabilitado</h3>
+            <DatePicker value={undefined} onChange={() => {}} disabled placeholder="Campo desabilitado" />
+          </div>
+        </>
       }
       installation={`import { DatePicker } from '@/components/UI';`}
       basicExample={`const [date, setDate] = useState<Date>();

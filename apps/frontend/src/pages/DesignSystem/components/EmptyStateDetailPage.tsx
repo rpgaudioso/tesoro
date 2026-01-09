@@ -1,5 +1,5 @@
 import { Inbox } from 'lucide-react';
-import { Card, EmptyState } from '../../../components/UI';
+import { EmptyState } from '../../../components/UI';
 import SimpleComponentPage from './SimpleComponentPage';
 
 export default function EmptyStateDetailPage() {
@@ -9,20 +9,17 @@ export default function EmptyStateDetailPage() {
       subtitle="Indica quando não há dados ou conteúdo para exibir"
       overview="EmptyState fornece feedback visual quando listas ou tabelas estão vazias, ajudando usuários a entender o que fazer."
       usage={
-        <Card>
-          <h2>Exemplos</h2>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '24px', marginTop: '16px' }}>
-            <EmptyState
-              icon={<Inbox size={48} />}
-              message="Nenhuma transação encontrada"
-            />
-            <EmptyState
-              icon={<Inbox size={48} />}
-              message="Sua lista está vazia"
-              description="Comece criando sua primeira categoria"
-            />
-          </div>
-        </Card>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+          <EmptyState
+            icon={<Inbox size={48} />}
+            message="Nenhuma transação encontrada"
+          />
+          <EmptyState
+            icon={<Inbox size={48} />}
+            message="Sua lista está vazia"
+            description="Comece criando sua primeira categoria"
+          />
+        </div>
       }
       installation={`import { EmptyState } from '@/components/UI';
 import { Inbox } from 'lucide-react';`}

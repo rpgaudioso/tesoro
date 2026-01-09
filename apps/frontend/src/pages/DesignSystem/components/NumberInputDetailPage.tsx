@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Card, NumberInput } from '../../../components/UI';
+import { NumberInput } from '../../../components/UI';
 import SimpleComponentPage from './SimpleComponentPage';
 
 export default function NumberInputDetailPage() {
@@ -12,45 +12,36 @@ export default function NumberInputDetailPage() {
       subtitle="Input numérico com controles"
       overview="NumberInput é um campo de entrada especializado para valores numéricos com botões de incremento e decremento."
       usage={
-        <Card>
-          <h2>Exemplos</h2>
-          <div style={{ marginTop: '16px', display: 'flex', flexDirection: 'column', gap: '24px' }}>
-            <div>
-              <label style={{ display: 'block', marginBottom: '8px', fontWeight: 500 }}>
-                Valor (R$)
-              </label>
-              <NumberInput
-                value={amount}
-                onChange={setAmount}
-                min={0}
-                step={10}
-                placeholder="0.00"
-              />
-            </div>
-            <div>
-              <label style={{ display: 'block', marginBottom: '8px', fontWeight: 500 }}>
-                Número de Parcelas
-              </label>
-              <NumberInput
-                value={installments}
-                onChange={setInstallments}
-                min={1}
-                max={12}
-                step={1}
-              />
-            </div>
-            <div>
-              <label style={{ display: 'block', marginBottom: '8px', fontWeight: 500 }}>
-                Sem Controles
-              </label>
-              <NumberInput
-                value={50}
-                showControls={false}
-                placeholder="Digite um número"
-              />
-            </div>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+          <div>
+            <h3 className="section-title">Valor (R$)</h3>
+            <NumberInput
+              value={amount}
+              onChange={setAmount}
+              min={0}
+              step={10}
+              placeholder="0.00"
+            />
           </div>
-        </Card>
+          <div>
+            <h3 className="section-title">Número de Parcelas</h3>
+            <NumberInput
+              value={installments}
+              onChange={setInstallments}
+              min={1}
+              max={12}
+              step={1}
+            />
+          </div>
+          <div>
+            <h3 className="section-title">Sem Controles</h3>
+            <NumberInput
+              value={50}
+              showControls={false}
+              placeholder="Digite um número"
+            />
+          </div>
+        </div>
       }
       installation={`import { NumberInput } from '@/components/UI';`}
       basicExample={`const [value, setValue] = useState(0);
