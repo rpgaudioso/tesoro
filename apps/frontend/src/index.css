@@ -64,8 +64,13 @@
   --color-warning-bg: rgba(245, 158, 11, 0.1);
 
   --color-danger: #ef4444;
+  --color-danger-hover: #dc2626;
   --color-danger-light: #fee2e2;
   --color-danger-bg: rgba(239, 68, 68, 0.1);
+
+  /* Overlay colors */
+  --color-overlay: rgba(0, 0, 0, 0.6);
+  --color-overlay-light: rgba(0, 0, 0, 0.5);
 
   /* Neutral colors */
   --color-neutral-50: #fafafa;
@@ -94,6 +99,18 @@
   /* Border colors */
   --color-border: #e5e5e5;
   --color-border-light: #f0f0f0;
+
+  /* Drawer & Modal dimensions */
+  --drawer-width-sm: 320px;
+  --drawer-width-md: 480px;
+  --drawer-width-lg: 640px;
+  --drawer-height-sm: 240px;
+  --drawer-height-md: 360px;
+  --drawer-height-lg: 480px;
+  --modal-width-sm: 400px;
+  --modal-width-md: 600px;
+  --modal-width-lg: 800px;
+  --modal-shadow: 0 4px 6px rgba(0, 0, 0, 0.07), 0 10px 20px rgba(0, 0, 0, 0.1), 0 20px 40px rgba(0, 0, 0, 0.15);
 
   /* Shadows - Modern and subtle */
   --shadow-xs: 0 1px 2px 0 rgb(0 0 0 / 0.03);

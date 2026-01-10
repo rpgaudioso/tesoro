@@ -9,7 +9,7 @@ export default function AILabelDetailPage() {
       overview="AI Label é um componente visual que identifica funcionalidades que utilizam inteligência artificial, ajudando usuários a reconhecer recursos assistidos por IA."
       usage={
         <>
-          <div className="card">
+          <div>
             <h3 className="section-title">Variantes</h3>
             <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap', alignItems: 'center' }}>
               <AILabel />
@@ -17,7 +17,7 @@ export default function AILabelDetailPage() {
               <AILabel text="Assistente" />
             </div>
           </div>
-          <div className="card">
+          <div>
             <h3 className="section-title">Tamanhos</h3>
             <div style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
               <AILabel size="sm" />

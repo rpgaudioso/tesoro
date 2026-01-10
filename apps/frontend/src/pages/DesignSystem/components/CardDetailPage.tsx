@@ -1,90 +1,110 @@
-import { useState } from 'react';
-import { Card as CardComponent, CodeBlock, PageHeader } from '../../../components/UI';
-import styles from './ComponentDetailPage.module.css';
+import { Card } from '../../../components/UI';
+import SimpleComponentPage from './SimpleComponentPage';
 
 export default function CardDetailPage() {
-  const [activeTab, setActiveTab] = useState<'usage' | 'code' | 'style'>('usage');
-
   return (
-    <div className={styles.container}>
-      <PageHeader title="Card" subtitle="Container com elevação e padding padronizado" />
-      
-      <div className={styles.tabs}>
-        <button className={`${styles.tab} ${activeTab === 'usage' ? styles.active : ''}`} onClick={() => setActiveTab('usage')}>Usage</button>
-        <button className={`${styles.tab} ${activeTab === 'code' ? styles.active : ''}`} onClick={() => setActiveTab('code')}>Code</button>
-        <button className={`${styles.tab} ${activeTab === 'style' ? styles.active : ''}`} onClick={() => setActiveTab('style')}>Style</button>
-      </div>
+    <SimpleComponentPage
+      title="Card"
+      subtitle="Container com elevação e padding padronizado"
+      overview="Cards são containers que agrupam conteúdo relacionado. Fornecem elevação visual através de sombras e organizam informações de forma clara e estruturada."
+      usage={
+        <>
+          <div>
+            <h3 className="section-title">Card Básico</h3>
+            
+            <Card>
+              <h3 style={{ marginBottom: '8px', fontSize: '16px', fontWeight: 600 }}>Título do Card</h3>
+              <p style={{ fontSize: '14px', color: 'var(--color-text-secondary)' }}>
+                Este é um exemplo de card básico com título e conteúdo textual.
+              </p>
+            </Card>
+          </div>
 
-      {activeTab === 'usage' && (
-        <div className={styles.content}>
-          <CardComponent>
-            <h2 className={styles.sectionTitle}>Overview</h2>
-            <p className={styles.text}>Cards são containers com elevação, usados para agrupar conteúdo relacionado.</p>
-          </CardComponent>
+          <div>
+            <h3 className="section-title">Card com Conteúdo Estruturado</h3>
+            
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '16px' }}>
+              <Card>
+                <h4 style={{ marginBottom: '8px', fontSize: '14px', fontWeight: 600 }}>Receitas</h4>
+                <p style={{ fontSize: '24px', fontWeight: 700, color: 'var(--color-success)', marginBottom: '4px' }}>
+                  R$ 15.280,00
+                </p>
+                <p style={{ fontSize: '12px', color: 'var(--color-text-secondary)' }}>
+                  +12% vs mês anterior
+                </p>
+              </Card>
 
-          <CardComponent>
-            <h2 className={styles.sectionTitle}>Tamanhos de Padding</h2>
-            <div className={styles.example}>
-              <h3 className={styles.exampleTitle}>Small</h3>
-              <div className={styles.preview}>
-                <CardComponent padding="sm"><p>Padding pequeno (16px)</p></CardComponent>
-              </div>
-            </div>
-            <div className={styles.example}>
-              <h3 className={styles.exampleTitle}>Medium (padrão)</h3>
-              <div className={styles.preview}>
-                <CardComponent padding="md"><p>Padding médio (24px)</p></CardComponent>
-              </div>
-            </div>
-            <div className={styles.example}>
-              <h3 className={styles.exampleTitle}>Large</h3>
-              <div className={styles.preview}>
-                <CardComponent padding="lg"><p>Padding grande (32px)</p></CardComponent>
-              </div>
-            </div>
-          </CardComponent>
-        </div>
-      )}
+              <Card>
+                <h4 style={{ marginBottom: '8px', fontSize: '14px', fontWeight: 600 }}>Despesas</h4>
+                <p style={{ fontSize: '24px', fontWeight: 700, color: 'var(--color-danger)', marginBottom: '4px' }}>
+                  R$ 8.420,00
+                </p>
+                <p style={{ fontSize: '12px', color: 'var(--color-text-secondary)' }}>
+                  -5% vs mês anterior
+                </p>
+              </Card>
 
-      {activeTab === 'code' && (
-        <div className={styles.content}>
-          <CardComponent>
-            <h2 className={styles.sectionTitle}>Instalação</h2>
-            <CodeBlock code={`import { Card } from '@/components/UI';`} language="tsx" />
-          </CardComponent>
-          <CardComponent>
-            <h2 className={styles.sectionTitle}>Uso Básico</h2>
-            <CodeBlock code={`<Card padding="md">
+              <Card>
+                <h4 style={{ marginBottom: '8px', fontSize: '14px', fontWeight: 600 }}>Saldo</h4>
+                <p style={{ fontSize: '24px', fontWeight: 700, color: 'var(--color-primary)', marginBottom: '4px' }}>
+                  R$ 6.860,00
+                </p>
+                <p style={{ fontSize: '12px', color: 'var(--color-text-secondary)' }}>
+                  Disponível
+                </p>
+              </Card>
+            </div>
+          </div>
+
+          <div>
+            <h3 className="section-title">Card com Lista</h3>
+            
+            <Card>
+              <h3 style={{ marginBottom: '16px', fontSize: '16px', fontWeight: 600 }}>Transações Recentes</h3>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', paddingBottom: '12px', borderBottom: '1px solid var(--color-border)' }}>
+                  <span style={{ fontSize: '14px' }}>Supermercado</span>
+                  <span style={{ fontSize: '14px', color: 'var(--color-danger)' }}>-R$ 245,80</span>
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', paddingBottom: '12px', borderBottom: '1px solid var(--color-border)' }}>
+                  <span style={{ fontSize: '14px' }}>Salário</span>
+                  <span style={{ fontSize: '14px', color: 'var(--color-success)' }}>+R$ 5.000,00</span>
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                  <span style={{ fontSize: '14px' }}>Conta de Luz</span>
+                  <span style={{ fontSize: '14px', color: 'var(--color-danger)' }}>-R$ 180,50</span>
+                </div>
+              </div>
+            </Card>
+          </div>
+        </>
+      }
+      installation="import { Card } from '@/components/UI';"
+      basicExample={`<Card>
   <h3>Título</h3>
-  <p>Conteúdo do card...</p>
-</Card>`} language="tsx" />
-          </CardComponent>
-          <CardComponent>
-            <h2 className={styles.sectionTitle}>Props</h2>
-            <CodeBlock code={`interface CardProps {
-  padding?: 'sm' | 'md' | 'lg';
+  <p>Conteúdo do card</p>
+</Card>`}
+      propsCode={`interface CardProps {
   children: ReactNode;
-}`} language="tsx" />
-          </CardComponent>
-        </div>
-      )}
-
-      {activeTab === 'style' && (
-        <div className={styles.content}>
-          <CardComponent>
-            <h2 className={styles.sectionTitle}>Design Tokens</h2>
-            <CodeBlock code={`background: var(--color-bg);
+  className?: string;
+}`}
+      styleTokens={`padding: var(--spacing-20);
+background: white;
 border-radius: var(--radius-12);
 box-shadow: var(--shadow-sm);
-border: 1px solid var(--color-border);
-
-/* Padding variants */
-padding-sm: var(--spacing-16);
-padding-md: var(--spacing-24);
-padding-lg: var(--spacing-32);`} language="css" />
-          </CardComponent>
-        </div>
-      )}
-    </div>
+border: 1px solid var(--color-border);`}
+      whenToUse={[
+        'Para agrupar conteúdo relacionado',
+        'Para criar layouts de dashboard com métricas',
+        'Para listas de itens ou produtos',
+        'Para destacar seções importantes da página',
+      ]}
+      whenNotToUse={[
+        'Para todo o conteúdo da página (use containers apropriados)',
+        'Para navegação (use Menu ou Tabs)',
+        'Para alertas ou notificações (use Alert ou Toast)',
+        'Quando não há necessidade de agrupamento visual',
+      ]}
+    />
   );
 }

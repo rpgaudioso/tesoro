@@ -1,7 +1,7 @@
 .backdrop {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.5);
+  background: var(--color-overlay-light);
   z-index: 1000;
   animation: fadeIn 0.2s ease-out;
 }
@@ -42,32 +42,32 @@
 
 .drawer.small.right,
 .drawer.small.left {
-  width: 320px;
+  width: var(--drawer-width-sm);
 }
 
 .drawer.medium.right,
 .drawer.medium.left {
-  width: 480px;
+  width: var(--drawer-width-md);
 }
 
 .drawer.large.right,
 .drawer.large.left {
-  width: 640px;
+  width: var(--drawer-width-lg);
 }
 
 .drawer.small.top,
 .drawer.small.bottom {
-  height: 240px;
+  height: var(--drawer-height-sm);
 }
 
 .drawer.medium.top,
 .drawer.medium.bottom {
-  height: 360px;
+  height: var(--drawer-height-md);
 }
 
 .drawer.large.top,
 .drawer.large.bottom {
-  height: 480px;
+  height: var(--drawer-height-lg);
 }
 
 .header {

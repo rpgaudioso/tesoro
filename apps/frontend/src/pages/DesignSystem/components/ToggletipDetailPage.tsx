@@ -9,7 +9,7 @@ export default function ToggletipDetailPage() {
       overview="Toggletip é um tooltip que pode conter conteúdo interativo como links ou botões, diferente de tooltips comuns que desaparecem ao mover o mouse."
       usage={
         <>
-          <div className="card">
+          <div>
             <h3 className="section-title">Posicionamento</h3>
             <div style={{ display: 'flex', gap: '24px', flexWrap: 'wrap', alignItems: 'center' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
@@ -38,7 +38,7 @@ export default function ToggletipDetailPage() {
               </div>
             </div>
           </div>
-          <div className="card">
+          <div>
             <h3 className="section-title">Com Conteúdo Interativo</h3>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
               <span>Ajuda interativa</span>

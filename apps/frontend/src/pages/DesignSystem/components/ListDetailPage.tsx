@@ -9,7 +9,7 @@ export default function ListDetailPage() {
       overview="List é um componente simples para apresentar listas com marcadores ou numeradas, mantendo consistência visual com o design system."
       usage={
         <>
-          <div className="card">
+          <div>
             <h3 className="section-title">Lista Não-Ordenada</h3>
             <List>
               <ListItem>Primeiro item da lista</ListItem>
@@ -17,7 +17,7 @@ export default function ListDetailPage() {
               <ListItem>Terceiro item da lista</ListItem>
             </List>
           </div>
-          <div className="card">
+          <div>
             <h3 className="section-title">Lista Ordenada</h3>
             <List ordered>
               <ListItem>Primeiro passo</ListItem>
@@ -25,7 +25,7 @@ export default function ListDetailPage() {
               <ListItem>Terceiro passo</ListItem>
             </List>
           </div>
-          <div className="card">
+          <div>
             <h3 className="section-title">Lista Aninhada</h3>
             <List>
               <ListItem>

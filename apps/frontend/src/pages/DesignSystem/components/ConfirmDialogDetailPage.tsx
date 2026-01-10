@@ -27,7 +27,7 @@ export default function ConfirmDialogDetailPage() {
       overview="ConfirmDialog é um modal especializado para confirmar ações importantes ou irreversíveis."
       usage={
         <>
-          <div className="card">
+          <div>
             <h3 className="section-title">Variante Danger (Destrutivo)</h3>
             <p style={{ marginBottom: '16px', fontSize: '14px', color: 'var(--color-text-secondary)' }}>
               Use para ações destrutivas como excluir, remover ou cancelar permanentemente.
@@ -49,7 +49,7 @@ export default function ConfirmDialogDetailPage() {
             />
           </div>
 
-          <div className="card">
+          <div>
             <h3 className="section-title">Variante Warning (Atenção)</h3>
             <p style={{ marginBottom: '16px', fontSize: '14px', color: 'var(--color-text-secondary)' }}>
               Use para ações que requerem atenção mas não são irreversíveis.
@@ -72,7 +72,7 @@ export default function ConfirmDialogDetailPage() {
             />
           </div>
 
-          <div className="card">
+          <div>
             <h3 className="section-title">Variante Info (Informação)</h3>
             <p style={{ marginBottom: '16px', fontSize: '14px', color: 'var(--color-text-secondary)' }}>
               Use para confirmações informativas sem consequências graves.

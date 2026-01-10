@@ -1,4 +1,4 @@
-import { Children, useState } from 'react';
+import { Children, Fragment, ReactElement, useState } from 'react';
 import { Card, CodeBlock, Divider, PageHeader } from '../../../components/UI';
 import styles from './ComponentDetailPage.module.css';
 
@@ -41,8 +41,16 @@ export default function SimpleComponentPage({
 }: SimpleComponentPageProps) {
   const [activeTab, setActiveTab] = useState<'usage' | 'code' | 'style'>('usage');
 
-  // Converte usage para array e adiciona dividers
-  const usageChildren = Children.toArray(usage);
+  // Converte usage para array e extrai children de Fragments
+  let usageChildren = Children.toArray(usage);
+  
+  // Se o único child é um Fragment, pega os children de dentro dele
+  if (usageChildren.length === 1) {
+    const child = usageChildren[0] as ReactElement;
+    if (child.type === Fragment) {
+      usageChildren = Children.toArray(child.props.children);
+    }
+  }
 
   return (
     <div className={styles.container}>
@@ -63,11 +71,9 @@ export default function SimpleComponentPage({
           
           <Card>
             {usageChildren.map((child, index) => (
-              <div key={index} style={{ marginTop: index === 0 ? 0 : 'var(--spacing-24)' }}>
-                {index > 0 && <Divider spacing="none" />}
-                <div style={{ marginTop: index === 0 ? 0 : 'var(--spacing-24)' }}>
-                  {child}
-                </div>
+              <div key={index}>
+                {index > 0 && <Divider spacing="large" />}
+                {child}
               </div>
             ))}
           </Card>

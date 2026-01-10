@@ -19,6 +19,19 @@
   margin-top: var(--spacing-48);
 }
 
+.searchContainer {
+  margin-bottom: var(--spacing-24);
+  max-width: 500px;
+}
+
+.noResults {
+  font-size: var(--font-base);
+  color: var(--color-text-secondary);
+  text-align: center;
+  padding: var(--spacing-32);
+  margin: 0;
+}
+
 .tokensSection {
   margin-top: var(--spacing-48);
   margin-bottom: var(--spacing-48);

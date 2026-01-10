@@ -12,11 +12,11 @@ export default function EmptyStateDetailPage() {
         <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
           <EmptyState
             icon={<Inbox size={48} />}
-            message="Nenhuma transação encontrada"
+            title="Nenhuma transação encontrada"
           />
           <EmptyState
             icon={<Inbox size={48} />}
-            message="Sua lista está vazia"
+            title="Sua lista está vazia"
             description="Comece criando sua primeira categoria"
           />
         </div>
@@ -25,12 +25,12 @@ export default function EmptyStateDetailPage() {
 import { Inbox } from 'lucide-react';`}
       basicExample={`<EmptyState
   icon={<Inbox size={48} />}
-  message="Nenhum dado encontrado"
+  title="Nenhum dado encontrado"
   description="Tente ajustar os filtros"
 />`}
       propsCode={`interface EmptyStateProps {
   icon?: ReactNode;
-  message: string;
+  title: string;
   description?: string;
 }`}
       styleTokens={`display: flex;

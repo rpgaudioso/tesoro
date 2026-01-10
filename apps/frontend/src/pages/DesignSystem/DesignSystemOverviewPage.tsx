@@ -1,5 +1,6 @@
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Card, PageHeader } from '../../components/UI';
+import { Card, PageHeader, Search } from '../../components/UI';
 import styles from './DesignSystemOverviewPage.module.css';
 
 interface Component {
@@ -77,6 +78,13 @@ const components: Component[] = [
 ];
 
 export default function DesignSystemOverviewPage() {
+  const [searchQuery, setSearchQuery] = useState('');
+
+  const filteredComponents = components.filter((component) =>
+    component.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    component.description.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
   return (
     <div className={styles.container}>
       <PageHeader
@@ -95,24 +103,6 @@ export default function DesignSystemOverviewPage() {
         </Card>
       </div>
 
-      <div className={styles.componentsSection}>
-        <h2 className={styles.sectionTitle}>Componentes</h2>
-        <div className={styles.componentsGrid}>
-          {components.map((component) => (
-            <Link
-              key={component.id}
-              to={`/app/design-system/${component.id}`}
-              className={styles.componentCard}
-            >
-              <Card padding="md">
-                <h3 className={styles.componentName}>{component.name}</h3>
-                <p className={styles.componentDescription}>{component.description}</p>
-              </Card>
-            </Link>
-          ))}
-        </div>
-      </div>
-
       <div className={styles.tokensSection}>
         <h2 className={styles.sectionTitle}>Design Tokens</h2>
         <Card>
@@ -124,6 +114,41 @@ export default function DesignSystemOverviewPage() {
             Ver Design Tokens →
           </Link>
         </Card>
+      </div>
+
+      <div className={styles.componentsSection}>
+        <h2 className={styles.sectionTitle}>Componentes</h2>
+        
+        <div className={styles.searchContainer}>
+          <Search
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder="Buscar componentes..."
+          />
+        </div>
+
+        {filteredComponents.length === 0 ? (
+          <Card>
+            <p className={styles.noResults}>
+              Nenhum componente encontrado para "{searchQuery}"
+            </p>
+          </Card>
+        ) : (
+          <div className={styles.componentsGrid}>
+            {filteredComponents.map((component) => (
+              <Link
+                key={component.id}
+                to={`/app/design-system/${component.id}`}
+                className={styles.componentCard}
+              >
+                <Card padding="md">
+                  <h3 className={styles.componentName}>{component.name}</h3>
+                  <p className={styles.componentDescription}>{component.description}</p>
+                </Card>
+              </Link>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );

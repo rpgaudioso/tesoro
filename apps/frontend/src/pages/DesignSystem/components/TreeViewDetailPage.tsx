@@ -10,7 +10,7 @@ export default function TreeViewDetailPage() {
       overview="Tree View apresenta dados hierárquicos em uma estrutura de árvore expansível, ideal para navegação em estruturas aninhadas como pastas ou categorias."
       usage={
         <>
-          <div className="card">
+          <div>
             <h3 className="section-title">Estrutura de Pastas</h3>
             <TreeView>
               <TreeNode label="Documentos" icon={Folder} defaultExpanded>
@@ -27,7 +27,7 @@ export default function TreeViewDetailPage() {
               </TreeNode>
             </TreeView>
           </div>
-          <div className="card">
+          <div>
             <h3 className="section-title">Configurações</h3>
             <TreeView>
               <TreeNode label="Sistema" icon={Settings} defaultExpanded>

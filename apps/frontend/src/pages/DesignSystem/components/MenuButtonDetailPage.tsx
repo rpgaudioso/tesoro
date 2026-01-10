@@ -10,7 +10,7 @@ export default function MenuButtonDetailPage() {
       overview="Menu Button combina um botão com um menu dropdown, permitindo agrupar múltiplas ações relacionadas em um único componente interativo."
       usage={
         <>
-          <div className="card">
+          <div>
             <h3 className="section-title">Variantes</h3>
             <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap' }}>
               <MenuButton label="Ações" kind="primary">
@@ -25,7 +25,7 @@ export default function MenuButtonDetailPage() {
               </MenuButton>
             </div>
           </div>
-          <div className="card">
+          <div>
             <h3 className="section-title">Com Ícone</h3>
             <MenuButton label="Baixar" icon={Download} kind="primary">
               <MenuButtonItem label="PDF" onClick={() => {}} />

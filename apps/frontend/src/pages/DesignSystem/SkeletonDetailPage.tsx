@@ -137,30 +137,6 @@ export default function SkeletonDetailPage() {
       ]}
       whenToUse={whenToUse}
       whenNotToUse={whenNotToUse}
-      basicExample={`<Skeleton variant="text" width="80%" />
-<Skeleton variant="circular" width={40} height={40} />
-<Skeleton variant="rectangular" width="100%" height={100} />
-
-<SkeletonGroup count={3} />`}
-      propsCode={`interface SkeletonProps {
-  width?: string | number;
-  height?: string | number;
-  variant?: 'text' | 'circular' | 'rectangular' | 'rounded';
-  animation?: 'pulse' | 'wave' | 'none';
-}
-
-interface SkeletonGroupProps {
-  count?: number;
-  spacing?: string;
-  children?: React.ReactNode;
-}`}
-      styleTokens={`/* Tokens utilizados */
---color-bg-secondary
---radius-6
---radius-12
---radius-full`}
-      whenToUse={whenToUse}
-      whenNotToUse={whenNotToUse}
     />
   );
 }

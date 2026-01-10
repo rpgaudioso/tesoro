@@ -10,7 +10,7 @@ export default function ContainedListDetailPage() {
       overview="Contained List apresenta itens em uma lista com bordas e divisores claros, ideal para listas de configurações, opções ou dados estruturados."
       usage={
         <>
-          <div className="card">
+          <div>
             <h3 className="section-title">Lista Básica</h3>
             <ContainedList header="Configurações">
               <ContainedListItem>Notificações por email</ContainedListItem>
@@ -18,7 +18,7 @@ export default function ContainedListDetailPage() {
               <ContainedListItem>Alertas de segurança</ContainedListItem>
             </ContainedList>
           </div>
-          <div className="card">
+          <div>
             <h3 className="section-title">Com Ações</h3>
             <ContainedList header="Usuários">
               <ContainedListItem action={

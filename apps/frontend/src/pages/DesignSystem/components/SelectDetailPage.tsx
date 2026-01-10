@@ -1,191 +1,129 @@
 import { useState } from 'react';
-import { Card, CodeBlock, PageHeader, Select } from '../../../components/UI';
-import styles from './ComponentDetailPage.module.css';
+import { Select } from '../../../components/UI';
+import SimpleComponentPage from './SimpleComponentPage';
 
 export default function SelectDetailPage() {
-  const [activeTab, setActiveTab] = useState<'usage' | 'code' | 'style'>('usage');
-  const [selectValue, setSelectValue] = useState('');
+  const [selectedValue, setSelectedValue] = useState('');
 
   const options = [
-    { value: 'option1', label: 'Opção 1' },
-    { value: 'option2', label: 'Opção 2' },
-    { value: 'option3', label: 'Opção 3' },
+    { value: 'opcao1', label: 'Opção 1' },
+    { value: 'opcao2', label: 'Opção 2' },
+    { value: 'opcao3', label: 'Opção 3' },
+  ];
+
+  const categoryOptions = [
+    { value: 'alimentacao', label: 'Alimentação' },
+    { value: 'transporte', label: 'Transporte' },
+    { value: 'lazer', label: 'Lazer' },
+    { value: 'saude', label: 'Saúde' },
   ];
 
   return (
-    <div className={styles.container}>
-      <PageHeader
-        title="Select"
-        subtitle="Dropdown de seleção com opções customizadas"
-      />
-
-      <div className={styles.tabs}>
-        <button
-          className={`${styles.tab} ${activeTab === 'usage' ? styles.active : ''}`}
-          onClick={() => setActiveTab('usage')}
-        >
-          Usage
-        </button>
-        <button
-          className={`${styles.tab} ${activeTab === 'code' ? styles.active : ''}`}
-          onClick={() => setActiveTab('code')}
-        >
-          Code
-        </button>
-        <button
-          className={`${styles.tab} ${activeTab === 'style' ? styles.active : ''}`}
-          onClick={() => setActiveTab('style')}
-        >
-          Style
-        </button>
-      </div>
-
-      {activeTab === 'usage' && (
-        <div className={styles.content}>
-          <Card>
-            <h2 className={styles.sectionTitle}>Overview</h2>
-            <p className={styles.text}>
-              Select permite que usuários escolham uma opção de uma lista pré-definida.
-              Ideal para quando há 5 ou mais opções.
-            </p>
-          </Card>
-
-          <Card>
-            <h2 className={styles.sectionTitle}>Variações</h2>
-
-            <div className={styles.example}>
-              <h3 className={styles.exampleTitle}>Com Label</h3>
-              <div className={styles.preview}>
-                <Select
-                  label="Categoria"
-                  options={options}
-                  value={selectValue}
-                  onChange={(e) => setSelectValue(e.target.value)}
-                  fullWidth
-                />
-              </div>
+    <SimpleComponentPage
+      title="Select"
+      subtitle="Campo de seleção com dropdown de opções"
+      overview="Select permite que usuários escolham uma opção de uma lista. É ideal quando há 5 ou mais opções para selecionar."
+      usage={
+        <>
+          <div>
+            <h3 className="section-title">Estados</h3>
+            
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', maxWidth: '400px' }}>
+              <Select
+                label="Selecione uma opção"
+                options={options}
+                value={selectedValue}
+                onChange={setSelectedValue}
+                placeholder="Escolha..."
+              />
+              
+              <Select
+                label="Categoria"
+                options={categoryOptions}
+                placeholder="Selecione uma categoria"
+              />
+              
+              <Select
+                label="Campo com erro"
+                options={options}
+                error="Seleção obrigatória"
+                placeholder="Escolha uma opção"
+              />
+              
+              <Select
+                label="Campo desabilitado"
+                options={options}
+                disabled
+                placeholder="Desabilitado"
+              />
             </div>
+          </div>
 
-            <div className={styles.example}>
-              <h3 className={styles.exampleTitle}>Com Placeholder</h3>
-              <div className={styles.preview}>
-                <Select
-                  label="Selecione uma opção"
-                  options={options}
-                  placeholder="Escolha..."
-                  fullWidth
-                />
-              </div>
+          <div>
+            <h3 className="section-title">Com valor pré-selecionado</h3>
+            
+            <div style={{ maxWidth: '400px' }}>
+              <Select
+                label="Status"
+                options={[
+                  { value: 'ativo', label: 'Ativo' },
+                  { value: 'inativo', label: 'Inativo' },
+                  { value: 'pendente', label: 'Pendente' },
+                ]}
+                value="ativo"
+                onChange={() => {}}
+              />
             </div>
+          </div>
+        </>
+      }
+      installation="import { Select } from '@/components/UI';"
+      basicExample={`const [value, setValue] = useState('');
 
-            <div className={styles.example}>
-              <h3 className={styles.exampleTitle}>Desabilitado</h3>
-              <div className={styles.preview}>
-                <Select
-                  label="Campo desabilitado"
-                  options={options}
-                  value="option1"
-                  disabled
-                  fullWidth
-                />
-              </div>
-            </div>
-          </Card>
-
-          <Card>
-            <h2 className={styles.sectionTitle}>Quando usar</h2>
-            <ul className={styles.list}>
-              <li>Para escolher uma opção de uma lista de 5+ itens</li>
-              <li>Para categorias, status, filtros</li>
-              <li>Quando o espaço é limitado</li>
-            </ul>
-
-            <h3 className={styles.subsectionTitle}>Quando NÃO usar</h3>
-            <ul className={styles.list}>
-              <li>Para 2-4 opções (use Radio Button)</li>
-              <li>Para seleção múltipla (use Checkbox ou Multiselect)</li>
-              <li>Para texto livre (use Input)</li>
-            </ul>
-          </Card>
-        </div>
-      )}
-
-      {activeTab === 'code' && (
-        <div className={styles.content}>
-          <Card>
-            <h2 className={styles.sectionTitle}>Instalação</h2>
-            <CodeBlock
-              code={`import { Select } from '@/components/UI';`}
-              language="tsx"
-            />
-          </Card>
-
-          <Card>
-            <h2 className={styles.sectionTitle}>Uso Básico</h2>
-            <CodeBlock
-              code={`const options = [
-  { value: 'cat1', label: 'Categoria 1' },
-  { value: 'cat2', label: 'Categoria 2' },
-  { value: 'cat3', label: 'Categoria 3' }
+const options = [
+  { value: 'op1', label: 'Opção 1' },
+  { value: 'op2', label: 'Opção 2' },
+  { value: 'op3', label: 'Opção 3' },
 ];
 
-const [selected, setSelected] = useState('');
-
 <Select
-  label="Categoria"
+  label="Selecione"
   options={options}
-  value={selected}
-  onChange={(e) => setSelected(e.target.value)}
-  fullWidth
+  value={value}
+  onChange={setValue}
+  placeholder="Escolha uma opção"
 />`}
-              language="tsx"
-            />
-          </Card>
-
-          <Card>
-            <h2 className={styles.sectionTitle}>Props</h2>
-            <CodeBlock
-              code={`interface SelectProps {
+      propsCode={`interface SelectProps {
   label?: string;
-  options: SelectOption[];
+  options: Array<{ value: string; label: string }>;
   value?: string;
+  onChange?: (value: string) => void;
   placeholder?: string;
+  error?: string;
   disabled?: boolean;
   required?: boolean;
-  fullWidth?: boolean;
-  onChange?: (e: ChangeEvent<HTMLSelectElement>) => void;
-}
-
-type SelectOption = {
-  value: string;
-  label: string;
-};`}
-              language="tsx"
-            />
-          </Card>
-        </div>
-      )}
-
-      {activeTab === 'style' && (
-        <div className={styles.content}>
-          <Card>
-            <h2 className={styles.sectionTitle}>Design Tokens</h2>
-            <CodeBlock
-              code={`height: 40px;
-padding: var(--spacing-10) var(--spacing-12);
+}`}
+      styleTokens={`padding: var(--spacing-8) var(--spacing-12);
 border: 1px solid var(--color-border);
 border-radius: var(--radius-6);
-font-size: var(--font-base);
-background: var(--color-bg);
+font-size: var(--font-sm);
+background: white;
 
-/* Disabled */
-opacity: 0.6;
-cursor: not-allowed;`}
-              language="css"
-            />
-          </Card>
-        </div>
-      )}
-    </div>
+/* Focus */
+border-color: var(--color-primary);
+outline: 2px solid var(--color-primary-light);`}
+      whenToUse={[
+        'Quando há 5 ou mais opções para escolher',
+        'Para categorias, status ou tipos predefinidos',
+        'Quando o espaço vertical é limitado',
+        'Para seleções de uma única opção',
+      ]}
+      whenNotToUse={[
+        'Para menos de 5 opções (use RadioButton)',
+        'Para múltiplas seleções (use Checkbox)',
+        'Para alternar entre estados (use Toggle)',
+        'Para entrada de texto livre (use Input)',
+      ]}
+    />
   );
 }

@@ -11,26 +11,26 @@ export default function ProgressBarDetailPage() {
         <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
           <div>
             <p style={{ marginBottom: '8px', fontSize: '14px', color: 'var(--color-text-secondary)' }}>25%</p>
-            <ProgressBar progress={25} />
+            <ProgressBar value={25} />
           </div>
           <div>
             <p style={{ marginBottom: '8px', fontSize: '14px', color: 'var(--color-text-secondary)' }}>50%</p>
-            <ProgressBar progress={50} />
+            <ProgressBar value={50} />
           </div>
           <div>
             <p style={{ marginBottom: '8px', fontSize: '14px', color: 'var(--color-text-secondary)' }}>75%</p>
-            <ProgressBar progress={75} />
+            <ProgressBar value={75} />
           </div>
           <div>
             <p style={{ marginBottom: '8px', fontSize: '14px', color: 'var(--color-text-secondary)' }}>100%</p>
-            <ProgressBar progress={100} />
+            <ProgressBar value={100} />
           </div>
         </div>
       }
       installation={`import { ProgressBar } from '@/components/UI';`}
-      basicExample={`<ProgressBar progress={65} />`}
+      basicExample={`<ProgressBar value={65} />`}
       propsCode={`interface ProgressBarProps {
-  progress: number; // 0-100
+  value: number; // 0-100
 }`}
       styleTokens={`height: 8px;
 background: var(--color-bg-secondary);

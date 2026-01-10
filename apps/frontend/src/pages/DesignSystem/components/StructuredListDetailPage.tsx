@@ -9,7 +9,7 @@ export default function StructuredListDetailPage() {
       overview="Structured List apresenta dados em formato de lista com múltiplas colunas, ideal para comparações, especificações técnicas ou dados estruturados."
       usage={
         <>
-          <div className="card">
+          <div>
             <h3 className="section-title">Lista Básica</h3>
             <StructuredList>
               <StructuredListRow head>
@@ -34,7 +34,7 @@ export default function StructuredListDetailPage() {
               </StructuredListRow>
             </StructuredList>
           </div>
-          <div className="card">
+          <div>
             <h3 className="section-title">Condensada</h3>
             <StructuredList condensed>
               <StructuredListRow head>
