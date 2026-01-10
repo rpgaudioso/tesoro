@@ -45,6 +45,18 @@ animation: spin 0.8s linear infinite;
 
 /* Sizes */
 sm: 24px; md: 40px; lg: 64px;`}
+      whenToUse={[
+        'Durante carregamento de dados assíncronos',
+        'Em páginas que demoram para carregar',
+        'Para feedback de processamento',
+        'Dentro de botões durante ações longas'
+      ]}
+      whenNotToUse={[
+        'Para progresso mensurável (use ProgressBar)',
+        'Para estados vazios (use EmptyState)',
+        'Em carregamentos instantâneos (< 300ms)',
+        'Para processos multi-etapa (use Stepper)'
+      ]}
     />
   );
 }

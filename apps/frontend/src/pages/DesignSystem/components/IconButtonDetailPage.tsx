@@ -41,6 +41,18 @@ border-radius: var(--radius-full);
 display: flex;
 align-items: center;
 justify-content: center;`}
+      whenToUse={[
+        'Para ações rápidas em toolbars',
+        'Em linhas de tabelas com múltiplas ações',
+        'Para ícones de editar, deletar, visualizar',
+        'Quando o espaço é limitado'
+      ]}
+      whenNotToUse={[
+        'Para ações primárias importantes (use Button)',
+        'Quando o ícone não for óbvio para todos',
+        'Para ações que precisam de confirmação explícita',
+        'Em formulários de submissão'
+      ]}
     />
   );
 }

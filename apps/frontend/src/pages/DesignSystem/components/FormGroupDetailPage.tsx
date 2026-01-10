@@ -38,6 +38,18 @@ color: var(--color-text-primary);
 color: var(--color-danger);
 font-size: 14px;
 margin-top: var(--space-1);`}
+      whenToUse={[
+        'Para agrupar label + input em formulários',
+        'Quando precisar mostrar mensagens de erro',
+        'Para manter consistência em layouts de formulários',
+        'Com qualquer tipo de campo de entrada'
+      ]}
+      whenNotToUse={[
+        'Para campos inline sem label',
+        'Em filtros de busca simples',
+        'Quando o label for redundante',
+        'Para checkboxes e radios (já têm label integrado)'
+      ]}
     />
   );
 }

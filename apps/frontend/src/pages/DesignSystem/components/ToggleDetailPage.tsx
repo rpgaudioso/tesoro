@@ -45,6 +45,18 @@ background: var(--color-primary);
 width: 18px; height: 18px;
 transform: translateX(20px) when checked;
 transition: transform 0.2s;`}
+      whenToUse={[
+        'Para configurações on/off',
+        'Com preferências binárias do usuário',
+        'Para ativar/desativar funcionalidades',
+        'Quando mudança é instantânea'
+      ]}
+      whenNotToUse={[
+        'Para seleção entre múltiplas opções (use Radio)',
+        'Quando precisa de confirmação',
+        'Para ações destrutivas (use Checkbox + Confirm)',
+        'Em formulários que precisam de submit'
+      ]}
     />
   );
 }

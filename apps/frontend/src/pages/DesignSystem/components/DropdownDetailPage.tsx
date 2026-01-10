@@ -50,8 +50,25 @@ border: 1px solid var(--color-border);
 border-radius: var(--radius-md);
 box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 
+/* Item */
+padding: 10px 16px;
+cursor: pointer;
+transition: background 0.2s;
+
 /* Item hover */
 background: var(--color-bg-secondary);`}
+      whenToUse={[
+        'Para ações contextuais em linhas de tabelas',
+        'Em ações em massa que precisam economizar espaço',
+        'Para menus de configurações e opções',
+        'Quando há 3+ ações relacionadas'
+      ]}
+      whenNotToUse={[
+        'Para navegação principal (use Tabs)',
+        'Quando há apenas 1 ou 2 ações (use Buttons)',
+        'Para formulários de seleção (use Select)',
+        'Quando as ações precisam estar sempre visíveis'
+      ]}
     />
   );
 }

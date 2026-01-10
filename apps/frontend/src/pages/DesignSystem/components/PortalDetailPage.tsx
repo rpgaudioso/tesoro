@@ -58,6 +58,18 @@ left: 0;
 width: 100%;
 height: 100%;
 z-index: 9999;`}
+      whenToUse={[
+        'Para implementar modais e overlays',
+        'Com tooltips que podem sair do container',
+        'Para dropdowns que precisam escapar overflow:hidden',
+        'Quando z-index local não resolver'
+      ]}
+      whenNotToUse={[
+        'Para conteúdo normal da página',
+        'Quando posicionamento relativo funciona',
+        'Para todos os componentes (causa complexidade)',
+        'Se não houver problema de overflow'
+      ]}
     />
   );
 }

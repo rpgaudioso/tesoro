@@ -68,6 +68,18 @@ border-bottom-color: var(--color-primary);
 
 /* Content Animation */
 animation: fadeIn 0.2s;`}
+      whenToUse={[
+        'Para organizar conteúdo relacionado',
+        'Em páginas de detalhes com múltiplas seções',
+        'Para alternar entre visualizações',
+        'Quando há 2-7 categorias de informação'
+      ]}
+      whenNotToUse={[
+        'Para navegação principal (use Menu)',
+        'Para processos sequenciais (use Stepper)',
+        'Com apenas 1 opção',
+        'Para ações (use Buttons ou Dropdown)'
+      ]}
     />
   );
 }

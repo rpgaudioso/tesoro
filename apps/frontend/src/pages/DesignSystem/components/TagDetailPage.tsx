@@ -58,6 +58,18 @@ font-weight: 500;
 /* Primary */
 background: var(--color-primary-light);
 color: var(--color-primary);`}
+      whenToUse={[
+        'Para mostrar filtros ativos',
+        'Com categorias múltiplas selecionadas',
+        'Para keywords e labels removíveis',
+        'Em chips de seleção múltipla'
+      ]}
+      whenNotToUse={[
+        'Para status fixos (use Badge)',
+        'Para navegação (use Breadcrumb)',
+        'Quando não for removível (use Badge)',
+        'Para botões de ação (use Button)'
+      ]}
     />
   );
 }

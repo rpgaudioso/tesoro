@@ -43,6 +43,18 @@ color: var(--color-text-secondary);
 margin-top: var(--space-1);
 
 margin-bottom: var(--space-6);`}
+      whenToUse={[
+        'No topo de todas as páginas internas',
+        'Para mostrar título da página atual',
+        'Com ações principais da página (criar, voltar)',
+        'Para manter consistência de layout'
+      ]}
+      whenNotToUse={[
+        'Dentro de modais (use título do modal)',
+        'Em componentes reutilizáveis',
+        'Para seções dentro da página',
+        'Na página de login ou landing pages'
+      ]}
     />
   );
 }

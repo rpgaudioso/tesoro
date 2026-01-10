@@ -39,6 +39,18 @@ border-radius: var(--radius-full);
 /* Bar */
 background: var(--color-primary);
 transition: width 0.3s ease;`}
+      whenToUse={[
+        'Para uploads e downloads de arquivos',
+        'Quando o progresso é mensurável (0-100%)',
+        'Para importação de dados em lote',
+        'Ao processar múltiplos itens'
+      ]}
+      whenNotToUse={[
+        'Para processos indeterminados (use Loading)',
+        'Para steps discretos (use Stepper)',
+        'Quando não souber o progresso total',
+        'Para feedback instantâneo (use Toast)'
+      ]}
     />
   );
 }

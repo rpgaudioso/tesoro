@@ -43,6 +43,18 @@ text-align: center;
 /* Icon */
 opacity: 0.5;
 margin-bottom: var(--space-3);`}
+      whenToUse={[
+        'Quando listas ou tabelas estão vazias',
+        'Para estados sem resultados de busca',
+        'Ao mostrar categorias ou filtros vazios',
+        'Como placeholder antes de dados carregarem'
+      ]}
+      whenNotToUse={[
+        'Durante carregamento de dados (use Loading)',
+        'Para erros do sistema (use Alert)',
+        'Em formulários vazios',
+        'Como única mensagem em páginas 404'
+      ]}
     />
   );
 }

@@ -48,6 +48,18 @@ border-radius: var(--radius-md);
 background: var(--color-primary);
 color: white;
 border-color: var(--color-primary);`}
+      whenToUse={[
+        'Para listas longas de transações',
+        'Em tabelas com muitas linhas (>50)',
+        'Quando scroll infinito não for apropriado',
+        'Para navegação explícita entre páginas'
+      ]}
+      whenNotToUse={[
+        'Para feeds sociais (use scroll infinito)',
+        'Com menos de 20 itens (mostre todos)',
+        'Em dispositivos móveis com listas curtas',
+        'Quando a ordem temporal é crítica'
+      ]}
     />
   );
 }

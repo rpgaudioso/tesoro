@@ -50,6 +50,18 @@ padding: 6px 12px;
 border-radius: 4px;
 font-size: 13px;
 box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);`}
+      whenToUse={[
+        'Para explicar ícones e abreviações',
+        'Com informações complementares curtas',
+        'Para dicas de atalhos de teclado',
+        'Quando hover for uma ação natural'
+      ]}
+      whenNotToUse={[
+        'Para informações críticas',
+        'Com textos longos (use Popover)',
+        'Em dispositivos touch (não há hover)',
+        'Para conteúdo interativo (use Toggletip)'
+      ]}
     />
   );
 }

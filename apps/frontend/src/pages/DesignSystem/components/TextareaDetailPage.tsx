@@ -50,6 +50,18 @@ border: 1px solid var(--color-border);
 border-radius: var(--radius-6);
 font-size: var(--font-base);
 resize: vertical;`}
+      whenToUse={[
+        'Para descrições e observações longas',
+        'Com notas e comentários de transações',
+        'Para mensagens e feedback do usuário',
+        'Quando texto pode ter múltiplas linhas'
+      ]}
+      whenNotToUse={[
+        'Para textos curtos de 1 linha (use Input)',
+        'Para código ou JSON (use CodeBlock)',
+        'Para campos com validação rigorosa',
+        'Quando formatação rica for necessária (use Editor)'
+      ]}
     />
   );
 }
